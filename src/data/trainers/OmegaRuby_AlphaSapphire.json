@@ -1,0 +1,6929 @@
+{
+  "game": "OmegaRuby/AlphaSapphire",
+  "generation": 6,
+  "encounters": [
+    {
+      "id": "omegarubyalphasapphire-0",
+      "trainerClass": "Rival",
+      "trainerName": "#1 (Mudkip)",
+      "location": "R103",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Treecko",
+          "level": 5,
+          "ability": "Overgrow",
+          "item": "",
+          "nature": "Hardy",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Pound",
+            "No Move",
+            "No Move",
+            "No Move"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-1",
+      "trainerClass": "Rival",
+      "trainerName": "#1 (Treecko)",
+      "location": "R103",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Torchic",
+          "level": 5,
+          "ability": "Blaze",
+          "item": "",
+          "nature": "Hardy",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Scratch",
+            "No Move",
+            "No Move",
+            "No Move"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-2",
+      "trainerClass": "Rival",
+      "trainerName": "#1 (Torchic)",
+      "location": "R103",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Mudkip",
+          "level": 5,
+          "ability": "Torrent",
+          "item": "",
+          "nature": "Hardy",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Tackle",
+            "No Move",
+            "No Move",
+            "No Move"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-3",
+      "trainerClass": "Youngster",
+      "trainerName": "Calvin",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Zigzagoon",
+          "level": 4,
+          "ability": "Pickup",
+          "item": "",
+          "nature": "Mild",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Tackle",
+            "Growl",
+            "No Move",
+            "No Move"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-4",
+      "trainerClass": "",
+      "trainerName": "Magma Grunt",
+      "location": "Petalburg Woods",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Poochyena",
+          "level": 9,
+          "ability": "Run Away",
+          "item": "",
+          "nature": "Mild",
+          "ivs": {
+            "hp": 8,
+            "atk": 8,
+            "def": 8,
+            "spa": 8,
+            "spd": 8,
+            "spe": 8
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Tackle",
+            "Growl",
+            "Sand Attack",
+            "No Move"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-5",
+      "trainerClass": "",
+      "trainerName": "Aqua Grunt",
+      "location": "Petalburg Woods",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Poochyena",
+          "level": 9,
+          "ability": "Run Away",
+          "item": "",
+          "nature": "Lonely",
+          "ivs": {
+            "hp": 8,
+            "atk": 8,
+            "def": 8,
+            "spa": 8,
+            "spd": 8,
+            "spe": 8
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Tackle",
+            "Growl",
+            "Sand Attack",
+            "No Move"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-6",
+      "trainerClass": "",
+      "trainerName": "Schoolkid Georgia",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Geodude",
+          "level": 10,
+          "ability": "Rock Head",
+          "item": "",
+          "nature": "Modest",
+          "ivs": {
+            "hp": 8,
+            "atk": 8,
+            "def": 8,
+            "spa": 8,
+            "spd": 8,
+            "spe": 8
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Tackle",
+            "Rock Throw",
+            "No Move",
+            "No Move"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-7",
+      "trainerClass": "Leader",
+      "trainerName": "Roxanne",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Nosepass",
+          "level": 14,
+          "ability": "Magnet Pull",
+          "item": "",
+          "nature": "Docile",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Tackle",
+            "Harden",
+            "Rock Tomb",
+            "No Move"
+          ]
+        },
+        {
+          "species": "Geodude",
+          "level": 12,
+          "ability": "Sturdy",
+          "item": "",
+          "nature": "Mild",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Tackle",
+            "Defense Curl",
+            "Rock Throw",
+            "No Move"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-8",
+      "trainerClass": "Hiker",
+      "trainerName": "Clark",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Geodude",
+          "level": 10,
+          "ability": "Sturdy",
+          "item": "",
+          "nature": "Impish",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Defense Curl",
+            "Mud Sport",
+            "Rock Polish",
+            "Rollout"
+          ]
+        },
+        {
+          "species": "Geodude",
+          "level": 8,
+          "ability": "Rock Head",
+          "item": "",
+          "nature": "Adamant",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Tackle",
+            "Defense Curl",
+            "Mud Sport",
+            "Rock Polish"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-9",
+      "trainerClass": "",
+      "trainerName": "Magma Grunt",
+      "location": "Rusturf Tunnel",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Poochyena",
+          "level": 13,
+          "ability": "Quick Feet",
+          "item": "",
+          "nature": "Jolly",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Howl",
+            "Sand Attack",
+            "Bite",
+            "Odor Sleuth"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-10",
+      "trainerClass": "",
+      "trainerName": "Aqua Grunt",
+      "location": "Rusturf Tunnel",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Poochyena",
+          "level": 13,
+          "ability": "Quick Feet",
+          "item": "",
+          "nature": "Adamant",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Howl",
+            "Sand Attack",
+            "Bite",
+            "Odor Sleuth"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-11",
+      "trainerClass": "Battle Girl",
+      "trainerName": "Laura",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Meditite",
+          "level": 13,
+          "ability": "Pure Power",
+          "item": "",
+          "nature": "Lax",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Meditate",
+            "Confusion",
+            "Detect",
+            "Endure"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-12",
+      "trainerClass": "",
+      "trainerName": "HIDEKI",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Machop",
+          "level": 13,
+          "ability": "No Guard",
+          "item": "",
+          "nature": "Bold",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Focus Energy",
+            "Karate Chop",
+            "Foresight",
+            "Low Sweep"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-13",
+      "trainerClass": "Battle Girl",
+      "trainerName": "Tessa",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Machop",
+          "level": 11,
+          "ability": "No Guard",
+          "item": "",
+          "nature": "Jolly",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Leer",
+            "Focus Energy",
+            "Karate Chop",
+            "Foresight"
+          ]
+        },
+        {
+          "species": "Meditite",
+          "level": 11,
+          "ability": "Pure Power",
+          "item": "",
+          "nature": "Hasty",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Bide",
+            "Meditate",
+            "Confusion",
+            "Detect"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-14",
+      "trainerClass": "Leader",
+      "trainerName": "Brawly",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Makuhita",
+          "level": 16,
+          "ability": "Guts",
+          "item": "",
+          "nature": "Hardy",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Arm Thrust",
+            "Knock Off",
+            "Sand Attack",
+            "Bulk Up"
+          ]
+        },
+        {
+          "species": "Machop",
+          "level": 14,
+          "ability": "Guts",
+          "item": "",
+          "nature": "Adamant",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Leer",
+            "Karate Chop",
+            "Seismic Toss",
+            "Bulk Up"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-15",
+      "trainerClass": "",
+      "trainerName": "M Grunt 1",
+      "location": "Museum",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Numel",
+          "level": 16,
+          "ability": "Simple",
+          "item": "",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Ember",
+            "Focus Energy",
+            "Magnitude",
+            "Flame Burst"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-16",
+      "trainerClass": "",
+      "trainerName": "M Grunt 2",
+      "location": "Museum",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Numel",
+          "level": 14,
+          "ability": "Oblivious",
+          "item": "",
+          "nature": "Quiet",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Tackle",
+            "Ember",
+            "Focus Energy",
+            "Magnitude"
+          ]
+        },
+        {
+          "species": "Zubat",
+          "level": 14,
+          "ability": "Inner Focus",
+          "item": "",
+          "nature": "Quiet",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Supersonic",
+            "Astonish",
+            "Bite",
+            "Wing Attack"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-17",
+      "trainerClass": "",
+      "trainerName": "A Grunt 1",
+      "location": "Museum",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Carvanha",
+          "level": 16,
+          "ability": "Rough Skin",
+          "item": "",
+          "nature": "Relaxed",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Assurance",
+            "Aqua Jet",
+            "Rage",
+            "Focus Energy"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-18",
+      "trainerClass": "",
+      "trainerName": "A Grunt 2",
+      "location": "Museum",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Carvanha",
+          "level": 14,
+          "ability": "Rough Skin",
+          "item": "",
+          "nature": "Calm",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Assurance",
+            "Aqua Jet",
+            "Rage",
+            "Focus Energy"
+          ]
+        },
+        {
+          "species": "Zubat",
+          "level": 14,
+          "ability": "Inner Focus",
+          "item": "",
+          "nature": "Impish",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Supersonic",
+            "Astonish",
+            "Bite",
+            "Wing Attack"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-19",
+      "trainerClass": "",
+      "trainerName": "Poke Fan Isabel",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Minun",
+          "level": 15,
+          "ability": "Minus",
+          "item": "",
+          "nature": "Naive",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Helping Hand",
+            "Spark",
+            "Encore",
+            "Switcheroo"
+          ]
+        },
+        {
+          "species": "Plusle",
+          "level": 15,
+          "ability": "Plus",
+          "item": "",
+          "nature": "Quiet",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Helping Hand",
+            "Spark",
+            "Encore",
+            "Bestow"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-20",
+      "trainerClass": "Rival",
+      "trainerName": "#2 (Mudkip)",
+      "location": "R110",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Grovyle",
+          "level": 20,
+          "ability": "Overgrow",
+          "item": "",
+          "nature": "Rash",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Quick Attack",
+            "Mega Drain",
+            "Fury Cutter",
+            "Pursuit"
+          ]
+        },
+        {
+          "species": "Slugma",
+          "level": 18,
+          "ability": "Magma Armor",
+          "item": "",
+          "nature": "Hasty",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Ember",
+            "Rock Throw",
+            "Harden",
+            "Incinerate"
+          ]
+        },
+        {
+          "species": "Wailmer",
+          "level": 18,
+          "ability": "Water Veil",
+          "item": "",
+          "nature": "Hardy",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Water Gun",
+            "Rollout",
+            "Whirlpool",
+            "Astonish"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-21",
+      "trainerClass": "Rival",
+      "trainerName": "#2 (Treecko)",
+      "location": "R110",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Combusken",
+          "level": 20,
+          "ability": "Blaze",
+          "item": "",
+          "nature": "Rash",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Sand Attack",
+            "Peck",
+            "Double Kick",
+            "Flame Charge"
+          ]
+        },
+        {
+          "species": "Shroomish",
+          "level": 18,
+          "ability": "Effect Spore",
+          "item": "",
+          "nature": "Hasty",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Stun Spore",
+            "Leech Seed",
+            "Mega Drain",
+            "Headbutt"
+          ]
+        },
+        {
+          "species": "Wailmer",
+          "level": 18,
+          "ability": "Water Veil",
+          "item": "",
+          "nature": "Hardy",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Water Gun",
+            "Rollout",
+            "Whirlpool",
+            "Astonish"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-22",
+      "trainerClass": "Rival",
+      "trainerName": "#2 (Torchic)",
+      "location": "R110",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Marshtomp",
+          "level": 20,
+          "ability": "Torrent",
+          "item": "",
+          "nature": "Rash",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Mud Slap",
+            "Foresight",
+            "Mud Bomb",
+            "Bide"
+          ]
+        },
+        {
+          "species": "Shroomish",
+          "level": 18,
+          "ability": "Effect Spore",
+          "item": "",
+          "nature": "Hardy",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Stun Spore",
+            "Leech Seed",
+            "Mega Drain",
+            "Headbutt"
+          ]
+        },
+        {
+          "species": "Slugma",
+          "level": 18,
+          "ability": "Magma Armor",
+          "item": "",
+          "nature": "Hasty",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Ember",
+            "Rock Throw",
+            "Harden",
+            "Incinerate"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-23",
+      "trainerClass": "",
+      "trainerName": "Wally 1",
+      "location": "Mauville City",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Ralts",
+          "level": 17,
+          "ability": "Synchronize",
+          "item": "",
+          "nature": "Relaxed",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Teleport",
+            "Disarming Voice",
+            "Lucky Chant",
+            "Magical Leaf"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-24",
+      "trainerClass": "",
+      "trainerName": "Guitarist Kirk",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Electrike",
+          "level": 16,
+          "ability": "Lightning Rod",
+          "item": "",
+          "nature": "Sassy",
+          "ivs": {
+            "hp": 8,
+            "atk": 8,
+            "def": 8,
+            "spa": 8,
+            "spd": 8,
+            "spe": 8
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Volt Switch",
+            "Quick Attack",
+            "Odor Sleuth",
+            "No Move"
+          ]
+        },
+        {
+          "species": "Magnemite",
+          "level": 16,
+          "ability": "Magnet Pull",
+          "item": "",
+          "nature": "Bold",
+          "ivs": {
+            "hp": 8,
+            "atk": 8,
+            "def": 8,
+            "spa": 8,
+            "spd": 8,
+            "spe": 8
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Thunder Wave",
+            "Volt Switch",
+            "Tackle",
+            "No Move"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-25",
+      "trainerClass": "Youngster",
+      "trainerName": "Ben",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Electrike",
+          "level": 17,
+          "ability": "Lightning Rod",
+          "item": "",
+          "nature": "Quiet",
+          "ivs": {
+            "hp": 8,
+            "atk": 8,
+            "def": 8,
+            "spa": 8,
+            "spd": 8,
+            "spe": 8
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Odor Sleuth",
+            "Spark",
+            "Tackle",
+            "No Move"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-26",
+      "trainerClass": "",
+      "trainerName": "Guitarist Shawn",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Voltorb",
+          "level": 17,
+          "ability": "Static",
+          "item": "",
+          "nature": "Sassy",
+          "ivs": {
+            "hp": 8,
+            "atk": 8,
+            "def": 8,
+            "spa": 8,
+            "spd": 8,
+            "spe": 8
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Spark",
+            "Rollout",
+            "Screech",
+            "Charge Beam"
+          ]
+        },
+        {
+          "species": "Voltorb",
+          "level": 15,
+          "ability": "Static",
+          "item": "",
+          "nature": "Serious",
+          "ivs": {
+            "hp": 8,
+            "atk": 8,
+            "def": 8,
+            "spa": 8,
+            "spd": 8,
+            "spe": 8
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Eerie Impulse",
+            "Spark",
+            "Rollout",
+            "Screech"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-27",
+      "trainerClass": "Leader",
+      "trainerName": "Watson",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Magneton",
+          "level": 21,
+          "ability": "Magnet Pull",
+          "item": "",
+          "nature": "Naive",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Supersonic",
+            "Magnet Bomb",
+            "Volt Switch",
+            "No Move"
+          ]
+        },
+        {
+          "species": "Magnemite",
+          "level": 19,
+          "ability": "Sturdy",
+          "item": "",
+          "nature": "Brave",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Thunder Wave",
+            "Tackle",
+            "Volt Switch",
+            "No Move"
+          ]
+        },
+        {
+          "species": "Voltorb",
+          "level": 19,
+          "ability": "Soundproof",
+          "item": "",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Rollout",
+            "Charge",
+            "Volt Switch",
+            "No Move"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-28",
+      "trainerClass": "Ace Trainer",
+      "trainerName": "Wilton",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Bagon",
+          "level": 20,
+          "ability": "Rock Head",
+          "item": "",
+          "nature": "Brave",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Leer",
+            "Bite",
+            "Dragon Breath",
+            "Headbutt"
+          ]
+        },
+        {
+          "species": "Electrike",
+          "level": 20,
+          "ability": "Static",
+          "item": "",
+          "nature": "Careful",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Quick Attack",
+            "Spark",
+            "Odor Sleuth",
+            "Thunder Fang"
+          ]
+        },
+        {
+          "species": "Makuhita",
+          "level": 20,
+          "ability": "Thick Fat",
+          "item": "",
+          "nature": "Brave",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Fake Out",
+            "Force Palm",
+            "Whirlwind",
+            "Knock Off"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-29",
+      "trainerClass": "Youngster",
+      "trainerName": "Neal",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Electrike",
+          "level": 19,
+          "ability": "Lightning Rod",
+          "item": "",
+          "nature": "Gentle",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Quick Attack",
+            "Spark",
+            "Odor Sleuth",
+            "Thunder Fang"
+          ]
+        },
+        {
+          "species": "Trapinch",
+          "level": 19,
+          "ability": "Arena Trap",
+          "item": "",
+          "nature": "Serious",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Bulldoze",
+            "Sand Tomb",
+            "Rock Slide",
+            "Dig"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-30",
+      "trainerClass": "",
+      "trainerName": "Poke Maniac Steve",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Aron",
+          "level": 23,
+          "ability": "Sturdy",
+          "item": "",
+          "nature": "Naive",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Rock Tomb",
+            "Protect",
+            "Roar",
+            "Iron Head"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-31",
+      "trainerClass": "",
+      "trainerName": "Tabitha 1",
+      "location": "Double",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": true,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Koffing",
+          "level": 24,
+          "ability": "Levitate",
+          "item": "",
+          "nature": "Hardy",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Assurance",
+            "Clear Smog",
+            "Sludge",
+            "Self-Destruct"
+          ]
+        },
+        {
+          "species": "Numel",
+          "level": 24,
+          "ability": "Oblivious",
+          "item": "",
+          "nature": "Hardy",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Magnitude",
+            "Flame Burst",
+            "Amnesia",
+            "Lava Plume"
+          ]
+        },
+        {
+          "species": "Mightyena",
+          "level": 23,
+          "ability": "Intimidate",
+          "item": "",
+          "nature": "Hardy",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Odor Sleuth",
+            "Roar",
+            "Snarl",
+            "Swagger"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-32",
+      "trainerClass": "",
+      "trainerName": "Shelly 1",
+      "location": "Double",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": true,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Carvanha",
+          "level": 23,
+          "ability": "Rough Skin",
+          "item": "",
+          "nature": "Hardy",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Aqua Jet",
+            "Assurance",
+            "Screech",
+            "Swagger"
+          ]
+        },
+        {
+          "species": "Grimer",
+          "level": 23,
+          "ability": "Stench",
+          "item": "",
+          "nature": "Hardy",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Disable",
+            "Mud Bomb",
+            "Sludge",
+            "Minimize"
+          ]
+        },
+        {
+          "species": "Mightyena",
+          "level": 23,
+          "ability": "Intimidate",
+          "item": "",
+          "nature": "Adamant",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Odor Sleuth",
+            "Roar",
+            "Snarl",
+            "Swagger"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-33",
+      "trainerClass": "",
+      "trainerName": "M Grunt",
+      "location": "Mt Chimney",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Koffing",
+          "level": 22,
+          "ability": "Levitate",
+          "item": "",
+          "nature": "Brave",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Smokescreen",
+            "Assurance",
+            "Clear Smog",
+            "Sludge"
+          ]
+        },
+        {
+          "species": "Poochyena",
+          "level": 22,
+          "ability": "Quick Feet",
+          "item": "",
+          "nature": "Hardy",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Odor Sleuth",
+            "Roar",
+            "Swagger",
+            "Assurance"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-34",
+      "trainerClass": "",
+      "trainerName": "Tabitha 2",
+      "location": "Mt Chimney",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Koffing",
+          "level": 24,
+          "ability": "Levitate",
+          "item": "",
+          "nature": "Timid",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Assurance",
+            "Clear Smog",
+            "Sludge",
+            "Self-Destruct"
+          ]
+        },
+        {
+          "species": "Numel",
+          "level": 24,
+          "ability": "Oblivious",
+          "item": "",
+          "nature": "Careful",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Magnitude",
+            "Flame Burst",
+            "Amnesia",
+            "Lava Plume"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-35",
+      "trainerClass": "",
+      "trainerName": "Maxie 1",
+      "location": "Mt Chimney",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Camerupt",
+          "level": 27,
+          "ability": "Solid Rock",
+          "item": "",
+          "nature": "Jolly",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Flame Burst",
+            "Amnesia",
+            "Lava Plume",
+            "Earth Power"
+          ]
+        },
+        {
+          "species": "Golbat",
+          "level": 25,
+          "ability": "Inner Focus",
+          "item": "",
+          "nature": "Gentle",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Wing Attack",
+            "Confuse Ray",
+            "Air Cutter",
+            "Swift"
+          ]
+        },
+        {
+          "species": "Mightyena",
+          "level": 25,
+          "ability": "Intimidate",
+          "item": "",
+          "nature": "Calm",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Roar",
+            "Snarl",
+            "Swagger",
+            "Assurance"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-36",
+      "trainerClass": "",
+      "trainerName": "A Grunt",
+      "location": "Mt Chimney",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Grimer",
+          "level": 22,
+          "ability": "Stench",
+          "item": "",
+          "nature": "Gentle",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Disable",
+            "Mud Bomb",
+            "Sludge",
+            "Minimize"
+          ]
+        },
+        {
+          "species": "Poochyena",
+          "level": 22,
+          "ability": "Quick Feet",
+          "item": "",
+          "nature": "Mild",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Odor Sleuth",
+            "Roar",
+            "Swagger",
+            "Assurance"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-37",
+      "trainerClass": "",
+      "trainerName": "Shelly 2",
+      "location": "Mt Chimney",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Carvanha",
+          "level": 24,
+          "ability": "Rough Skin",
+          "item": "",
+          "nature": "Mild",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Aqua Jet",
+            "Assurance",
+            "Screech",
+            "Swagger"
+          ]
+        },
+        {
+          "species": "Grimer",
+          "level": 24,
+          "ability": "Stench",
+          "item": "",
+          "nature": "Bashful",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Disable",
+            "Mud Bomb",
+            "Sludge",
+            "Minimize"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-38",
+      "trainerClass": "",
+      "trainerName": "Archie 1",
+      "location": "Mt Chimney",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Sharpedo",
+          "level": 27,
+          "ability": "Rough Skin",
+          "item": "",
+          "nature": "Bashful",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Assurance",
+            "Screech",
+            "Swagger",
+            "Ice Fang"
+          ]
+        },
+        {
+          "species": "Golbat",
+          "level": 25,
+          "ability": "Inner Focus",
+          "item": "",
+          "nature": "Bashful",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Wing Attack",
+            "Confuse Ray",
+            "Air Cutter",
+            "Swift"
+          ]
+        },
+        {
+          "species": "Mightyena",
+          "level": 25,
+          "ability": "Quick Feet",
+          "item": "",
+          "nature": "Impish",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Roar",
+            "Snarl",
+            "Swagger",
+            "Assurance"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-39",
+      "trainerClass": "",
+      "trainerName": "Kindler Andy",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Numel",
+          "level": 25,
+          "ability": "Oblivious",
+          "item": "",
+          "nature": "Hasty",
+          "ivs": {
+            "hp": 16,
+            "atk": 16,
+            "def": 16,
+            "spa": 16,
+            "spd": 16,
+            "spe": 16
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Overheat",
+            "Earth Power",
+            "No Move",
+            "No Move"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-40",
+      "trainerClass": "Leader",
+      "trainerName": "Flannery",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Torkoal",
+          "level": 28,
+          "ability": "White Smoke",
+          "item": "",
+          "nature": "Impish",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Overheat",
+            "Body Slam",
+            "Curse",
+            "Sunny Day"
+          ]
+        },
+        {
+          "species": "Numel",
+          "level": 26,
+          "ability": "Simple",
+          "item": "",
+          "nature": "Rash",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Earth Power",
+            "Lava Plume",
+            "Amnesia",
+            "Sunny Day"
+          ]
+        },
+        {
+          "species": "Slugma",
+          "level": 26,
+          "ability": "Flame Body",
+          "item": "",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Overheat",
+            "Rock Throw",
+            "Light Screen",
+            "Sunny Day"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-41",
+      "trainerClass": "Ace Trainer",
+      "trainerName": "Mary",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Delcatty",
+          "level": 28,
+          "ability": "Cute Charm",
+          "item": "",
+          "nature": "Hardy",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Fake Out",
+            "Sing",
+            "Attract",
+            "Double Slap"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-42",
+      "trainerClass": "Ace Trainer",
+      "trainerName": "George",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Linoone",
+          "level": 28,
+          "ability": "Gluttony",
+          "item": "",
+          "nature": "Sassy",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Mud Sport",
+            "Fury Swipes",
+            "Covet",
+            "Bestow"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-43",
+      "trainerClass": "Ace Trainer",
+      "trainerName": "Burke",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Zangoose",
+          "level": 28,
+          "ability": "Immunity",
+          "item": "",
+          "nature": "Quiet",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Hone Claws",
+            "Slash",
+            "Revenge",
+            "Crush Claw"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-44",
+      "trainerClass": "Leader",
+      "trainerName": "Norman",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Slaking",
+          "level": 30,
+          "ability": "Truant",
+          "item": "",
+          "nature": "Careful",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Chip Away",
+            "Swagger",
+            "Retaliate",
+            "Feint Attack"
+          ]
+        },
+        {
+          "species": "Slaking",
+          "level": 28,
+          "ability": "Truant",
+          "item": "",
+          "nature": "Rash",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Encore",
+            "Retaliate",
+            "Yawn",
+            "Feint Attack"
+          ]
+        },
+        {
+          "species": "Vigoroth",
+          "level": 28,
+          "ability": "Vital Spirit",
+          "item": "",
+          "nature": "Gentle",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Fury Swipes",
+            "Feint Attack",
+            "Retaliate",
+            "Encore"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-45",
+      "trainerClass": "",
+      "trainerName": "Courtney 1",
+      "location": "Double",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": true,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Camerupt",
+          "level": 31,
+          "ability": "Solid Rock",
+          "item": "",
+          "nature": "Sassy",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Lava Plume",
+            "Earth Power",
+            "Curse",
+            "Take Down"
+          ]
+        },
+        {
+          "species": "Koffing",
+          "level": 29,
+          "ability": "Levitate",
+          "item": "",
+          "nature": "Hardy",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Sludge",
+            "Self-Destruct",
+            "Haze",
+            "Gyro Ball"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-46",
+      "trainerClass": "",
+      "trainerName": "M Grunt 1",
+      "location": "Weather Institute",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Koffing",
+          "level": 30,
+          "ability": "Levitate",
+          "item": "",
+          "nature": "Serious",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Sludge",
+            "Self-Destruct",
+            "Haze",
+            "Gyro Ball"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-47",
+      "trainerClass": "",
+      "trainerName": "M Grunt 2",
+      "location": "Weather Institute",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Mightyena",
+          "level": 28,
+          "ability": "Quick Feet",
+          "item": "",
+          "nature": "Serious",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Snarl",
+            "Swagger",
+            "Assurance",
+            "Scary Face"
+          ]
+        },
+        {
+          "species": "Numel",
+          "level": 28,
+          "ability": "Simple",
+          "item": "",
+          "nature": "Timid",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Flame Burst",
+            "Amnesia",
+            "Lava Plume",
+            "Earth Power"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-48",
+      "trainerClass": "",
+      "trainerName": "Tabitha 3",
+      "location": "Weather Institute",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Camerupt",
+          "level": 32,
+          "ability": "Solid Rock",
+          "item": "",
+          "nature": "Bashful",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Lava Plume",
+            "Earth Power",
+            "Curse",
+            "Take Down"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-49",
+      "trainerClass": "",
+      "trainerName": "Matt 1",
+      "location": "Double",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": true,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Sharpedo",
+          "level": 31,
+          "ability": "Rough Skin",
+          "item": "",
+          "nature": "Timid",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Slash",
+            "Screech",
+            "Swagger",
+            "Ice Fang"
+          ]
+        },
+        {
+          "species": "Grimer",
+          "level": 29,
+          "ability": "Stench",
+          "item": "",
+          "nature": "Hardy",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Sludge Bomb",
+            "Mud Bomb",
+            "Fling",
+            "Minimize"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-50",
+      "trainerClass": "",
+      "trainerName": "A Grunt 1",
+      "location": "Weather Institute",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Grimer",
+          "level": 30,
+          "ability": "Stench",
+          "item": "",
+          "nature": "Adamant",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Sludge Bomb",
+            "Mud Bomb",
+            "Fling",
+            "Minimize"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-51",
+      "trainerClass": "",
+      "trainerName": "A Grunt 2",
+      "location": "Weather Institute",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Carvanha",
+          "level": 28,
+          "ability": "Rough Skin",
+          "item": "",
+          "nature": "Jolly",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Aqua Jet",
+            "Assurance",
+            "Screech",
+            "Swagger"
+          ]
+        },
+        {
+          "species": "Mightyena",
+          "level": 28,
+          "ability": "Quick Feet",
+          "item": "",
+          "nature": "Careful",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Snarl",
+            "Swagger",
+            "Assurance",
+            "Scary Face"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-52",
+      "trainerClass": "",
+      "trainerName": "Shelly 3",
+      "location": "Weather Institute",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Sharpedo",
+          "level": 32,
+          "ability": "Rough Skin",
+          "item": "",
+          "nature": "Impish",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Slash",
+            "Scary Face",
+            "Swagger",
+            "Ice Fang"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-53",
+      "trainerClass": "Rival",
+      "trainerName": "#3 (Mudkip)",
+      "location": "R119",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Grovyle",
+          "level": 33,
+          "ability": "Overgrow",
+          "item": "",
+          "nature": "Serious",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Pursuit",
+            "Leaf Blade",
+            "Agility",
+            "Slam"
+          ]
+        },
+        {
+          "species": "Slugma",
+          "level": 31,
+          "ability": "Magma Armor",
+          "item": "",
+          "nature": "Sassy",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Clear Smog",
+            "Ancient Power",
+            "Flame Burst",
+            "Rock Slide"
+          ]
+        },
+        {
+          "species": "Wailmer",
+          "level": 31,
+          "ability": "Water Veil",
+          "item": "",
+          "nature": "Impish",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Water Pulse",
+            "Mist",
+            "Brine",
+            "Rest"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-54",
+      "trainerClass": "Rival",
+      "trainerName": "#3 (Treecko)",
+      "location": "R119",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Grovyle",
+          "level": 33,
+          "ability": "Overgrow",
+          "item": "",
+          "nature": "Serious",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Pursuit",
+            "Leaf Blade",
+            "Agility",
+            "Slam"
+          ]
+        },
+        {
+          "species": "Shroomish",
+          "level": 31,
+          "ability": "Effect Spore",
+          "item": "",
+          "nature": "Sassy",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Poison Powder",
+            "Worry Seed",
+            "Giga Drain",
+            "Growth"
+          ]
+        },
+        {
+          "species": "Wailmer",
+          "level": 31,
+          "ability": "Water Veil",
+          "item": "",
+          "nature": "Impish",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Water Pulse",
+            "Mist",
+            "Brine",
+            "Rest"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-55",
+      "trainerClass": "Rival",
+      "trainerName": "#3 (Torchic)",
+      "location": "R119",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Grovyle",
+          "level": 33,
+          "ability": "Overgrow",
+          "item": "",
+          "nature": "Serious",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Pursuit",
+            "Leaf Blade",
+            "Agility",
+            "Slam"
+          ]
+        },
+        {
+          "species": "Shroomish",
+          "level": 31,
+          "ability": "Effect Spore",
+          "item": "",
+          "nature": "Impish",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Poison Powder",
+            "Worry Seed",
+            "Giga Drain",
+            "Growth"
+          ]
+        },
+        {
+          "species": "Slugma",
+          "level": 31,
+          "ability": "Magma Armor",
+          "item": "",
+          "nature": "Sassy",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Clear Smog",
+            "Ancient Power",
+            "Flame Burst",
+            "Rock Slide"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-56",
+      "trainerClass": "Leader",
+      "trainerName": "Winona",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Altaria",
+          "level": 35,
+          "ability": "Natural Cure",
+          "item": "",
+          "nature": "Rash",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Earth Power",
+            "Dragon Breath",
+            "Cotton Guard",
+            "Roost"
+          ]
+        },
+        {
+          "species": "Pelipper",
+          "level": 33,
+          "ability": "Keen Eye",
+          "item": "",
+          "nature": "Careful",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Water Pulse",
+            "Roost",
+            "Protect",
+            "Aerial Ace"
+          ]
+        },
+        {
+          "species": "Skarmory",
+          "level": 33,
+          "ability": "Keen Eye",
+          "item": "",
+          "nature": "Sassy",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Sand Attack",
+            "Air Cutter",
+            "Steel Wing",
+            "Aerial Ace"
+          ]
+        },
+        {
+          "species": "Swellow",
+          "level": 33,
+          "ability": "Guts",
+          "item": "",
+          "nature": "Sassy",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Quick Attack",
+            "Aerial Ace",
+            "Double Team",
+            "Endeavor"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-57",
+      "trainerClass": "",
+      "trainerName": "M Grunt 1",
+      "location": "Mt Pyre",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Koffing",
+          "level": 36,
+          "ability": "Levitate",
+          "item": "",
+          "nature": "Serious",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Self-Destruct",
+            "Haze",
+            "Gyro Ball",
+            "Sludge Bomb"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-58",
+      "trainerClass": "",
+      "trainerName": "M Grunt 2",
+      "location": "Mt Pyre",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Mightyena",
+          "level": 35,
+          "ability": "Quick Feet",
+          "item": "",
+          "nature": "Rash",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Swagger",
+            "Assurance",
+            "Scary Face",
+            "Embargo"
+          ]
+        },
+        {
+          "species": "Numel",
+          "level": 33,
+          "ability": "Simple",
+          "item": "",
+          "nature": "Quiet",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Lava Plume",
+            "Earth Power",
+            "Curse",
+            "Take Down"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-59",
+      "trainerClass": "",
+      "trainerName": "M Grunt 3",
+      "location": "Mt Pyre",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Golbat",
+          "level": 34,
+          "ability": "Inner Focus",
+          "item": "",
+          "nature": "Brave",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Air Cutter",
+            "Swift",
+            "Poison Fang",
+            "Mean Look"
+          ]
+        },
+        {
+          "species": "Mightyena",
+          "level": 34,
+          "ability": "Quick Feet",
+          "item": "",
+          "nature": "Docile",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Swagger",
+            "Assurance",
+            "Scary Face",
+            "Embargo"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-60",
+      "trainerClass": "",
+      "trainerName": "Courtney 2",
+      "location": "Mt Pyre",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Camerupt",
+          "level": 38,
+          "ability": "Solid Rock",
+          "item": "",
+          "nature": "Gentle",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Earth Power",
+            "Curse",
+            "Take Down",
+            "Rock Slide"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-61",
+      "trainerClass": "",
+      "trainerName": "A Grunt 1",
+      "location": "Mt Pyre",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Grimer",
+          "level": 36,
+          "ability": "Stench",
+          "item": "",
+          "nature": "Calm",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Sludge Bomb",
+            "Mud Bomb",
+            "Fling",
+            "Minimize"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-62",
+      "trainerClass": "",
+      "trainerName": "A Grunt 2",
+      "location": "Mt Pyre",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Mightyena",
+          "level": 35,
+          "ability": "Quick Feet",
+          "item": "",
+          "nature": "Relaxed",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Swagger",
+            "Assurance",
+            "Scary Face",
+            "Embargo"
+          ]
+        },
+        {
+          "species": "Carvanha",
+          "level": 33,
+          "ability": "Rough Skin",
+          "item": "",
+          "nature": "Bold",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Aqua Jet",
+            "Assurance",
+            "Screech",
+            "Swagger"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-63",
+      "trainerClass": "",
+      "trainerName": "A Grunt 3",
+      "location": "Mt Pyre",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Golbat",
+          "level": 34,
+          "ability": "Inner Focus",
+          "item": "",
+          "nature": "Jolly",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Air Cutter",
+            "Swift",
+            "Poison Fang",
+            "Mean Look"
+          ]
+        },
+        {
+          "species": "Mightyena",
+          "level": 34,
+          "ability": "Quick Feet",
+          "item": "",
+          "nature": "Relaxed",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Swagger",
+            "Assurance",
+            "Scary Face",
+            "Embargo"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-64",
+      "trainerClass": "",
+      "trainerName": "Matt 2",
+      "location": "Mt Pyre",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Sharpedo",
+          "level": 38,
+          "ability": "Rough Skin",
+          "item": "",
+          "nature": "Mild",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Ice Fang",
+            "Scary Face",
+            "Slash",
+            "Poision Fang"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-65",
+      "trainerClass": "",
+      "trainerName": "M Grunt 1",
+      "location": "Slateport Harbor",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Mightyena",
+          "level": 36,
+          "ability": "Intimidate",
+          "item": "",
+          "nature": "Careful",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Assurance",
+            "Scary Face",
+            "Embargo",
+            "Taunt"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-66",
+      "trainerClass": "",
+      "trainerName": "M Grunt 2",
+      "location": "Slateport Harbor",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Golbat",
+          "level": 34,
+          "ability": "Inner Focus",
+          "item": "",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Air Cutter",
+            "Swift",
+            "Poison Fang",
+            "Mean Look"
+          ]
+        },
+        {
+          "species": "Numel",
+          "level": 34,
+          "ability": "Simple",
+          "item": "",
+          "nature": "Gentle",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Lava Plume",
+            "Earth Power",
+            "Curse",
+            "Take Down"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-67",
+      "trainerClass": "",
+      "trainerName": "A Grunt 1",
+      "location": "Slateport Harbor",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Mightyena",
+          "level": 36,
+          "ability": "Intimidate",
+          "item": "",
+          "nature": "Quiet",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Assurance",
+            "Scary Face",
+            "Embargo",
+            "Taunt"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-68",
+      "trainerClass": "",
+      "trainerName": "A Grunt 2",
+      "location": "Slateport Harbor",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Carvanha",
+          "level": 34,
+          "ability": "Rough Skin",
+          "item": "",
+          "nature": "Relaxed",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Aqua Jet",
+            "Assurance",
+            "Screech",
+            "Swagger"
+          ]
+        },
+        {
+          "species": "Golbat",
+          "level": 34,
+          "ability": "Inner Focus",
+          "item": "",
+          "nature": "Lonely",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Air Cutter",
+            "Swift",
+            "Poison Fang",
+            "Mean Look"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-69",
+      "trainerClass": "Rival",
+      "trainerName": "#4 (Mudkip)",
+      "location": "Lilycove City",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Sceptile",
+          "level": 39,
+          "ability": "Overgrow",
+          "item": "",
+          "nature": "Brave",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Agility",
+            "Slam",
+            "Dual Chop",
+            "Detect"
+          ]
+        },
+        {
+          "species": "Magcargo",
+          "level": 37,
+          "ability": "Magma Armor",
+          "item": "",
+          "nature": "Hasty",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Flame Burst",
+            "Rock Slide",
+            "Lava Plume",
+            "Amnesia"
+          ]
+        },
+        {
+          "species": "Swellow",
+          "level": 37,
+          "ability": "Guts",
+          "item": "",
+          "nature": "Naughty",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Double Team",
+            "Aerial Ace",
+            "Quick Guard",
+            "Agility"
+          ]
+        },
+        {
+          "species": "Wailord",
+          "level": 37,
+          "ability": "Water Veil",
+          "item": "",
+          "nature": "Docile",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Rest",
+            "Brine",
+            "Water Spout",
+            "Amnesia"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-70",
+      "trainerClass": "Rival",
+      "trainerName": "#4 (Treecko)",
+      "location": "Lilycove City",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Blaziken",
+          "level": 39,
+          "ability": "Blaze",
+          "item": "",
+          "nature": "Brave",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Quick Attack",
+            "Bulk Up",
+            "Blaze Kick",
+            "Focus Energy"
+          ]
+        },
+        {
+          "species": "Breloom",
+          "level": 37,
+          "ability": "Effect Spore",
+          "item": "",
+          "nature": "Hasty",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Counter",
+            "Mach Punch",
+            "Force Palm",
+            "Mind Reader"
+          ]
+        },
+        {
+          "species": "Swellow",
+          "level": 37,
+          "ability": "Guts",
+          "item": "",
+          "nature": "Naughty",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Double Team",
+            "Aerial Ace",
+            "Quick Guard",
+            "Agility"
+          ]
+        },
+        {
+          "species": "Wailord",
+          "level": 37,
+          "ability": "Water Veil",
+          "item": "",
+          "nature": "Docile",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Rest",
+            "Brine",
+            "Water Spout",
+            "Amnesia"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-71",
+      "trainerClass": "Rival",
+      "trainerName": "#4 (Torchic)",
+      "location": "Lilycove City",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Swampert",
+          "level": 39,
+          "ability": "Torrent",
+          "item": "",
+          "nature": "Brave",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Mud Bomb",
+            "Rock Slide",
+            "Protect",
+            "Muddy Water"
+          ]
+        },
+        {
+          "species": "Breloom",
+          "level": 37,
+          "ability": "Effect Spore",
+          "item": "",
+          "nature": "Docile",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Counter",
+            "Mach Punch",
+            "Force Palm",
+            "Mind Reader"
+          ]
+        },
+        {
+          "species": "Magcargo",
+          "level": 37,
+          "ability": "Magma Armor",
+          "item": "",
+          "nature": "Hasty",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Flame Burst",
+            "Rock Slide",
+            "Lava Plume",
+            "Amnesia"
+          ]
+        },
+        {
+          "species": "Swellow",
+          "level": 37,
+          "ability": "Guts",
+          "item": "",
+          "nature": "Naughty",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Double Team",
+            "Aerial Ace",
+            "Quick Guard",
+            "Agility"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-72",
+      "trainerClass": "",
+      "trainerName": "M Grunt 1",
+      "location": "Magma Hideout",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Mightyena",
+          "level": 37,
+          "ability": "Quick Feet",
+          "item": "",
+          "nature": "Hasty",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Assurance",
+            "Scary Face",
+            "Embargo",
+            "Taunt"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-73",
+      "trainerClass": "",
+      "trainerName": "M Grunt 2",
+      "location": "Magma Hideout",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Numel",
+          "level": 37,
+          "ability": "Simple",
+          "item": "",
+          "nature": "Quiet",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Earth Power",
+            "Curse",
+            "Take Down",
+            "Yawn"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-74",
+      "trainerClass": "",
+      "trainerName": "M Grunt 3",
+      "location": "Magma Hideout",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Poochyena",
+          "level": 18,
+          "ability": "Quick Feet",
+          "item": "",
+          "nature": "Hasty",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Sand Attack",
+            "Bite",
+            "Odor Sleuth",
+            "Roar"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-75",
+      "trainerClass": "",
+      "trainerName": "Courtney 3",
+      "location": "Magma Hideout",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Camerupt",
+          "level": 39,
+          "ability": "Magma Armor",
+          "item": "",
+          "nature": "Gentle",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Curse",
+            "Take Down",
+            "Rock Slide",
+            "Yawn"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-76",
+      "trainerClass": "",
+      "trainerName": "A Grunt 1",
+      "location": "Aqua Hideout",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Mightyena",
+          "level": 37,
+          "ability": "Quick Feet",
+          "item": "",
+          "nature": "Mild",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Assurance",
+            "Scary Face",
+            "Embargo",
+            "Taunt"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-77",
+      "trainerClass": "",
+      "trainerName": "A Grunt 2",
+      "location": "Aqua Hideout",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Carvanha",
+          "level": 37,
+          "ability": "Rough Skin",
+          "item": "",
+          "nature": "Bashful",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Aqua Jet",
+            "Assurance",
+            "Screech",
+            "Swagger"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-78",
+      "trainerClass": "",
+      "trainerName": "A Grunt 3",
+      "location": "Aqua Hideout",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Poochyena",
+          "level": 18,
+          "ability": "Quick Feet",
+          "item": "",
+          "nature": "Gentle",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Sand Attack",
+            "Bite",
+            "Odor Sleuth",
+            "Roar"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-79",
+      "trainerClass": "",
+      "trainerName": "Matt 3",
+      "location": "Aqua Hideout",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Sharpedo",
+          "level": 39,
+          "ability": "Rough Skin",
+          "item": "",
+          "nature": "Naive",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Ice Fang",
+            "Scary Face",
+            "Slash",
+            "Poision Fang"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-80",
+      "trainerClass": "",
+      "trainerName": "Liza and Tate",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Lunatone",
+          "level": 45,
+          "ability": "Levitate",
+          "item": "",
+          "nature": "Relaxed",
+          "ivs": {
+            "hp": 16,
+            "atk": 16,
+            "def": 16,
+            "spa": 16,
+            "spd": 16,
+            "spe": 16
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Light Screen",
+            "Psychic",
+            "Hypnosis",
+            "Calm Mind"
+          ]
+        },
+        {
+          "species": "Solrock",
+          "level": 45,
+          "ability": "Levitate",
+          "item": "",
+          "nature": "Careful",
+          "ivs": {
+            "hp": 16,
+            "atk": 16,
+            "def": 16,
+            "spa": 16,
+            "spd": 16,
+            "spe": 16
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Sunny Day",
+            "Rock Slide",
+            "Psyhic",
+            "Solar Beam"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-81",
+      "trainerClass": "",
+      "trainerName": "M Grunt 1",
+      "location": "Seafloor Cavern",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Weezing",
+          "level": 40,
+          "ability": "Levitate",
+          "item": "",
+          "nature": "Modest",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Haze",
+            "Double Hit",
+            "Sludge Bomb",
+            "Explosion"
+          ]
+        },
+        {
+          "species": "Mightyena",
+          "level": 38,
+          "ability": "Intimidate",
+          "item": "",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Assurance",
+            "Scary Face",
+            "Embargo",
+            "Taunt"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-82",
+      "trainerClass": "",
+      "trainerName": "Maxie 2",
+      "location": "Seafloor Cavern",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Camerupt",
+          "level": 43,
+          "ability": "Magma Armor",
+          "item": "Cameruptite",
+          "nature": "Rash",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Curse",
+            "Take Down",
+            "Rock Slide",
+            "Yawn"
+          ]
+        },
+        {
+          "species": "Crobat",
+          "level": 41,
+          "ability": "Inner Focus",
+          "item": "",
+          "nature": "Sassy",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Poison Fang",
+            "Mean Look",
+            "Acrobatics",
+            "Haze"
+          ]
+        },
+        {
+          "species": "Mightyena",
+          "level": 41,
+          "ability": "Quick Feet",
+          "item": "",
+          "nature": "Mild",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Scary Face",
+            "Embargo",
+            "Taunt",
+            "Take Down"
+          ]
+        },
+        {
+          "species": "Weezing",
+          "level": 41,
+          "ability": "Levitate",
+          "item": "",
+          "nature": "Adamant",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Haze",
+            "Double Hit",
+            "Sludge Bomb",
+            "Explosion"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-83",
+      "trainerClass": "",
+      "trainerName": "A Grunt 1",
+      "location": "Seafloor Cavern",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Muk",
+          "level": 40,
+          "ability": "Stench",
+          "item": "",
+          "nature": "Serious",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Mud Bomb",
+            "Fling",
+            "Sludge Bomb",
+            "Minimize"
+          ]
+        },
+        {
+          "species": "Mightyena",
+          "level": 38,
+          "ability": "Intimidate",
+          "item": "",
+          "nature": "Modest",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Assurance",
+            "Scary Face",
+            "Embargo",
+            "Taunt"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-84",
+      "trainerClass": "",
+      "trainerName": "Archie 2",
+      "location": "Seafloor Cavern",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Sharpedo",
+          "level": 43,
+          "ability": "Rough Skin",
+          "item": "Sharpedonite",
+          "nature": "Hasty",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Scary Face",
+            "Slash",
+            "Poison Fang",
+            "Crunch"
+          ]
+        },
+        {
+          "species": "Crobat",
+          "level": 41,
+          "ability": "Inner Focus",
+          "item": "",
+          "nature": "Gentle",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Poison Fang",
+            "Mean Look",
+            "Acrobatics",
+            "Haze"
+          ]
+        },
+        {
+          "species": "Mightyena",
+          "level": 41,
+          "ability": "Quick Feet",
+          "item": "",
+          "nature": "Careful",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Scary Face",
+            "Embargo",
+            "Taunt",
+            "Take Down"
+          ]
+        },
+        {
+          "species": "Muk",
+          "level": 41,
+          "ability": "Stench",
+          "item": "",
+          "nature": "Timid",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Sludge Wave",
+            "Screech",
+            "Venom Drench",
+            "Gunk Shot"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-85",
+      "trainerClass": "Leader",
+      "trainerName": "Wallace",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Milotic",
+          "level": 46,
+          "ability": "Marvel Scale",
+          "item": "",
+          "nature": "Bold",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Hydro Pump",
+            "Disarming Voice",
+            "Recover",
+            "Ice Beam"
+          ]
+        },
+        {
+          "species": "Luvdisc",
+          "level": 44,
+          "ability": "Swift Swim",
+          "item": "",
+          "nature": "Hasty",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Water Pulse",
+            "Attract",
+            "Sweet Kiss",
+            "Draining Kiss"
+          ]
+        },
+        {
+          "species": "Seaking",
+          "level": 44,
+          "ability": "Swift Swim",
+          "item": "",
+          "nature": "Jolly",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Aqua Ring",
+            "Rain Dance",
+            "Waterfall",
+            "Horn Drill"
+          ]
+        },
+        {
+          "species": "Sealeo",
+          "level": 44,
+          "ability": "Thick Fat",
+          "item": "",
+          "nature": "Rash",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Encore",
+            "Body Slam",
+            "Aurora Beam",
+            "Waterfall"
+          ]
+        },
+        {
+          "species": "Whiscash",
+          "level": 44,
+          "ability": "Oblivious",
+          "item": "",
+          "nature": "Sassy",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Mud Sport",
+            "Waterfall",
+            "Zen Headbutt",
+            "Earthquake"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-86",
+      "trainerClass": "Ace Trainer",
+      "trainerName": "Hope",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Froslass",
+          "level": 47,
+          "ability": "Snow Cloak",
+          "item": "",
+          "nature": "Serious",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Confuse Ray",
+            "Wake-Up Slap",
+            "Captivate",
+            "Shadow Ball"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-87",
+      "trainerClass": "",
+      "trainerName": "Expert Bryn",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Hitmontop",
+          "level": 45,
+          "ability": "Technician",
+          "item": "",
+          "nature": "Hardy",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Counter",
+            "Feint",
+            "Agility",
+            "Gyro Ball"
+          ]
+        },
+        {
+          "species": "Throh",
+          "level": 45,
+          "ability": "Guts",
+          "item": "",
+          "nature": "Naive",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Bulk Up",
+            "Circle Throw",
+            "Endure",
+            "Wide Guard"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-88",
+      "trainerClass": "Ace Trainer",
+      "trainerName": "Edgar",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Mawile",
+          "level": 47,
+          "ability": "Hyper Cutter",
+          "item": "",
+          "nature": "Serious",
+          "ivs": {
+            "hp": 24,
+            "atk": 24,
+            "def": 24,
+            "spa": 24,
+            "spd": 24,
+            "spe": 24
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Stockpile",
+            "Swallow",
+            "Spit Up",
+            "Iron Head"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-89",
+      "trainerClass": "",
+      "trainerName": "Expert Theodore",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Sawk",
+          "level": 47,
+          "ability": "Inner Focus",
+          "item": "",
+          "nature": "Bold",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Bulk Up",
+            "Retaliate",
+            "Endure",
+            "Quick Guard"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-90",
+      "trainerClass": "",
+      "trainerName": "Wally 2",
+      "location": "VR",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Gallade",
+          "level": 48,
+          "ability": "Steadfast",
+          "item": "Galladite",
+          "nature": "Gentle",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Psycho Cut",
+            "Close Combat",
+            "Slash",
+            "Swords Dance"
+          ]
+        },
+        {
+          "species": "Altaria",
+          "level": 46,
+          "ability": "Natural Cure",
+          "item": "",
+          "nature": "Brave",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Aerial Ace",
+            "Safeguard",
+            "Dragon Pulse",
+            "Cotton Guard"
+          ]
+        },
+        {
+          "species": "Delcatty",
+          "level": 46,
+          "ability": "Cute Charm",
+          "item": "",
+          "nature": "Calm",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Sing",
+            "Disarming Voice",
+            "Charm",
+            "Feint Attack"
+          ]
+        },
+        {
+          "species": "Magneton",
+          "level": 46,
+          "ability": "Sturdy",
+          "item": "",
+          "nature": "Naive",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Screech",
+            "Discharge",
+            "Tri Attack",
+            "Flash Cannon"
+          ]
+        },
+        {
+          "species": "Roselia",
+          "level": 46,
+          "ability": "Poison Point",
+          "item": "",
+          "nature": "Hasty",
+          "ivs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Synthesis",
+            "Leech Seed",
+            "Petal Blizzard",
+            "Toxic"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-91",
+      "trainerClass": "",
+      "trainerName": "E4 Sidney",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Absol",
+          "level": 52,
+          "ability": "Super Luck",
+          "item": "",
+          "nature": "Hasty",
+          "ivs": {
+            "hp": 8,
+            "atk": 8,
+            "def": 8,
+            "spa": 8,
+            "spd": 8,
+            "spe": 8
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Aerial Ace",
+            "Night Slash",
+            "Psycho Cut",
+            "Slash"
+          ]
+        },
+        {
+          "species": "Cacturne",
+          "level": 50,
+          "ability": "Sand Veil",
+          "item": "",
+          "nature": "Modest",
+          "ivs": {
+            "hp": 8,
+            "atk": 8,
+            "def": 8,
+            "spa": 8,
+            "spd": 8,
+            "spe": 8
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Leech Seed",
+            "Payback",
+            "Needle Arm",
+            "Spiky Shield"
+          ]
+        },
+        {
+          "species": "Mightyena",
+          "level": 50,
+          "ability": "Intimidate",
+          "item": "",
+          "nature": "Modest",
+          "ivs": {
+            "hp": 8,
+            "atk": 8,
+            "def": 8,
+            "spa": 8,
+            "spd": 8,
+            "spe": 8
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Swagger",
+            "Take Down",
+            "Sucker Punch",
+            "Crunch"
+          ]
+        },
+        {
+          "species": "Sharpedo",
+          "level": 50,
+          "ability": "Rough Skin",
+          "item": "",
+          "nature": "Lonely",
+          "ivs": {
+            "hp": 8,
+            "atk": 8,
+            "def": 8,
+            "spa": 8,
+            "spd": 8,
+            "spe": 8
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Crunch",
+            "Poison Fang",
+            "Aqua Jet",
+            "Slash"
+          ]
+        },
+        {
+          "species": "Shiftry",
+          "level": 50,
+          "ability": "Chlorophyll",
+          "item": "",
+          "nature": "Bashful",
+          "ivs": {
+            "hp": 8,
+            "atk": 8,
+            "def": 8,
+            "spa": 8,
+            "spd": 8,
+            "spe": 8
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Fake Out",
+            "Feint Attack",
+            "Extrasensory",
+            "Leaf Blade"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-92",
+      "trainerClass": "",
+      "trainerName": "E4 Phoebe",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Dusknoir",
+          "level": 53,
+          "ability": "Pressure",
+          "item": "",
+          "nature": "Bold",
+          "ivs": {
+            "hp": 8,
+            "atk": 8,
+            "def": 8,
+            "spa": 8,
+            "spd": 8,
+            "spe": 8
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Hex",
+            "Fire Punch",
+            "Ice Punch",
+            "Thunder Punch"
+          ]
+        },
+        {
+          "species": "Banette",
+          "level": 51,
+          "ability": "Insomnia",
+          "item": "",
+          "nature": "Hasty",
+          "ivs": {
+            "hp": 8,
+            "atk": 8,
+            "def": 8,
+            "spa": 8,
+            "spd": 8,
+            "spe": 8
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Shadow Ball",
+            "Grudge",
+            "Toxic",
+            "Psychic"
+          ]
+        },
+        {
+          "species": "Banette",
+          "level": 51,
+          "ability": "Insomnia",
+          "item": "",
+          "nature": "Hasty",
+          "ivs": {
+            "hp": 8,
+            "atk": 8,
+            "def": 8,
+            "spa": 8,
+            "spd": 8,
+            "spe": 8
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Shadow Ball",
+            "Spite",
+            "Will-O-Wisp",
+            "Feint Attack"
+          ]
+        },
+        {
+          "species": "Dusclops",
+          "level": 51,
+          "ability": "Pressure",
+          "item": "",
+          "nature": "Rash",
+          "ivs": {
+            "hp": 8,
+            "atk": 8,
+            "def": 8,
+            "spa": 8,
+            "spd": 8,
+            "spe": 8
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Shadow Punch",
+            "Confuse Ray",
+            "Curse",
+            "Future Sight"
+          ]
+        },
+        {
+          "species": "Sableye",
+          "level": 51,
+          "ability": "Prankster",
+          "item": "",
+          "nature": "Serious",
+          "ivs": {
+            "hp": 8,
+            "atk": 8,
+            "def": 8,
+            "spa": 8,
+            "spd": 8,
+            "spe": 8
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Shadow Claw",
+            "Foul Play",
+            "Power Gem",
+            "Fake Out"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-93",
+      "trainerClass": "",
+      "trainerName": "E4 Glacia",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Walrein",
+          "level": 54,
+          "ability": "Thick Fat",
+          "item": "",
+          "nature": "Rash",
+          "ivs": {
+            "hp": 8,
+            "atk": 8,
+            "def": 8,
+            "spa": 8,
+            "spd": 8,
+            "spe": 8
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Surf",
+            "Body Slam",
+            "Blizzard",
+            "Sheer Cold"
+          ]
+        },
+        {
+          "species": "Froslass",
+          "level": 52,
+          "ability": "Snow Cloak",
+          "item": "",
+          "nature": "Sassy",
+          "ivs": {
+            "hp": 8,
+            "atk": 8,
+            "def": 8,
+            "spa": 8,
+            "spd": 8,
+            "spe": 8
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Confuse Ray",
+            "Blizzard",
+            "Hail",
+            "Ominous Wind"
+          ]
+        },
+        {
+          "species": "Froslass",
+          "level": 52,
+          "ability": "Snow Cloak",
+          "item": "",
+          "nature": "Sassy",
+          "ivs": {
+            "hp": 8,
+            "atk": 8,
+            "def": 8,
+            "spa": 8,
+            "spd": 8,
+            "spe": 8
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Draining Kiss",
+            "Blizzard",
+            "Hail",
+            "Shadow Ball"
+          ]
+        },
+        {
+          "species": "Glalie",
+          "level": 52,
+          "ability": "Inner Focus",
+          "item": "",
+          "nature": "Impish",
+          "ivs": {
+            "hp": 8,
+            "atk": 8,
+            "def": 8,
+            "spa": 8,
+            "spd": 8,
+            "spe": 8
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Light Screen",
+            "Ice Shard",
+            "Hail",
+            "Crunch"
+          ]
+        },
+        {
+          "species": "Glalie",
+          "level": 52,
+          "ability": "Inner Focus",
+          "item": "",
+          "nature": "Impish",
+          "ivs": {
+            "hp": 8,
+            "atk": 8,
+            "def": 8,
+            "spa": 8,
+            "spd": 8,
+            "spe": 8
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Protect",
+            "Ice Shard",
+            "Hail",
+            "Freeze-Dry"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-94",
+      "trainerClass": "",
+      "trainerName": "E4 Drake",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Salamence",
+          "level": 55,
+          "ability": "Intimidate",
+          "item": "",
+          "nature": "Rash",
+          "ivs": {
+            "hp": 8,
+            "atk": 8,
+            "def": 8,
+            "spa": 8,
+            "spd": 8,
+            "spe": 8
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Dragon Rush",
+            "Zen Headbutt",
+            "Crunch",
+            "Thunder Fang"
+          ]
+        },
+        {
+          "species": "Altaria",
+          "level": 53,
+          "ability": "Natural Cure",
+          "item": "",
+          "nature": "Serious",
+          "ivs": {
+            "hp": 8,
+            "atk": 8,
+            "def": 8,
+            "spa": 8,
+            "spd": 8,
+            "spe": 8
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Aerial Ace",
+            "Cotton Guard",
+            "Dragon Pulse",
+            "Moonblast"
+          ]
+        },
+        {
+          "species": "Flygon",
+          "level": 53,
+          "ability": "Levitate",
+          "item": "",
+          "nature": "Brave",
+          "ivs": {
+            "hp": 8,
+            "atk": 8,
+            "def": 8,
+            "spa": 8,
+            "spd": 8,
+            "spe": 8
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Flamethrower",
+            "Boomburst",
+            "Dragon Pulse",
+            "Screech"
+          ]
+        },
+        {
+          "species": "Flygon",
+          "level": 53,
+          "ability": "Levitate",
+          "item": "",
+          "nature": "Brave",
+          "ivs": {
+            "hp": 8,
+            "atk": 8,
+            "def": 8,
+            "spa": 8,
+            "spd": 8,
+            "spe": 8
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Earthquake",
+            "Dragon Claw",
+            "Rock Slide",
+            "Supersonic"
+          ]
+        },
+        {
+          "species": "Kingdra",
+          "level": 53,
+          "ability": "Sniper",
+          "item": "",
+          "nature": "Quiet",
+          "ivs": {
+            "hp": 8,
+            "atk": 8,
+            "def": 8,
+            "spa": 8,
+            "spd": 8,
+            "spe": 8
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Dragon Pulse",
+            "Surf",
+            "Yawn",
+            "Ice Beam"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "omegarubyalphasapphire-95",
+      "trainerClass": "Champion",
+      "trainerName": "Steven",
+      "location": "",
+      "game": "OmegaRuby/AlphaSapphire",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
+        {
+          "species": "Metagross",
+          "level": 59,
+          "ability": "Clear Body",
+          "item": "Metagrossite",
+          "nature": "Impish",
+          "ivs": {
+            "hp": 16,
+            "atk": 16,
+            "def": 16,
+            "spa": 16,
+            "spd": 16,
+            "spe": 16
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Bullet Punch",
+            "Zen Headbutt",
+            "Meteor Mash",
+            "Giga Impact"
+          ]
+        },
+        {
+          "species": "Aggron",
+          "level": 57,
+          "ability": "Sturdy",
+          "item": "",
+          "nature": "Timid",
+          "ivs": {
+            "hp": 16,
+            "atk": 16,
+            "def": 16,
+            "spa": 16,
+            "spd": 16,
+            "spe": 16
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Stone Edge",
+            "Earthquake",
+            "Iron Tail",
+            "Dragon Claw"
+          ]
+        },
+        {
+          "species": "Armaldo",
+          "level": 57,
+          "ability": "Battle Armor",
+          "item": "",
+          "nature": "Jolly",
+          "ivs": {
+            "hp": 16,
+            "atk": 16,
+            "def": 16,
+            "spa": 16,
+            "spd": 16,
+            "spe": 16
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "X-Scissor",
+            "Rock Blast",
+            "Metal Claw",
+            "Crush Claw"
+          ]
+        },
+        {
+          "species": "Claydol",
+          "level": 57,
+          "ability": "Levitate",
+          "item": "",
+          "nature": "Relaxed",
+          "ivs": {
+            "hp": 16,
+            "atk": 16,
+            "def": 16,
+            "spa": 16,
+            "spd": 16,
+            "spe": 16
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Reflect",
+            "Light Screen",
+            "Extrasensory",
+            "Earth Power"
+          ]
+        },
+        {
+          "species": "Cradily",
+          "level": 57,
+          "ability": "Suction Cups",
+          "item": "",
+          "nature": "Relaxed",
+          "ivs": {
+            "hp": 16,
+            "atk": 16,
+            "def": 16,
+            "spa": 16,
+            "spd": 16,
+            "spe": 16
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Giga Drain",
+            "Ancient Power",
+            "Sludge Bomb",
+            "Confuse Ray"
+          ]
+        },
+        {
+          "species": "Skarmory",
+          "level": 57,
+          "ability": "Sturdy",
+          "item": "",
+          "nature": "Impish",
+          "ivs": {
+            "hp": 16,
+            "atk": 16,
+            "def": 16,
+            "spa": 16,
+            "spd": 16,
+            "spe": 16
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Toxic",
+            "Aerial Ace",
+            "Spikes",
+            "Steel Wing"
+          ]
+        }
+      ]
+    }
+  ]
+}

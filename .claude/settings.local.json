@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm search:*)",
+      "Bash(find:*)",
+      "Bash(elm make:*)",
+      "Bash(timeout 60 npm run:*)",
+      "Bash(timeout 30 npx elm make:*)",
+      "Bash(echo:*)",
+      "WebFetch(domain:bulbapedia.bulbagarden.net)",
+      "Bash(jq:*)",
+      "Bash(grep:*)",
+      "mcp__serena__find_symbol",
+      "Bash(npm run build:*)",
+      "Bash(npm test:*)",
+      "mcp__serena__search_for_pattern",
+      "mcp__serena__list_dir",
+      "Bash(node scripts/convert-black-pearl.js:*)",
+      "Bash(node -e:*)",
+      "Bash(curl:*)"
+    ],
+    "deny": [],
+    "ask": []
+  },
+  "enabledMcpjsonServers": [
+    "memory",
+    "sequential-thinking",
+    "serena"
+  ]
+}

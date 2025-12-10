@@ -1,0 +1,26 @@
+{
+  "games": [
+    "Red/Blue",
+    "Yellow",
+    "Gold/Silver",
+    "Crystal",
+    "Ruby/Sapphire",
+    "Emerald",
+    "FireRed/LeafGreen",
+    "Diamond/Pearl",
+    "Platinum",
+    "HeartGold/SoulSilver",
+    "Black/White",
+    "Black2/White2",
+    "X/Y",
+    "OmegaRuby/AlphaSapphire",
+    "Sun/Moon",
+    "UltraSun/UltraMoon",
+    "Sword/Shield",
+    "BrilliantDiamond/ShiningPearl",
+    "Scarlet/Violet",
+    "Black Pearl"
+  ],
+  "totalEncounters": 8182,
+  "totalPokemon": 18379
+}
