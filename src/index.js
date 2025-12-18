@@ -903,4 +903,181 @@ app.ports.requestBoxMatchup.subscribe(function(data) {
     }
 });
 
+// Port: Calculate team matchup (same logic as box, different receive port)
+app.ports.requestTeamMatchup.subscribe(function(data) {
+    try {
+        const { generation, boxIndex, attacker, defender, field } = data;
+
+        // Create Pokemon objects
+        const attackerPokemon = new Pokemon(generation, attacker.species, {
+            level: attacker.level,
+            nature: attacker.nature,
+            ability: attacker.ability,
+            item: attacker.item,
+            evs: attacker.evs,
+            ivs: attacker.ivs,
+            boosts: attacker.boosts,
+            status: attacker.status,
+            curHP: attacker.curHP,
+            teraType: attacker.teraType,
+            isDynamaxed: attacker.isDynamaxed
+        });
+
+        const defenderPokemon = new Pokemon(generation, defender.species, {
+            level: defender.level,
+            nature: defender.nature,
+            ability: defender.ability,
+            item: defender.item,
+            evs: defender.evs,
+            ivs: defender.ivs,
+            boosts: defender.boosts,
+            status: defender.status,
+            curHP: defender.curHP,
+            teraType: defender.teraType,
+            isDynamaxed: defender.isDynamaxed
+        });
+
+        // Create Field object
+        let fieldObj = undefined;
+        if (field) {
+            fieldObj = new Field({
+                gameType: field.gameType,
+                weather: field.weather,
+                terrain: field.terrain,
+                isGravity: field.isGravity,
+                attackerSide: field.attackerSide,
+                defenderSide: field.defenderSide
+            });
+        }
+
+        // Get max HP for both Pokemon
+        const defenderMaxHP = defenderPokemon.maxHP();
+        const attackerMaxHP = attackerPokemon.maxHP();
+
+        // Calculate effective speed
+        function getEffectiveSpeed(pokemon, pokemonData, side) {
+            let speed = pokemon.stats.spe;
+
+            // Apply stat boost multipliers
+            const boost = pokemonData.boosts.spe || 0;
+            if (boost > 0) {
+                speed = Math.floor(speed * (2 + boost) / 2);
+            } else if (boost < 0) {
+                speed = Math.floor(speed * 2 / (2 - boost));
+            }
+
+            // Apply Tailwind
+            if (side && side.isTailwind) {
+                speed = speed * 2;
+            }
+
+            // Apply paralysis
+            if (pokemonData.status === 'par') {
+                if (generation >= 7) {
+                    speed = Math.floor(speed / 2);
+                } else {
+                    speed = Math.floor(speed / 4);
+                }
+            }
+
+            return speed;
+        }
+
+        const attackerSpeed = getEffectiveSpeed(attackerPokemon, attacker, field ? field.attackerSide : null);
+        const defenderSpeed = getEffectiveSpeed(defenderPokemon, defender, field ? field.defenderSide : null);
+
+        // Calculate attacker's damage to defender (best move)
+        let bestDamagePercent = 0;
+        let canOHKO = false;
+        let mightOHKO = false;
+
+        for (const moveData of attacker.moves) {
+            if (!moveData.name || moveData.name === "") continue;
+
+            try {
+                const moveObj = new Move(generation, moveData.name, {
+                    isCrit: false,
+                    hits: moveData.hits
+                });
+                const result = calculate(generation, attackerPokemon, defenderPokemon, moveObj, fieldObj);
+                const damageRange = result.range();
+                const maxPercent = defenderMaxHP > 0 ? (damageRange[1] / defenderMaxHP) * 100 : 0;
+                const minPercent = defenderMaxHP > 0 ? (damageRange[0] / defenderMaxHP) * 100 : 0;
+
+                // Track best damage
+                if (maxPercent > bestDamagePercent) {
+                    bestDamagePercent = maxPercent;
+                }
+
+                // Check OHKO potential
+                if (minPercent >= 100) {
+                    canOHKO = true;
+                }
+                if (maxPercent >= 100) {
+                    mightOHKO = true;
+                }
+            } catch (e) {
+                // Skip invalid moves
+            }
+        }
+
+        // Calculate defender's damage to attacker (worst damage taken)
+        let worstDamageTaken = 0;
+        let getsOHKOd = false;
+        let mightGetOHKOd = false;
+
+        for (const moveData of defender.moves) {
+            if (!moveData.name || moveData.name === "") continue;
+
+            try {
+                const moveObj = new Move(generation, moveData.name, {
+                    isCrit: false,
+                    hits: moveData.hits
+                });
+                const result = calculate(generation, defenderPokemon, attackerPokemon, moveObj, fieldObj);
+                const damageRange = result.range();
+                const maxPercent = attackerMaxHP > 0 ? (damageRange[1] / attackerMaxHP) * 100 : 0;
+                const minPercent = attackerMaxHP > 0 ? (damageRange[0] / attackerMaxHP) * 100 : 0;
+
+                // Track worst damage taken
+                if (maxPercent > worstDamageTaken) {
+                    worstDamageTaken = maxPercent;
+                }
+
+                // Check if we get OHKO'd
+                if (minPercent >= 100) {
+                    getsOHKOd = true;
+                }
+                if (maxPercent >= 100) {
+                    mightGetOHKOd = true;
+                }
+            } catch (e) {
+                // Skip invalid moves
+            }
+        }
+
+        // Determine matchup classifications
+        const isHardCounter = worstDamageTaken <= 25 && mightOHKO;
+        const isWall = worstDamageTaken <= 25 && bestDamagePercent > worstDamageTaken;
+
+        const response = {
+            boxIndex: boxIndex,
+            attackerSpeed: attackerSpeed,
+            defenderSpeed: defenderSpeed,
+            canOHKO: canOHKO,
+            mightOHKO: mightOHKO,
+            getsOHKOd: getsOHKOd,
+            mightGetOHKOd: mightGetOHKOd,
+            isHardCounter: isHardCounter,
+            isWall: isWall,
+            bestDamagePercent: bestDamagePercent,
+            worstDamageTaken: worstDamageTaken
+        };
+
+        app.ports.receiveTeamMatchup.send(response);
+    } catch (error) {
+        console.error('Team matchup calculation error:', error);
+    }
+});
+
 console.log('Trevenant initialized with @smogon/calc');

@@ -511,8 +511,8 @@ function convertToTrevenantFormat(pokemonByTrainer) {
     let id = 0;
 
     for (const [trainerName, team] of pokemonByTrainer.entries()) {
-        // Sort team by level descending
-        team.sort((a, b) => b.level - a.level);
+        // IMPORTANT: Do NOT sort the team - preserve original order from source document
+        // The order in the source reflects the actual battle order (lead Pokemon first)
 
         encounters.push({
             id: `blackpearl-${id++}`,

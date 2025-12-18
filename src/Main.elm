@@ -101,6 +101,13 @@ port requestBoxMatchup : Encode.Value -> Cmd msg
 port receiveBoxMatchup : (Decode.Value -> msg) -> Sub msg
 
 
+-- Team matchup ports (reuses same calculation logic)
+port requestTeamMatchup : Encode.Value -> Cmd msg
+
+
+port receiveTeamMatchup : (Decode.Value -> msg) -> Sub msg
+
+
 
 init : Flags -> ( Model, Cmd Msg )
 init flags =
@@ -152,6 +159,7 @@ init flags =
             , showColorCodeHelp = False
             , levelCap = Nothing
             , boxMatchupResults = Dict.empty
+            , teamMatchupResults = Dict.empty
             }
     in
     ( initialModel
@@ -288,6 +296,7 @@ type Msg
       -- Box matchup calculations
     | CalculateBoxMatchups
     | ReceivedBoxMatchupResult Decode.Value
+    | ReceivedTeamMatchupResult Decode.Value
       -- Color code help modal
     | ShowColorCodeHelp
     | HideColorCodeHelp
@@ -703,6 +712,7 @@ update msg model =
         SetAttackerSpecies species ->
             -- When species changes, clear attackerSource to break auto-save link
             -- This prevents overwriting the original Pokemon when "catching" a new one
+            -- Also reset all fields to defaults when species changes (UX improvement)
             let
                 speciesChanged =
                     species /= model.attacker.species
@@ -713,14 +723,38 @@ update msg model =
                     else
                         model.attackerSource
 
+                -- Get default ability for the new species
+                defaultAbility =
+                    getDefaultAbilityForSpecies species model.pokemonList
+
                 ( updatedModel, calcCmd ) =
                     updateAndCalculate
                         (\m ->
                             let
                                 attacker =
                                     m.attacker
+
+                                -- Reset all fields when species changes
+                                newAttacker =
+                                    if speciesChanged then
+                                        { attacker
+                                            | species = species
+                                            , ability = defaultAbility
+                                            , item = ""
+                                            , nature = "Hardy"
+                                            , evs = { hp = 0, atk = 0, def = 0, spa = 0, spd = 0, spe = 0 }
+                                            , ivs = defaultIVs
+                                            , moves =
+                                                [ defaultMove
+                                                , defaultMove
+                                                , defaultMove
+                                                , defaultMove
+                                                ]
+                                        }
+                                    else
+                                        { attacker | species = species }
                             in
-                            { m | attacker = { attacker | species = species }, attackerSource = newSource }
+                            { m | attacker = newAttacker, attackerSource = newSource }
                         )
                         model
 
@@ -2010,10 +2044,30 @@ update msg model =
                     else
                         model.selectedTrainerIndex
 
+                -- Get the new encounter and auto-select first Pokemon
+                newEncounter =
+                    model.trainerEncounters
+                        |> List.drop newIndex
+                        |> List.head
+
+                newDefender =
+                    case newEncounter of
+                        Just encounter ->
+                            case List.head encounter.team of
+                                Just trainerPokemon ->
+                                    trainerPokemonToState trainerPokemon
+
+                                Nothing ->
+                                    model.defender
+
+                        Nothing ->
+                            model.defender
+
                 newModel =
-                    { model | selectedTrainerIndex = newIndex }
+                    { model | selectedTrainerIndex = newIndex, defender = newDefender }
             in
-            ( newModel, saveToLocalStorage (encodeSettings newModel) )
+            updateAndCalculate (\m -> m) newModel
+                |> (\( m, cmd ) -> ( m, Cmd.batch [ cmd, saveToLocalStorage (encodeSettings m) ] ))
 
         PrevTrainer ->
             let
@@ -2024,10 +2078,30 @@ update msg model =
                     else
                         0
 
+                -- Get the new encounter and auto-select first Pokemon
+                newEncounter =
+                    model.trainerEncounters
+                        |> List.drop newIndex
+                        |> List.head
+
+                newDefender =
+                    case newEncounter of
+                        Just encounter ->
+                            case List.head encounter.team of
+                                Just trainerPokemon ->
+                                    trainerPokemonToState trainerPokemon
+
+                                Nothing ->
+                                    model.defender
+
+                        Nothing ->
+                            model.defender
+
                 newModel =
-                    { model | selectedTrainerIndex = newIndex }
+                    { model | selectedTrainerIndex = newIndex, defender = newDefender }
             in
-            ( newModel, saveToLocalStorage (encodeSettings newModel) )
+            updateAndCalculate (\m -> m) newModel
+                |> (\( m, cmd ) -> ( m, Cmd.batch [ cmd, saveToLocalStorage (encodeSettings m) ] ))
 
         LoadTrainerToDefender pokemonIndex ->
             case getSelectedEncounter model of
@@ -2613,17 +2687,15 @@ update msg model =
                         model
 
         CalculateBoxMatchups ->
-            -- Clear previous results and trigger calculations for all box Pokemon
+            -- Clear previous results and trigger calculations for all box AND team Pokemon
             let
                 -- Only calculate if defender is valid
                 isValidDefender =
                     not (String.isEmpty model.defender.species)
                         && List.any (\p -> p.name == model.defender.species) model.pokemonList
-            in
-            if isValidDefender && not (List.isEmpty model.box) then
-                ( { model | boxMatchupResults = Dict.empty }
-                , Cmd.batch
-                    (List.indexedMap
+
+                boxCommands =
+                    List.indexedMap
                         (\index boxPokemon ->
                             requestBoxMatchup
                                 (Encode.object
@@ -2636,7 +2708,25 @@ update msg model =
                                 )
                         )
                         model.box
-                    )
+
+                teamCommands =
+                    List.indexedMap
+                        (\index teamPokemon ->
+                            requestTeamMatchup
+                                (Encode.object
+                                    [ ( "generation", Encode.int model.generation )
+                                    , ( "boxIndex", Encode.int index )
+                                    , ( "attacker", encodePokemon teamPokemon )
+                                    , ( "defender", encodePokemon model.defender )
+                                    , ( "field", encodeField model.field )
+                                    ]
+                                )
+                        )
+                        model.team
+            in
+            if isValidDefender && (not (List.isEmpty model.box) || not (List.isEmpty model.team)) then
+                ( { model | boxMatchupResults = Dict.empty, teamMatchupResults = Dict.empty }
+                , Cmd.batch (boxCommands ++ teamCommands)
                 )
 
             else
@@ -2648,6 +2738,15 @@ update msg model =
                     ( { model | boxMatchupResults = Dict.insert result.boxIndex result model.boxMatchupResults }, Cmd.none )
 
                 Err error ->
+                    -- Silently ignore decoding errors in production build
+                    ( model, Cmd.none )
+
+        ReceivedTeamMatchupResult value ->
+            case Decode.decodeValue boxMatchupResultDecoder value of
+                Ok result ->
+                    ( { model | teamMatchupResults = Dict.insert result.boxIndex result model.teamMatchupResults }, Cmd.none )
+
+                Err _ ->
                     -- Silently ignore decoding errors in production build
                     ( model, Cmd.none )
 
@@ -2678,6 +2777,15 @@ update msg model =
 
                 "Enter" ->
                     -- Select highlighted item from dropdown
+                    case getEnterKeyMessage model of
+                        Just selectMsg ->
+                            update selectMsg model
+
+                        Nothing ->
+                            ( model, Cmd.none )
+
+                "Tab" ->
+                    -- Tab selects highlighted item (like Enter) for muscle memory
                     case getEnterKeyMessage model of
                         Just selectMsg ->
                             update selectMsg model
@@ -2925,6 +3033,8 @@ getPlayerStarterFromRival generation rivalPokemon =
                 "Meowscarada" -> "Fuecoco"
                 "Skeledirge" -> "Quaxly"
                 "Quaquaval" -> "Sprigatito"
+                -- Black Pearl ROM hack: Player gets Porygon vs Cynthia's Gible
+                "Gible" -> "Porygon"
                 _ -> "Sprigatito"
 
         _ ->
@@ -3166,6 +3276,7 @@ subscriptions model =
         , receiveAvailableGames ReceivedAvailableGames
         , receiveTrainerData ReceivedTrainerData
         , receiveBoxMatchup ReceivedBoxMatchupResult
+        , receiveTeamMatchup ReceivedTeamMatchupResult
 
         -- Keyboard events (only subscribe when a dropdown is open)
         , if model.openDropdown /= Nothing then
@@ -3527,11 +3638,17 @@ viewMoveButtonColumn moveList pokemonList pokemonName results mySpeed theirSpeed
                 Nothing ->
                     text ""
             , span [ class "text-xs font-medium truncate" ] [ text pokemonName ]
-            , if isSlower then
-                span [ class "badge badge-warning badge-xs" ] [ text "slow" ]
-
-              else
-                text ""
+            , span
+                [ class
+                    (if mySpeed > theirSpeed then
+                        "badge badge-success badge-xs"
+                     else if mySpeed < theirSpeed then
+                        "badge badge-error badge-xs"
+                     else
+                        "badge badge-warning badge-xs"
+                    )
+                ]
+                [ text (String.fromInt mySpeed) ]
             ]
 
         -- 4 move buttons in a column
@@ -3588,29 +3705,18 @@ viewDamageDetailsCenter result selectedSource selectedIndex attacker defender =
             Just moveResult ->
                 div [ class "text-center" ]
                     [ -- Normal damage percentage (big and prominent)
-                      div [ class "mb-3" ]
+                      div [ class "mb-2" ]
                         [ div [ class "text-xs text-base-content/60 mb-1" ] [ text "Normal Damage" ]
                         , div [ class "text-xl font-bold text-success mb-1" ]
                             [ text (formatDamagePercent moveResult.damagePercent) ]
                         , if not (String.isEmpty moveResult.koChance) then
-                            div [ class "text-xs text-warning" ] [ text moveResult.koChance ]
-                          else
-                            text ""
-                        ]
-
-                    -- Crit damage percentage (big and prominent, in yellow)
-                    , div [ class "mb-3" ]
-                        [ div [ class "text-xs text-base-content/60 mb-1" ] [ text "Critical Hit Damage" ]
-                        , div [ class "text-xl font-bold text-warning mb-1" ]
-                            [ text (formatDamagePercent moveResult.critDamagePercent) ]
-                        , if not (String.isEmpty moveResult.critKoChance) then
-                            div [ class "text-xs text-warning" ] [ text moveResult.critKoChance ]
+                            div [ class "text-xs text-success" ] [ text moveResult.koChance ]
                           else
                             text ""
                         ]
 
                     -- Normal damage rolls
-                    , div [ class "mb-2" ]
+                    , div [ class "mb-3" ]
                         [ div [ class "text-xs text-base-content/60 mb-1" ] [ text "Normal Rolls" ]
                         , div [ class "text-xs text-base-content/60" ]
                             [ text
@@ -3619,6 +3725,17 @@ viewDamageDetailsCenter result selectedSource selectedIndex attacker defender =
                                     |> String.join ", "
                                 )
                             ]
+                        ]
+
+                    -- Crit damage percentage (in warning color)
+                    , div [ class "mb-2" ]
+                        [ div [ class "text-xs text-base-content/60 mb-1" ] [ text "Critical Hit Damage" ]
+                        , div [ class "text-xl font-bold text-warning mb-1" ]
+                            [ text (formatDamagePercent moveResult.critDamagePercent) ]
+                        , if not (String.isEmpty moveResult.critKoChance) then
+                            div [ class "text-xs text-warning" ] [ text moveResult.critKoChance ]
+                          else
+                            text ""
                         ]
 
                     -- Crit damage rolls
@@ -4130,14 +4247,26 @@ viewTeamPokemonCompact model index pokemon =
         pokemonData =
             List.filter (\p -> p.name == pokemon.species) model.pokemonList
                 |> List.head
+
+        -- Get matchup result for this team Pokemon
+        matchupResult =
+            Dict.get index model.teamMatchupResults
+
+        -- Determine border color based on matchup
+        borderColor =
+            if isSelected then
+                "border-primary"
+
+            else
+                getBoxPokemonBorderColor matchupResult
     in
     div
         [ class
             (if isSelected then
-                "flex items-center justify-between p-2 bg-base-300 rounded cursor-pointer border-2 border-primary"
+                "flex items-center justify-between p-2 bg-base-300 rounded cursor-pointer border-2 " ++ borderColor
 
              else
-                "flex items-center justify-between p-2 bg-base-300 rounded cursor-pointer border border-transparent hover:border-primary"
+                "flex items-center justify-between p-2 bg-base-300 rounded cursor-pointer border-2 " ++ borderColor ++ " hover:border-primary"
             )
         , onClick (LoadFromTeam index)
         , draggable "true"
@@ -4293,6 +4422,12 @@ viewBoxPokemonCompact model index pokemon =
                     text ""
             , span [ class "text-xs font-medium" ] [ text pokemon.species ]
             , span [ class "text-xs text-base-content/60" ] [ text ("L" ++ String.fromInt pokemon.level) ]
+            , case matchupResult of
+                Just m ->
+                    span [ class "text-xs text-info" ] [ text ("Spe:" ++ String.fromInt m.attackerSpeed) ]
+
+                Nothing ->
+                    text ""
             ]
         , div [ class "flex items-center gap-1" ]
             [ -- Evolution button/dropdown
@@ -4473,12 +4608,6 @@ viewLoadoutSection model =
                             , onFocus (ToggleDropdown AttackerItemDropdown)
                             ]
                             []
-                        , button
-                            [ type_ "button"
-                            , onClick (ToggleDropdown AttackerItemDropdown)
-                            , class "btn btn-xs btn-square"
-                            ]
-                            [ text "▼" ]
                         ]
                     -- Custom dropdown
                     , if model.openDropdown == Just AttackerItemDropdown then
@@ -4537,12 +4666,6 @@ viewLoadoutSection model =
                                 , onFocus (ToggleDropdown (AttackerMoveDropdown index))
                                 ]
                                 []
-                            , button
-                                [ type_ "button"
-                                , onClick (ToggleDropdown (AttackerMoveDropdown index))
-                                , class "btn btn-xs btn-square"
-                                ]
-                                [ text "▼" ]
                             ]
                         -- Custom dropdown
                         , if model.openDropdown == Just (AttackerMoveDropdown index) then
@@ -5332,12 +5455,6 @@ viewBaseStatsContent pokemon pokemonList abilityList natureList generation isAtt
                         , onFocus (ToggleDropdown dropdownId)
                         ]
                         []
-                    , button
-                        [ type_ "button"
-                        , onClick (ToggleDropdown dropdownId)
-                        , class "btn btn-xs btn-square"
-                        ]
-                        [ text "▼" ]
                     ]
                 -- Custom dropdown
                 , if openDropdown == Just dropdownId then

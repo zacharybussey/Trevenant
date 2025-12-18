@@ -404,35 +404,6 @@
       "isRotation": false,
       "team": [
         {
-          "species": "Smoliv",
-          "level": 14,
-          "ability": "Harvest",
-          "item": "",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "Tackle",
-            "Absorb",
-            "Leech Seed",
-            "No Move"
-          ]
-        },
-        {
           "species": "Applin",
           "level": 12,
           "ability": "Ripen",
@@ -459,6 +430,35 @@
             "Attract",
             "Astonish",
             "Absorb"
+          ]
+        },
+        {
+          "species": "Smoliv",
+          "level": 14,
+          "ability": "Harvest",
+          "item": "",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Tackle",
+            "Absorb",
+            "Leech Seed",
+            "No Move"
           ]
         }
       ]
@@ -1080,6 +1080,35 @@
       "isRotation": false,
       "team": [
         {
+          "species": "Orthworm",
+          "level": 11,
+          "ability": "Earth Eater",
+          "item": "",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Smack Down",
+            "Wrap",
+            "No Move",
+            "No Move"
+          ]
+        },
+        {
           "species": "Qwilfish",
           "level": 12,
           "ability": "Intimidate",
@@ -1134,35 +1163,6 @@
             "Thunder Shock",
             "Water Gun",
             "Confuse Ray",
-            "No Move"
-          ]
-        },
-        {
-          "species": "Orthworm",
-          "level": 11,
-          "ability": "Earth Eater",
-          "item": "",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "Smack Down",
-            "Wrap",
-            "No Move",
             "No Move"
           ]
         }
@@ -1983,6 +1983,64 @@
       "isRotation": false,
       "team": [
         {
+          "species": "Onix",
+          "level": 14,
+          "ability": "Sturdy",
+          "item": "Lum Berry",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Roar",
+            "Dig",
+            "Stealth Rock",
+            "No Move"
+          ]
+        },
+        {
+          "species": "Sandygast",
+          "level": 14,
+          "ability": "Sand Veil",
+          "item": "Expert Belt",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Confuse Ray",
+            "Infestation",
+            "Mega Drain",
+            "Sand Tomb"
+          ]
+        },
+        {
           "species": "Diglett",
           "level": 15,
           "ability": "Sand Veil",
@@ -2067,64 +2125,6 @@
             "Temper Flare",
             "Rock Throw",
             "Bulldoze"
-          ]
-        },
-        {
-          "species": "Onix",
-          "level": 14,
-          "ability": "Sturdy",
-          "item": "Lum Berry",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "Roar",
-            "Dig",
-            "Stealth Rock",
-            "No Move"
-          ]
-        },
-        {
-          "species": "Sandygast",
-          "level": 14,
-          "ability": "Sand Veil",
-          "item": "Expert Belt",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "Confuse Ray",
-            "Infestation",
-            "Mega Drain",
-            "Sand Tomb"
           ]
         },
         {
@@ -3275,6 +3275,35 @@
           ]
         },
         {
+          "species": "Weezing-Galar",
+          "level": 22,
+          "ability": "Levitate",
+          "item": "Choice Band",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Explosion",
+            "No Move",
+            "No Move",
+            "No Move"
+          ]
+        },
+        {
           "species": "Stunky",
           "level": 24,
           "ability": "Aftermath",
@@ -3387,35 +3416,6 @@
             "Aerial Ace",
             "Fell Stinger",
             "Electroweb",
-            "No Move"
-          ]
-        },
-        {
-          "species": "Weezing-Galar",
-          "level": 22,
-          "ability": "Levitate",
-          "item": "Choice Band",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "Explosion",
-            "No Move",
-            "No Move",
             "No Move"
           ]
         }
@@ -5064,64 +5064,6 @@
       "isRotation": false,
       "team": [
         {
-          "species": "Milotic",
-          "level": 33,
-          "ability": "Competitive",
-          "item": "Leftovers",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "Water Pulse",
-            "Dragon Tail",
-            "Disarming Voice",
-            "No Move"
-          ]
-        },
-        {
-          "species": "Gabite",
-          "level": 33,
-          "ability": "Rough Skin",
-          "item": "Lum Berry",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "Dragon Breath",
-            "Bulldoze",
-            "No Move",
-            "No Move"
-          ]
-        },
-        {
           "species": "Roselia",
           "level": 32,
           "ability": "Poison Point",
@@ -5206,6 +5148,64 @@
             "Aura Sphere",
             "Work Up",
             "Bullet Punch"
+          ]
+        },
+        {
+          "species": "Milotic",
+          "level": 33,
+          "ability": "Competitive",
+          "item": "Leftovers",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Water Pulse",
+            "Dragon Tail",
+            "Disarming Voice",
+            "No Move"
+          ]
+        },
+        {
+          "species": "Gabite",
+          "level": 33,
+          "ability": "Rough Skin",
+          "item": "Lum Berry",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Dragon Breath",
+            "Bulldoze",
+            "No Move",
+            "No Move"
           ]
         }
       ]
@@ -7763,35 +7763,6 @@
           ]
         },
         {
-          "species": "Roselia",
-          "level": 31,
-          "ability": "Poison Point",
-          "item": "",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "Magical Leaf",
-            "Leech Seed",
-            "Toxic",
-            "No Move"
-          ]
-        },
-        {
           "species": "Altaria",
           "level": 29,
           "ability": "Natural Cure",
@@ -7875,6 +7846,35 @@
             "Psybeam",
             "Draining Kiss",
             "Hypnosis",
+            "No Move"
+          ]
+        },
+        {
+          "species": "Roselia",
+          "level": 31,
+          "ability": "Poison Point",
+          "item": "",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Magical Leaf",
+            "Leech Seed",
+            "Toxic",
             "No Move"
           ]
         }
@@ -8369,6 +8369,93 @@
       "isRotation": false,
       "team": [
         {
+          "species": "Torkoal",
+          "level": 31,
+          "ability": "Drought",
+          "item": "Heat Rock",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Lava Plume",
+            "Yawn",
+            "Rock Tomb",
+            "Bulldoze"
+          ]
+        },
+        {
+          "species": "Monferno",
+          "level": 31,
+          "ability": "Iron Fist",
+          "item": "Choice Scarf",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Fire Punch",
+            "Drain Punch",
+            "Thunder Punch",
+            "Ice Punch"
+          ]
+        },
+        {
+          "species": "Quilava",
+          "level": 32,
+          "ability": "Blaze",
+          "item": "Focus Sash",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Sunny Day",
+            "Endeavor",
+            "Temper Flare",
+            "No Move"
+          ]
+        },
+        {
           "species": "Arcanine",
           "level": 33,
           "ability": "Intimidate",
@@ -8453,93 +8540,6 @@
             "Flamethrower",
             "Nasty Plot",
             "Sludge Bomb"
-          ]
-        },
-        {
-          "species": "Quilava",
-          "level": 32,
-          "ability": "Blaze",
-          "item": "Focus Sash",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "Sunny Day",
-            "Endeavor",
-            "Temper Flare",
-            "No Move"
-          ]
-        },
-        {
-          "species": "Torkoal",
-          "level": 31,
-          "ability": "Drought",
-          "item": "Heat Rock",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "Lava Plume",
-            "Yawn",
-            "Rock Tomb",
-            "Bulldoze"
-          ]
-        },
-        {
-          "species": "Monferno",
-          "level": 31,
-          "ability": "Iron Fist",
-          "item": "Choice Scarf",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "Fire Punch",
-            "Drain Punch",
-            "Thunder Punch",
-            "Ice Punch"
           ]
         }
       ]
@@ -19588,6 +19588,64 @@
       "isRotation": false,
       "team": [
         {
+          "species": "Claydol",
+          "level": 50,
+          "ability": "Levitate",
+          "item": "Assault Vest",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Scorching Sands",
+            "Psychic",
+            "Ancient Power",
+            "No Move"
+          ]
+        },
+        {
+          "species": "Gothitelle",
+          "level": 50,
+          "ability": "Shadow Tag",
+          "item": "Choice Specs",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Trick",
+            "Rest",
+            "Psychic",
+            "Thunderbolt"
+          ]
+        },
+        {
           "species": "Hatterene",
           "level": 51,
           "ability": "Magic Bounce",
@@ -19701,64 +19759,6 @@
             "Roost",
             "Ice Beam",
             "Dragon Pulse"
-          ]
-        },
-        {
-          "species": "Claydol",
-          "level": 50,
-          "ability": "Levitate",
-          "item": "Assault Vest",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "Scorching Sands",
-            "Psychic",
-            "Ancient Power",
-            "No Move"
-          ]
-        },
-        {
-          "species": "Gothitelle",
-          "level": 50,
-          "ability": "Shadow Tag",
-          "item": "Choice Specs",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "Trick",
-            "Rest",
-            "Psychic",
-            "Thunderbolt"
           ]
         }
       ]
@@ -53097,94 +53097,94 @@
       "team": [
         {
           "species": "Koffing",
+          "level": 25,
+          "ability": "",
+          "item": "",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "No Move",
+            "No Move",
+            "No Move",
+            "No Move"
+          ]
+        },
+        {
+          "species": "Koffing",
+          "level": 25,
+          "ability": "",
+          "item": "",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "No Move",
+            "No Move",
+            "No Move",
+            "No Move"
+          ]
+        },
+        {
+          "species": "Koffing",
+          "level": 25,
+          "ability": "",
+          "item": "",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "No Move",
+            "No Move",
+            "No Move",
+            "No Move"
+          ]
+        },
+        {
+          "species": "Koffing",
           "level": 34,
-          "ability": "",
-          "item": "",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "No Move",
-            "No Move",
-            "No Move",
-            "No Move"
-          ]
-        },
-        {
-          "species": "Koffing",
-          "level": 25,
-          "ability": "",
-          "item": "",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "No Move",
-            "No Move",
-            "No Move",
-            "No Move"
-          ]
-        },
-        {
-          "species": "Koffing",
-          "level": 25,
-          "ability": "",
-          "item": "",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "No Move",
-            "No Move",
-            "No Move",
-            "No Move"
-          ]
-        },
-        {
-          "species": "Koffing",
-          "level": 25,
           "ability": "",
           "item": "",
           "nature": "Quirky",
@@ -53791,66 +53791,66 @@
       "isRotation": false,
       "team": [
         {
-          "species": "Gyarados",
-          "level": 35,
-          "ability": "",
-          "item": "",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "No Move",
-            "No Move",
-            "No Move",
-            "No Move"
-          ]
-        },
-        {
-          "species": "Gyarados",
-          "level": 35,
-          "ability": "",
-          "item": "",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "No Move",
-            "No Move",
-            "No Move",
-            "No Move"
-          ]
-        },
-        {
           "species": "Tentacool",
           "level": 25,
+          "ability": "",
+          "item": "",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "No Move",
+            "No Move",
+            "No Move",
+            "No Move"
+          ]
+        },
+        {
+          "species": "Gyarados",
+          "level": 35,
+          "ability": "",
+          "item": "",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "No Move",
+            "No Move",
+            "No Move",
+            "No Move"
+          ]
+        },
+        {
+          "species": "Gyarados",
+          "level": 35,
           "ability": "",
           "item": "",
           "nature": "Quirky",
@@ -55848,35 +55848,6 @@
           ]
         },
         {
-          "species": "Gyarados",
-          "level": 37,
-          "ability": "",
-          "item": "",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "No Move",
-            "No Move",
-            "No Move",
-            "No Move"
-          ]
-        },
-        {
           "species": "Carvanha",
           "level": 34,
           "ability": "",
@@ -55933,21 +55904,9 @@
             "No Move",
             "No Move"
           ]
-        }
-      ]
-    },
-    {
-      "id": "blackpearl-577",
-      "trainerClass": "",
-      "trainerName": "Lao3",
-      "location": "",
-      "game": "Black Pearl",
-      "isDouble": false,
-      "isTriple": false,
-      "isRotation": false,
-      "team": [
+        },
         {
-          "species": "Koffing",
+          "species": "Gyarados",
           "level": 37,
           "ability": "",
           "item": "",
@@ -55974,7 +55933,19 @@
             "No Move",
             "No Move"
           ]
-        },
+        }
+      ]
+    },
+    {
+      "id": "blackpearl-577",
+      "trainerClass": "",
+      "trainerName": "Lao3",
+      "location": "",
+      "game": "Black Pearl",
+      "isDouble": false,
+      "isTriple": false,
+      "isRotation": false,
+      "team": [
         {
           "species": "Koffing",
           "level": 35,
@@ -56036,6 +56007,35 @@
         {
           "species": "Koffing",
           "level": 35,
+          "ability": "",
+          "item": "",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "No Move",
+            "No Move",
+            "No Move",
+            "No Move"
+          ]
+        },
+        {
+          "species": "Koffing",
+          "level": 37,
           "ability": "",
           "item": "",
           "nature": "Quirky",
@@ -56601,8 +56601,8 @@
       "isRotation": false,
       "team": [
         {
-          "species": "Makuhita",
-          "level": 42,
+          "species": "Zigzagoon",
+          "level": 36,
           "ability": "",
           "item": "",
           "nature": "Quirky",
@@ -56630,8 +56630,8 @@
           ]
         },
         {
-          "species": "Zigzagoon",
-          "level": 36,
+          "species": "Makuhita",
+          "level": 42,
           "ability": "",
           "item": "",
           "nature": "Quirky",
@@ -56741,8 +56741,8 @@
       "isRotation": false,
       "team": [
         {
-          "species": "Mightyena",
-          "level": 42,
+          "species": "Swellow",
+          "level": 36,
           "ability": "",
           "item": "",
           "nature": "Quirky",
@@ -56770,8 +56770,8 @@
           ]
         },
         {
-          "species": "Swellow",
-          "level": 36,
+          "species": "Mightyena",
+          "level": 42,
           "ability": "",
           "item": "",
           "nature": "Quirky",
@@ -57982,35 +57982,6 @@
           ]
         },
         {
-          "species": "Gyarados",
-          "level": 43,
-          "ability": "",
-          "item": "",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "No Move",
-            "No Move",
-            "No Move",
-            "No Move"
-          ]
-        },
-        {
           "species": "Carvanha",
           "level": 42,
           "ability": "",
@@ -58042,6 +58013,35 @@
         {
           "species": "Tentacruel",
           "level": 42,
+          "ability": "",
+          "item": "",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "No Move",
+            "No Move",
+            "No Move",
+            "No Move"
+          ]
+        },
+        {
+          "species": "Gyarados",
+          "level": 43,
           "ability": "",
           "item": "",
           "nature": "Quirky",
@@ -59871,94 +59871,94 @@
       "team": [
         {
           "species": "Koffing",
+          "level": 42,
+          "ability": "",
+          "item": "",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "No Move",
+            "No Move",
+            "No Move",
+            "No Move"
+          ]
+        },
+        {
+          "species": "Koffing",
+          "level": 42,
+          "ability": "",
+          "item": "",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "No Move",
+            "No Move",
+            "No Move",
+            "No Move"
+          ]
+        },
+        {
+          "species": "Koffing",
+          "level": 42,
+          "ability": "",
+          "item": "",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "No Move",
+            "No Move",
+            "No Move",
+            "No Move"
+          ]
+        },
+        {
+          "species": "Koffing",
           "level": 52,
-          "ability": "",
-          "item": "",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "No Move",
-            "No Move",
-            "No Move",
-            "No Move"
-          ]
-        },
-        {
-          "species": "Koffing",
-          "level": 42,
-          "ability": "",
-          "item": "",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "No Move",
-            "No Move",
-            "No Move",
-            "No Move"
-          ]
-        },
-        {
-          "species": "Koffing",
-          "level": 42,
-          "ability": "",
-          "item": "",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "No Move",
-            "No Move",
-            "No Move",
-            "No Move"
-          ]
-        },
-        {
-          "species": "Koffing",
-          "level": 42,
           "ability": "",
           "item": "",
           "nature": "Quirky",
@@ -60920,8 +60920,8 @@
       "isRotation": false,
       "team": [
         {
-          "species": "Makuhita",
-          "level": 53,
+          "species": "Zigzagoon",
+          "level": 43,
           "ability": "",
           "item": "",
           "nature": "Quirky",
@@ -60949,8 +60949,8 @@
           ]
         },
         {
-          "species": "Zigzagoon",
-          "level": 43,
+          "species": "Makuhita",
+          "level": 53,
           "ability": "",
           "item": "",
           "nature": "Quirky",
@@ -61101,35 +61101,6 @@
       "isRotation": false,
       "team": [
         {
-          "species": "Mightyena",
-          "level": 53,
-          "ability": "",
-          "item": "",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "No Move",
-            "No Move",
-            "No Move",
-            "No Move"
-          ]
-        },
-        {
           "species": "Swellow",
           "level": 43,
           "ability": "",
@@ -61161,6 +61132,35 @@
         {
           "species": "Linoone",
           "level": 37,
+          "ability": "",
+          "item": "",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "No Move",
+            "No Move",
+            "No Move",
+            "No Move"
+          ]
+        },
+        {
+          "species": "Mightyena",
+          "level": 53,
           "ability": "",
           "item": "",
           "nature": "Quirky",
@@ -64278,8 +64278,8 @@
           ]
         },
         {
-          "species": "Mightyena",
-          "level": 56,
+          "species": "Linoone",
+          "level": 52,
           "ability": "",
           "item": "",
           "nature": "Quirky",
@@ -64307,8 +64307,8 @@
           ]
         },
         {
-          "species": "Linoone",
-          "level": 52,
+          "species": "Mightyena",
+          "level": 56,
           "ability": "",
           "item": "",
           "nature": "Quirky",
@@ -64347,35 +64347,6 @@
       "isTriple": false,
       "isRotation": false,
       "team": [
-        {
-          "species": "Tentacruel",
-          "level": 56,
-          "ability": "",
-          "item": "",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "No Move",
-            "No Move",
-            "No Move",
-            "No Move"
-          ]
-        },
         {
           "species": "Gyarados",
           "level": 53,
@@ -64437,6 +64408,35 @@
         {
           "species": "Gyarados",
           "level": 53,
+          "ability": "",
+          "item": "",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "No Move",
+            "No Move",
+            "No Move",
+            "No Move"
+          ]
+        },
+        {
+          "species": "Tentacruel",
+          "level": 56,
           "ability": "",
           "item": "",
           "nature": "Quirky",
@@ -64833,95 +64833,95 @@
       "isRotation": false,
       "team": [
         {
+          "species": "Koffing",
+          "level": 53,
+          "ability": "",
+          "item": "",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "No Move",
+            "No Move",
+            "No Move",
+            "No Move"
+          ]
+        },
+        {
+          "species": "Koffing",
+          "level": 53,
+          "ability": "",
+          "item": "",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "No Move",
+            "No Move",
+            "No Move",
+            "No Move"
+          ]
+        },
+        {
+          "species": "Koffing",
+          "level": 53,
+          "ability": "",
+          "item": "",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "No Move",
+            "No Move",
+            "No Move",
+            "No Move"
+          ]
+        },
+        {
           "species": "Weezing",
           "level": 56,
-          "ability": "",
-          "item": "",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "No Move",
-            "No Move",
-            "No Move",
-            "No Move"
-          ]
-        },
-        {
-          "species": "Koffing",
-          "level": 53,
-          "ability": "",
-          "item": "",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "No Move",
-            "No Move",
-            "No Move",
-            "No Move"
-          ]
-        },
-        {
-          "species": "Koffing",
-          "level": 53,
-          "ability": "",
-          "item": "",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "No Move",
-            "No Move",
-            "No Move",
-            "No Move"
-          ]
-        },
-        {
-          "species": "Koffing",
-          "level": 53,
           "ability": "",
           "item": "",
           "nature": "Quirky",
@@ -67583,8 +67583,8 @@
       "isRotation": false,
       "team": [
         {
-          "species": "Hariyama",
-          "level": 57,
+          "species": "Linoone",
+          "level": 56,
           "ability": "",
           "item": "",
           "nature": "Quirky",
@@ -67612,8 +67612,8 @@
           ]
         },
         {
-          "species": "Linoone",
-          "level": 56,
+          "species": "Hariyama",
+          "level": 57,
           "ability": "",
           "item": "",
           "nature": "Quirky",
@@ -67694,8 +67694,8 @@
       "isRotation": false,
       "team": [
         {
-          "species": "Corviknight",
-          "level": 57,
+          "species": "Altaria",
+          "level": 56,
           "ability": "",
           "item": "",
           "nature": "Quirky",
@@ -67723,8 +67723,8 @@
           ]
         },
         {
-          "species": "Altaria",
-          "level": 56,
+          "species": "Corviknight",
+          "level": 57,
           "ability": "",
           "item": "",
           "nature": "Quirky",
@@ -68044,8 +68044,8 @@
       "isRotation": false,
       "team": [
         {
-          "species": "Sharpedo",
-          "level": 59,
+          "species": "Starmie",
+          "level": 56,
           "ability": "",
           "item": "",
           "nature": "Quirky",
@@ -68073,8 +68073,8 @@
           ]
         },
         {
-          "species": "Starmie",
-          "level": 56,
+          "species": "Sharpedo",
+          "level": 59,
           "ability": "",
           "item": "",
           "nature": "Quirky",
@@ -70434,37 +70434,8 @@
       "isRotation": false,
       "team": [
         {
-          "species": "Delcatty",
-          "level": 63,
-          "ability": "",
-          "item": "",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "No Move",
-            "No Move",
-            "No Move",
-            "No Move"
-          ]
-        },
-        {
           "species": "Skitty",
-          "level": 60,
+          "level": 23,
           "ability": "",
           "item": "",
           "nature": "Quirky",
@@ -70522,36 +70493,7 @@
         },
         {
           "species": "Skitty",
-          "level": 42,
-          "ability": "",
-          "item": "",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "No Move",
-            "No Move",
-            "No Move",
-            "No Move"
-          ]
-        },
-        {
-          "species": "Skitty",
-          "level": 23,
+          "level": 60,
           "ability": "",
           "item": "",
           "nature": "Quirky",
@@ -70581,6 +70523,64 @@
         {
           "species": "Skitty",
           "level": 14,
+          "ability": "",
+          "item": "",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "No Move",
+            "No Move",
+            "No Move",
+            "No Move"
+          ]
+        },
+        {
+          "species": "Skitty",
+          "level": 42,
+          "ability": "",
+          "item": "",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "No Move",
+            "No Move",
+            "No Move",
+            "No Move"
+          ]
+        },
+        {
+          "species": "Delcatty",
+          "level": 63,
           "ability": "",
           "item": "",
           "nature": "Quirky",
@@ -73198,35 +73198,6 @@
       "isRotation": false,
       "team": [
         {
-          "species": "Metagross",
-          "level": 93,
-          "ability": "",
-          "item": "",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "No Move",
-            "No Move",
-            "No Move",
-            "No Move"
-          ]
-        },
-        {
           "species": "Skarmory",
           "level": 90,
           "ability": "",
@@ -73345,6 +73316,35 @@
         {
           "species": "Armaldo",
           "level": 90,
+          "ability": "",
+          "item": "",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "No Move",
+            "No Move",
+            "No Move",
+            "No Move"
+          ]
+        },
+        {
+          "species": "Metagross",
+          "level": 93,
           "ability": "",
           "item": "",
           "nature": "Quirky",

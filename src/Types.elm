@@ -58,6 +58,8 @@ type alias Model =
     , levelCap : Maybe Int
     -- Box matchup results
     , boxMatchupResults : Dict Int BoxMatchupResult
+    -- Team matchup results (same structure as box)
+    , teamMatchupResults : Dict Int BoxMatchupResult
     }
 
 
@@ -419,6 +421,7 @@ type Msg
       -- Box matchup calculations
     | CalculateBoxMatchups
     | ReceivedBoxMatchupResult Json.Decode.Value
+    | ReceivedTeamMatchupResult Json.Decode.Value
       -- Color code help modal
     | ShowColorCodeHelp
     | HideColorCodeHelp
