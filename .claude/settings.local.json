@@ -23,14 +23,38 @@
       "Bash(git merge:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push)"
+      "Bash(git push)",
+      "Bash(git push:*)",
+      "Bash(npm run build:prod:*)",
+      "Bash(npx elm make:*)",
+      "Bash(npm install:*)",
+      "Bash(npx playwright install:*)",
+      "Bash(npx playwright:*)",
+      "Bash(npm run test:e2e:*)",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_install",
+      "Bash(npx:*)",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__browser_select_option",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_type",
+      "mcp__playwright__browser_press_key",
+      "mcp__playwright__browser_wait_for",
+      "mcp__playwright__browser_hover",
+      "mcp__playwright__browser_close",
+      "mcp__serena__think_about_whether_you_are_done",
+      "mcp__serena__replace_symbol_body",
+      "mcp__serena__insert_after_symbol"
     ],
     "deny": [],
     "ask": []
   },
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "memory",
     "sequential-thinking",
-    "serena"
+    "serena",
+    "playwright"
   ]
 }

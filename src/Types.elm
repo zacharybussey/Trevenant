@@ -49,12 +49,13 @@ type alias Model =
     , defenderEditMode : Bool
     -- Dropdown states for custom dropdowns
     , openDropdown : Maybe DropdownId
+    , dropdownHighlightIndex : Int
     -- Reset confirmation dialog
     , showResetConfirmDialog : Bool
+    -- Color code help modal
+    , showColorCodeHelp : Bool
     -- Level cap for ROM hacks
     , levelCap : Maybe Int
-    -- Field conditions dropdown
-    , fieldConditionsDropdownOpen : Bool
     -- Box matchup results
     , boxMatchupResults : Dict Int BoxMatchupResult
     }
@@ -71,6 +72,9 @@ type DropdownId
     | BoxEvolutionDropdown Int
     | TeamFormDropdown Int
     | BoxFormDropdown Int
+    | FieldConditionsAttackerDropdown
+    | FieldConditionsBothDropdown
+    | FieldConditionsDefenderDropdown
 
 
 type PokemonSource
@@ -385,6 +389,7 @@ type Msg
     | EvolvePokemonInBox Int String -- box index, target species name
     | EvolvePokemonInTeam Int String -- team index, target species name
     | SwitchAttackerForm String -- Switch current attacker to a different form
+    | SwitchDefenderForm String -- Switch current defender to a different form
     | SwitchTeamPokemonForm Int String -- team index, target form name
     | SwitchBoxPokemonForm Int String -- box index, target form name
       -- Drag and drop
@@ -411,11 +416,12 @@ type Msg
       -- Level cap for ROM hacks
     | SetLevelCap (Maybe Int)
     | ApplyLevelCapToAll
-      -- Field conditions dropdown
-    | ToggleFieldConditionsDropdown
       -- Box matchup calculations
     | CalculateBoxMatchups
     | ReceivedBoxMatchupResult Json.Decode.Value
+      -- Color code help modal
+    | ShowColorCodeHelp
+    | HideColorCodeHelp
 
 
 -- DEFAULT VALUES

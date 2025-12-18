@@ -300,14 +300,21 @@ app.ports.requestPokemonList.subscribe(function(generation) {
 app.ports.requestMoveList.subscribe(function(generation) {
     try {
         const gen = Generations.get(generation);
-        const moves = Array.from(gen.moves).map(m => ({
-            name: m.name,
-            type: m.type || 'Normal',
-            category: m.category || 'Status',
-            basePower: typeof m.basePower === 'number' ? m.basePower : 0,
-            accuracy: typeof m.accuracy === 'number' ? m.accuracy : (m.accuracy === true ? 100 : 100),
-            isMultihit: m.multihit !== undefined && m.multihit !== null
-        }));
+        const moves = Array.from(gen.moves).map(m => {
+            // Get full move data from @pkmn/dex (which has accuracy), not @smogon/calc
+            const dexMove = Dex.moves.get(m.name);
+            const accuracy = dexMove?.accuracy;
+
+            return {
+                name: m.name,
+                type: m.type || 'Normal',
+                category: m.category || 'Status',
+                basePower: typeof m.basePower === 'number' ? m.basePower : 0,
+                // accuracy: number (0-100) = normal accuracy, true = can't miss (use 0)
+                accuracy: typeof accuracy === 'number' ? accuracy : (accuracy === true ? 0 : 100),
+                isMultihit: m.multihit !== undefined && m.multihit !== null
+            };
+        });
 
         app.ports.receiveMoveList.send({
             success: true,

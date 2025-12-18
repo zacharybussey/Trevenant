@@ -7,7 +7,10 @@
     "build": "parcel build src/index.html --dist-dir dist",
     "build:prod": "parcel build src/index.html --dist-dir dist --public-url .",
     "typecheck": "elm make src/Main.elm --output=/dev/null",
-    "test": "elm-test"
+    "test": "elm-test",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed"
   },
   "author": "",
   "license": "ISC",
@@ -18,6 +21,7 @@
     "elm-test": "^0.19.1-revision17"
   },
   "devDependencies": {
+    "@playwright/test": "^1.57.0",
     "@tailwindcss/postcss": "^4.1.17",
     "autoprefixer": "^10.4.22",
     "daisyui": "^5.5.5",

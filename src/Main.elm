@@ -1,6 +1,7 @@
 port module Main exposing (main)
 
 import Browser
+import Browser.Events
 import Decoders exposing (..)
 import Dict exposing (Dict)
 import Encoders exposing (..)
@@ -146,9 +147,10 @@ init flags =
             , boxCollapsed = True
             , defenderEditMode = False
             , openDropdown = Nothing
+            , dropdownHighlightIndex = 0
             , showResetConfirmDialog = False
+            , showColorCodeHelp = False
             , levelCap = Nothing
-            , fieldConditionsDropdownOpen = False
             , boxMatchupResults = Dict.empty
             }
     in
@@ -255,6 +257,7 @@ type Msg
     | EvolvePokemonInBox Int String -- box index, target species name
     | EvolvePokemonInTeam Int String -- team index, target species name
     | SwitchAttackerForm String -- Switch current attacker to a different form
+    | SwitchDefenderForm String -- Switch current defender to a different form
     | SwitchTeamPokemonForm Int String -- team index, target form name
     | SwitchBoxPokemonForm Int String -- box index, target form name
       -- Drag and drop
@@ -274,6 +277,7 @@ type Msg
     | ToggleDropdown DropdownId
     | OpenDropdown DropdownId
     | CloseDropdown
+    | CloseAllDropdowns
       -- Reset game data
     | RequestResetGameData
     | ConfirmResetGameData
@@ -281,11 +285,14 @@ type Msg
       -- Level cap for ROM hacks
     | SetLevelCap (Maybe Int)
     | ApplyLevelCapToAll
-      -- Field conditions dropdown
-    | ToggleFieldConditionsDropdown
       -- Box matchup calculations
     | CalculateBoxMatchups
     | ReceivedBoxMatchupResult Decode.Value
+      -- Color code help modal
+    | ShowColorCodeHelp
+    | HideColorCodeHelp
+      -- Keyboard events
+    | KeyPressed String
 
 
 -- Helper function to get box Pokemon border color based on matchup results
@@ -296,31 +303,23 @@ getBoxPokemonBorderColor maybeResult =
             "border-transparent"
 
         Just result ->
-            -- Priority order for color coding (based on .specs/features/BoxColorCoding.png):
-            -- 1. Both sides OHKO each other (green)
+            -- Simplified color coding (5 colors):
+            -- 1. Both sides OHKO each other (teal - distinct from selection green)
             -- 2. Both sides might OHKO each other (orange)
             -- 3. Always gets OHKO'd (red)
-            -- 4. Might get OHKO'd (orange)
-            -- 5. Always OHKO (yellow - bright)
-            -- 6. Might OHKO (yellow - muted)
-            -- 7. Hard Counter (cyan)
-            -- 8. Walls (magenta)
-            -- 9. Speed indicators (blue/purple/black)
+            -- 4. Always OHKO (yellow)
+            -- 5. Might OHKO (yellow muted)
             if result.canOHKO && result.getsOHKOd then
-                -- Green: Both sides OHKO each other
-                "border-green-500"
+                -- Teal: Both sides OHKO each other
+                "border-teal-400"
 
             else if result.mightOHKO && result.mightGetOHKOd then
                 -- Orange: Both sides might OHKO each other
                 "border-orange-500"
 
-            else if result.getsOHKOd then
-                -- Red: Always gets OHKO'd
+            else if result.getsOHKOd || result.mightGetOHKOd then
+                -- Red: Gets OHKO'd or might get OHKO'd
                 "border-red-500"
-
-            else if result.mightGetOHKOd then
-                -- Orange: Might get OHKO'd
-                "border-orange-500"
 
             else if result.canOHKO then
                 -- Yellow: Always OHKO
@@ -330,25 +329,9 @@ getBoxPokemonBorderColor maybeResult =
                 -- Yellow (muted): Might OHKO
                 "border-yellow-600"
 
-            else if result.isHardCounter then
-                -- Cyan: Hard Counter (gets 4HKO'd at worse and may OHKO)
-                "border-cyan-500"
-
-            else if result.isWall then
-                -- Magenta: Walls (gets 4HKO'd at worse and does more damage)
-                "border-fuchsia-500"
-
-            else if result.attackerSpeed > result.defenderSpeed then
-                -- Blue: Outspeeds
-                "border-blue-500"
-
-            else if result.attackerSpeed == result.defenderSpeed then
-                -- Purple: Speed Tie
-                "border-purple-500"
-
             else
-                -- Black: Slower
-                "border-gray-900"
+                -- No significant matchup info
+                "border-transparent"
 
 
 -- Helper function to check if a move name exists in the move list
@@ -532,6 +515,178 @@ updateAndCalculate updateFn model =
         ( newModel, saveCmd )
 
 
+{-| Get the message to dispatch when Enter is pressed on a dropdown.
+Returns Nothing if no dropdown is open or if there are no options.
+-}
+getEnterKeyMessage : Model -> Maybe Msg
+getEnterKeyMessage model =
+    case model.openDropdown of
+        Nothing ->
+            Nothing
+
+        Just dropdownId ->
+            case dropdownId of
+                AttackerMoveDropdown index ->
+                    let
+                        move =
+                            List.drop index model.attacker.moves |> List.head |> Maybe.withDefault defaultMove
+
+                        isExactMatch =
+                            List.any (\m -> m.name == move.name) model.moveList
+
+                        filteredMoves =
+                            getFilteredMoveList model.attackerLearnset model.moveList
+                                |> List.filter
+                                    (\m ->
+                                        String.isEmpty move.name
+                                            || isExactMatch
+                                            || String.contains (String.toLower move.name) (String.toLower m.name)
+                                    )
+
+                        clampedHighlight =
+                            Basics.min model.dropdownHighlightIndex (List.length filteredMoves - 1)
+                                |> Basics.max 0
+                    in
+                    List.drop clampedHighlight filteredMoves
+                        |> List.head
+                        |> Maybe.map (\m -> SetAttackerMove index m.name)
+
+                DefenderMoveDropdown index ->
+                    let
+                        move =
+                            List.drop index model.defender.moves |> List.head |> Maybe.withDefault defaultMove
+
+                        isExactMatch =
+                            List.any (\m -> m.name == move.name) model.moveList
+
+                        filteredMoves =
+                            getFilteredMoveList model.defenderLearnset model.moveList
+                                |> List.filter
+                                    (\m ->
+                                        String.isEmpty move.name
+                                            || isExactMatch
+                                            || String.contains (String.toLower move.name) (String.toLower m.name)
+                                    )
+
+                        clampedHighlight =
+                            Basics.min model.dropdownHighlightIndex (List.length filteredMoves - 1)
+                                |> Basics.max 0
+                    in
+                    List.drop clampedHighlight filteredMoves
+                        |> List.head
+                        |> Maybe.map (\m -> SetDefenderMove index m.name)
+
+                AttackerAbilityDropdown ->
+                    let
+                        isExactMatch =
+                            List.any (\a -> a == model.attacker.ability) model.abilityList
+
+                        filteredAbilities =
+                            getFilteredAbilityList model.attacker.species model.pokemonList model.abilityList
+                                |> List.filter
+                                    (\a ->
+                                        String.isEmpty model.attacker.ability
+                                            || isExactMatch
+                                            || String.contains (String.toLower model.attacker.ability) (String.toLower a)
+                                    )
+
+                        clampedHighlight =
+                            Basics.min model.dropdownHighlightIndex (List.length filteredAbilities - 1)
+                                |> Basics.max 0
+                    in
+                    List.drop clampedHighlight filteredAbilities
+                        |> List.head
+                        |> Maybe.map SetAttackerAbility
+
+                DefenderAbilityDropdown ->
+                    let
+                        isExactMatch =
+                            List.any (\a -> a == model.defender.ability) model.abilityList
+
+                        filteredAbilities =
+                            getFilteredAbilityList model.defender.species model.pokemonList model.abilityList
+                                |> List.filter
+                                    (\a ->
+                                        String.isEmpty model.defender.ability
+                                            || isExactMatch
+                                            || String.contains (String.toLower model.defender.ability) (String.toLower a)
+                                    )
+
+                        clampedHighlight =
+                            Basics.min model.dropdownHighlightIndex (List.length filteredAbilities - 1)
+                                |> Basics.max 0
+                    in
+                    List.drop clampedHighlight filteredAbilities
+                        |> List.head
+                        |> Maybe.map SetDefenderAbility
+
+                AttackerItemDropdown ->
+                    let
+                        isExactMatch =
+                            List.any (\item -> item == model.attacker.item) model.itemList
+
+                        filteredItems =
+                            getFilteredItemList model.itemList
+                                |> List.filter
+                                    (\item ->
+                                        String.isEmpty model.attacker.item
+                                            || isExactMatch
+                                            || String.contains (String.toLower model.attacker.item) (String.toLower item)
+                                    )
+
+                        clampedHighlight =
+                            Basics.min model.dropdownHighlightIndex (List.length filteredItems - 1)
+                                |> Basics.max 0
+                    in
+                    List.drop clampedHighlight filteredItems
+                        |> List.head
+                        |> Maybe.map SetAttackerItem
+
+                DefenderItemDropdown ->
+                    let
+                        isExactMatch =
+                            List.any (\item -> item == model.defender.item) model.itemList
+
+                        filteredItems =
+                            getFilteredItemList model.itemList
+                                |> List.filter
+                                    (\item ->
+                                        String.isEmpty model.defender.item
+                                            || isExactMatch
+                                            || String.contains (String.toLower model.defender.item) (String.toLower item)
+                                    )
+
+                        clampedHighlight =
+                            Basics.min model.dropdownHighlightIndex (List.length filteredItems - 1)
+                                |> Basics.max 0
+                    in
+                    List.drop clampedHighlight filteredItems
+                        |> List.head
+                        |> Maybe.map SetDefenderItem
+
+                -- Evolution/Form dropdowns and Field Conditions - Enter not supported for toggle-style dropdowns
+                TeamEvolutionDropdown _ ->
+                    Nothing
+
+                BoxEvolutionDropdown _ ->
+                    Nothing
+
+                TeamFormDropdown _ ->
+                    Nothing
+
+                BoxFormDropdown _ ->
+                    Nothing
+
+                FieldConditionsAttackerDropdown ->
+                    Nothing
+
+                FieldConditionsBothDropdown ->
+                    Nothing
+
+                FieldConditionsDefenderDropdown ->
+                    Nothing
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -580,14 +735,25 @@ update msg model =
 
         SetDefenderSpecies species ->
             let
+                -- Get default ability for the new species
+                defaultAbility =
+                    getDefaultAbilityForSpecies species model.pokemonList
+
                 ( updatedModel, calcCmd ) =
                     updateAndCalculate
                         (\m ->
                             let
                                 defender =
                                     m.defender
+
+                                -- Only update ability if species actually changed
+                                newAbility =
+                                    if species /= m.defender.species then
+                                        defaultAbility
+                                    else
+                                        defender.ability
                             in
-                            { m | defender = { defender | species = species } }
+                            { m | defender = { defender | species = species, ability = newAbility } }
                         )
                         model
 
@@ -651,8 +817,18 @@ update msg model =
                         attacker =
                             m.attacker
 
+                        -- Only close dropdown if user selected an exact match (from dropdown)
+                        isExactMatch =
+                            List.member ability m.abilityList
+
+                        newDropdown =
+                            if isExactMatch then
+                                Nothing
+                            else
+                                m.openDropdown
+
                         modelWithAbility =
-                            { m | attacker = { attacker | ability = ability }, openDropdown = Just AttackerAbilityDropdown }
+                            { m | attacker = { attacker | ability = ability }, openDropdown = newDropdown }
                     in
                     applyAbilityAutoTriggers modelWithAbility ability
                 )
@@ -665,8 +841,18 @@ update msg model =
                         defender =
                             m.defender
 
+                        -- Only close dropdown if user selected an exact match (from dropdown)
+                        isExactMatch =
+                            List.member ability m.abilityList
+
+                        newDropdown =
+                            if isExactMatch then
+                                Nothing
+                            else
+                                m.openDropdown
+
                         modelWithAbility =
-                            { m | defender = { defender | ability = ability }, openDropdown = Just DefenderAbilityDropdown }
+                            { m | defender = { defender | ability = ability }, openDropdown = newDropdown }
                     in
                     applyAbilityAutoTriggers modelWithAbility ability
                 )
@@ -679,8 +865,18 @@ update msg model =
                         attacker =
                             m.attacker
 
+                        -- Only close dropdown if user selected an exact match (from dropdown)
+                        isExactMatch =
+                            List.member item m.itemList
+
+                        newDropdown =
+                            if isExactMatch then
+                                Nothing
+                            else
+                                m.openDropdown
+
                         modelWithItem =
-                            { m | attacker = { attacker | item = item }, openDropdown = Just AttackerItemDropdown }
+                            { m | attacker = { attacker | item = item }, openDropdown = newDropdown }
                     in
                     applyItemAutoTriggers modelWithItem item True
                 )
@@ -693,8 +889,18 @@ update msg model =
                         defender =
                             m.defender
 
+                        -- Only close dropdown if user selected an exact match (from dropdown)
+                        isExactMatch =
+                            List.member item m.itemList
+
+                        newDropdown =
+                            if isExactMatch then
+                                Nothing
+                            else
+                                m.openDropdown
+
                         modelWithItem =
-                            { m | defender = { defender | item = item }, openDropdown = Just DefenderItemDropdown }
+                            { m | defender = { defender | item = item }, openDropdown = newDropdown }
                     in
                     applyItemAutoTriggers modelWithItem item False
                 )
@@ -740,17 +946,20 @@ update msg model =
                                 )
                                 attacker.moves
 
-                        -- Determine which dropdown to open based on index
-                        dropdownId =
-                            case index of
-                                0 -> AttackerMoveDropdown 0
-                                1 -> AttackerMoveDropdown 1
-                                2 -> AttackerMoveDropdown 2
-                                _ -> AttackerMoveDropdown 3
+                        -- Only close dropdown if user selected an exact match (from dropdown)
+                        -- Keep open if user is still typing (partial match)
+                        isExactMatch =
+                            List.any (\mv -> mv.name == moveName) m.moveList
+
+                        newDropdown =
+                            if isExactMatch then
+                                Nothing
+                            else
+                                m.openDropdown
                     in
                     { m
                         | attacker = { attacker | moves = moves }
-                        , openDropdown = Just dropdownId
+                        , openDropdown = newDropdown
                     }
                 )
                 model
@@ -773,17 +982,19 @@ update msg model =
                                 )
                                 defender.moves
 
-                        -- Determine which dropdown to open based on index
-                        dropdownId =
-                            case index of
-                                0 -> DefenderMoveDropdown 0
-                                1 -> DefenderMoveDropdown 1
-                                2 -> DefenderMoveDropdown 2
-                                _ -> DefenderMoveDropdown 3
+                        -- Only close dropdown if user selected an exact match (from dropdown)
+                        isExactMatch =
+                            List.any (\mv -> mv.name == moveName) m.moveList
+
+                        newDropdown =
+                            if isExactMatch then
+                                Nothing
+                            else
+                                m.openDropdown
                     in
                     { m
                         | defender = { defender | moves = moves }
-                        , openDropdown = Just dropdownId
+                        , openDropdown = newDropdown
                     }
                 )
                 model
@@ -2135,6 +2346,17 @@ update msg model =
                 )
                 model
 
+        SwitchDefenderForm targetSpecies ->
+            updateAndCalculate
+                (\m ->
+                    let
+                        defender =
+                            m.defender
+                    in
+                    { m | defender = { defender | species = targetSpecies } }
+                )
+                model
+
         SwitchTeamPokemonForm teamIndex targetSpecies ->
             case List.head (List.drop teamIndex model.team) of
                 Just pokemon ->
@@ -2257,20 +2479,28 @@ update msg model =
 
         ToggleDropdown dropdownId ->
             let
-                newOpenDropdown =
+                ( newOpenDropdown, newHighlightIndex ) =
                     if model.openDropdown == Just dropdownId then
-                        Nothing
+                        ( Nothing, 0 )
 
                     else
-                        Just dropdownId
+                        ( Just dropdownId, 0 )
             in
-            ( { model | openDropdown = newOpenDropdown }, Cmd.none )
+            ( { model | openDropdown = newOpenDropdown, dropdownHighlightIndex = newHighlightIndex }, Cmd.none )
 
         OpenDropdown dropdownId ->
-            ( { model | openDropdown = Just dropdownId }, Cmd.none )
+            ( { model | openDropdown = Just dropdownId, dropdownHighlightIndex = 0 }, Cmd.none )
 
         CloseDropdown ->
             ( { model | openDropdown = Nothing }, Cmd.none )
+
+        CloseAllDropdowns ->
+            ( { model
+                | openDropdown = Nothing
+                , dropdownHighlightIndex = 0
+              }
+            , Cmd.none
+            )
 
         RequestResetGameData ->
             ( { model | showResetConfirmDialog = True }, Cmd.none )
@@ -2382,9 +2612,6 @@ update msg model =
                         )
                         model
 
-        ToggleFieldConditionsDropdown ->
-            ( { model | fieldConditionsDropdownOpen = not model.fieldConditionsDropdownOpen }, Cmd.none )
-
         CalculateBoxMatchups ->
             -- Clear previous results and trigger calculations for all box Pokemon
             let
@@ -2422,6 +2649,43 @@ update msg model =
 
                 Err error ->
                     -- Silently ignore decoding errors in production build
+                    ( model, Cmd.none )
+
+        ShowColorCodeHelp ->
+            ( { model | showColorCodeHelp = True }, Cmd.none )
+
+        HideColorCodeHelp ->
+            ( { model | showColorCodeHelp = False }, Cmd.none )
+
+        KeyPressed key ->
+            case key of
+                "Escape" ->
+                    -- Close any open dropdown
+                    ( { model
+                        | openDropdown = Nothing
+                        , dropdownHighlightIndex = 0
+                      }
+                    , Cmd.none
+                    )
+
+                "ArrowDown" ->
+                    -- Move highlight down in dropdown
+                    ( { model | dropdownHighlightIndex = model.dropdownHighlightIndex + 1 }, Cmd.none )
+
+                "ArrowUp" ->
+                    -- Move highlight up in dropdown
+                    ( { model | dropdownHighlightIndex = Basics.max 0 (model.dropdownHighlightIndex - 1) }, Cmd.none )
+
+                "Enter" ->
+                    -- Select highlighted item from dropdown
+                    case getEnterKeyMessage model of
+                        Just selectMsg ->
+                            update selectMsg model
+
+                        Nothing ->
+                            ( model, Cmd.none )
+
+                _ ->
                     ( model, Cmd.none )
 
 
@@ -2889,7 +3153,7 @@ type alias GameSaveData =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions _ =
+subscriptions model =
     Sub.batch
         [ receiveCalculation ReceivedCalculation
         , receivePokemonList ReceivedPokemonList
@@ -2902,7 +3166,19 @@ subscriptions _ =
         , receiveAvailableGames ReceivedAvailableGames
         , receiveTrainerData ReceivedTrainerData
         , receiveBoxMatchup ReceivedBoxMatchupResult
+
+        -- Keyboard events (only subscribe when a dropdown is open)
+        , if model.openDropdown /= Nothing then
+            Browser.Events.onKeyDown (Decode.map KeyPressed keyDecoder)
+
+          else
+            Sub.none
         ]
+
+
+keyDecoder : Decoder String
+keyDecoder =
+    Decode.field "key" Decode.string
 
 
 
@@ -2922,7 +3198,7 @@ view model =
           if model.openDropdown /= Nothing then
             div
                 [ class "fixed inset-0 z-40"
-                , onClick CloseDropdown
+                , onClick CloseAllDropdowns
                 ]
                 []
 
@@ -2964,6 +3240,52 @@ view model =
                             , class "btn btn-sm btn-error"
                             ]
                             [ text "Yes, Reset Game Data" ]
+                        ]
+                    ]
+                ]
+
+          else
+            text ""
+
+        -- Color code help modal
+        , if model.showColorCodeHelp then
+            div
+                [ class "fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+                , onClick HideColorCodeHelp
+                ]
+                [ div
+                    [ class "bg-base-200 p-6 rounded-lg shadow-xl max-w-md"
+                    , Html.Events.stopPropagationOn "click" (Decode.succeed ( HideColorCodeHelp, True ))
+                    ]
+                    [ h3 [ class "text-lg font-bold mb-4" ] [ text "Color Coding Guide" ]
+                    , div [ class "space-y-2 text-sm" ]
+                        [ div [ class "flex items-center gap-2" ]
+                            [ span [ class "w-4 h-4 bg-teal-400 rounded" ] []
+                            , text "Teal - Both can OHKO each other"
+                            ]
+                        , div [ class "flex items-center gap-2" ]
+                            [ span [ class "w-4 h-4 bg-orange-500 rounded" ] []
+                            , text "Orange - Both might OHKO each other"
+                            ]
+                        , div [ class "flex items-center gap-2" ]
+                            [ span [ class "w-4 h-4 bg-red-500 rounded" ] []
+                            , text "Red - Gets OHKO'd by defender"
+                            ]
+                        , div [ class "flex items-center gap-2" ]
+                            [ span [ class "w-4 h-4 bg-yellow-400 rounded" ] []
+                            , text "Yellow - Can OHKO defender"
+                            ]
+                        , div [ class "flex items-center gap-2" ]
+                            [ span [ class "w-4 h-4 bg-yellow-600 rounded" ] []
+                            , text "Dark Yellow - Might OHKO defender"
+                            ]
+                        ]
+                    , div [ class "flex justify-end mt-4" ]
+                        [ button
+                            [ onClick HideColorCodeHelp
+                            , class "btn btn-sm btn-primary"
+                            ]
+                            [ text "Got it!" ]
                         ]
                     ]
                 ]
@@ -3191,13 +3513,14 @@ viewMoveButtonColumn moveList pokemonList pokemonName results mySpeed theirSpeed
                 Just data ->
                     img
                         [ src data.spriteUrl
-                        , class "w-8 h-8"
+                        , class "h-8"
                         , style "image-rendering"
                             (if data.isPixelated then
                                 "pixelated"
                              else
                                 "auto"
                             )
+                        , style "width" "auto"
                         ]
                         []
 
@@ -3330,124 +3653,241 @@ formatDamagePercent ( minP, maxP ) =
 viewFieldConditionsContent : Model -> Html Msg
 viewFieldConditionsContent model =
     div [ class "flex flex-col gap-3" ]
-        [ -- Active conditions pills
-          div []
-            [ div [ class "flex flex-wrap gap-2 min-h-[2rem]" ]
-                (viewActiveConditionPills model)
-            ]
-
-        -- Add condition dropdown button
-        , div [ class "relative" ]
-            [ button
-                [ onClick ToggleFieldConditionsDropdown
-                , class "btn btn-xs btn-outline btn-primary w-full"
+        [ -- Three columns layout: Attacker | Both | Defender
+          div [ class "flex gap-2" ]
+            [ -- Attacker column
+              div [ class "flex-1 flex flex-col gap-2" ]
+                [ -- Attacker pills
+                  div [ class "flex flex-wrap gap-1 min-h-[2rem]" ]
+                    (viewAttackerConditionPills model)
+                
+                -- Attacker dropdown
+                , viewFieldConditionDropdown
+                    "Attacker"
+                    FieldConditionsAttackerDropdown
+                    model.openDropdown
+                    model.dropdownHighlightIndex
+                    (getAttackerConditionOptions model)
                 ]
-                [ text "+ Add Field Condition" ]
 
-            -- Dropdown menu
-            , if model.fieldConditionsDropdownOpen then
-                div
-                    [ class "absolute top-full left-0 right-0 mt-1 bg-base-100 border border-base-300 rounded shadow-lg z-20 max-h-96 overflow-y-auto"
-                    ]
-                    [ viewFieldConditionsDropdownMenu model ]
+            -- Both/Field column
+            , div [ class "flex-1 flex flex-col gap-2" ]
+                [ -- Both pills
+                  div [ class "flex flex-wrap gap-1 min-h-[2rem]" ]
+                    (viewBothConditionPills model)
+                
+                -- Both dropdown
+                , viewFieldConditionDropdown
+                    "Both"
+                    FieldConditionsBothDropdown
+                    model.openDropdown
+                    model.dropdownHighlightIndex
+                    (getBothConditionOptions model)
+                ]
 
-              else
-                text ""
+            -- Defender column
+            , div [ class "flex-1 flex flex-col gap-2" ]
+                [ -- Defender pills
+                  div [ class "flex flex-wrap gap-1 min-h-[2rem]" ]
+                    (viewDefenderConditionPills model)
+                
+                -- Defender dropdown
+                , viewFieldConditionDropdown
+                    "Defender"
+                    FieldConditionsDefenderDropdown
+                    model.openDropdown
+                    model.dropdownHighlightIndex
+                    (getDefenderConditionOptions model)
+                ]
             ]
         ]
+
+
+-- Helper to render a field condition dropdown button with menu
+viewFieldConditionDropdown : String -> DropdownId -> Maybe DropdownId -> Int -> List ( String, Msg, Bool ) -> Html Msg
+viewFieldConditionDropdown label dropdownId openDropdown highlightIndex options =
+    div [ class "relative flex-1" ]
+        [ button
+            [ onClick (ToggleDropdown dropdownId)
+            , class "btn btn-xs btn-outline btn-primary w-full"
+            ]
+            [ text ("+ " ++ label) ]
+
+        -- Dropdown menu
+        , if openDropdown == Just dropdownId then
+            let
+                clampedHighlight =
+                    Basics.min highlightIndex (List.length options - 1)
+                        |> Basics.max 0
+            in
+            div
+                [ class "absolute top-full left-0 right-0 mt-1 bg-base-100 border border-base-300 rounded shadow-lg z-50 max-h-60 overflow-y-auto"
+                ]
+                (options
+                    |> List.indexedMap
+                        (\itemIndex ( optionLabel, msg, isActive ) ->
+                            button
+                                [ onClick msg
+                                , class
+                                    ("w-full text-left px-2 py-1 text-xs rounded "
+                                        ++ (if isActive then
+                                                "bg-success text-success-content"
+
+                                            else if itemIndex == clampedHighlight then
+                                                "bg-primary text-primary-content"
+
+                                            else
+                                                "hover:bg-base-300"
+                                           )
+                                    )
+                                ]
+                                [ text optionLabel ]
+                        )
+                )
+
+          else
+            text ""
+        ]
+
+
+-- Get attacker side condition options as (label, msg, isActive) tuples
+getAttackerConditionOptions : Model -> List ( String, Msg, Bool )
+getAttackerConditionOptions model =
+    [ ( "Reflect", SetAttackerSideReflect (not model.field.attackerSide.isReflect), model.field.attackerSide.isReflect )
+    , ( "Light Screen", SetAttackerSideLightScreen (not model.field.attackerSide.isLightScreen), model.field.attackerSide.isLightScreen )
+    , ( "Aurora Veil", SetAttackerSideAuroraVeil (not model.field.attackerSide.isAuroraVeil), model.field.attackerSide.isAuroraVeil )
+    , ( "Tailwind", SetAttackerSideTailwind (not model.field.attackerSide.isTailwind), model.field.attackerSide.isTailwind )
+    , ( "Helping Hand", SetAttackerSideHelpingHand (not model.field.attackerSide.isHelpingHand), model.field.attackerSide.isHelpingHand )
+    , ( "Stealth Rock", SetAttackerSideStealthRock (not model.field.attackerSide.isSteathRock), model.field.attackerSide.isSteathRock )
+    , ( "Spikes (1)", SetAttackerSideSpikes (if model.field.attackerSide.spikes == 1 then 0 else 1), model.field.attackerSide.spikes == 1 )
+    , ( "Spikes (2)", SetAttackerSideSpikes (if model.field.attackerSide.spikes == 2 then 0 else 2), model.field.attackerSide.spikes == 2 )
+    , ( "Spikes (3)", SetAttackerSideSpikes (if model.field.attackerSide.spikes == 3 then 0 else 3), model.field.attackerSide.spikes == 3 )
+    ]
+
+
+-- Get "both" (field-wide) condition options
+getBothConditionOptions : Model -> List ( String, Msg, Bool )
+getBothConditionOptions model =
+    [ ( "Gravity", SetFieldGravity (not model.field.isGravity), model.field.isGravity )
+    ]
+
+
+-- Get defender side condition options
+getDefenderConditionOptions : Model -> List ( String, Msg, Bool )
+getDefenderConditionOptions model =
+    [ ( "Reflect", SetDefenderSideReflect (not model.field.defenderSide.isReflect), model.field.defenderSide.isReflect )
+    , ( "Light Screen", SetDefenderSideLightScreen (not model.field.defenderSide.isLightScreen), model.field.defenderSide.isLightScreen )
+    , ( "Aurora Veil", SetDefenderSideAuroraVeil (not model.field.defenderSide.isAuroraVeil), model.field.defenderSide.isAuroraVeil )
+    , ( "Tailwind", SetDefenderSideTailwind (not model.field.defenderSide.isTailwind), model.field.defenderSide.isTailwind )
+    , ( "Helping Hand", SetDefenderSideHelpingHand (not model.field.defenderSide.isHelpingHand), model.field.defenderSide.isHelpingHand )
+    , ( "Stealth Rock", SetDefenderSideStealthRock (not model.field.defenderSide.isSteathRock), model.field.defenderSide.isSteathRock )
+    , ( "Spikes (1)", SetDefenderSideSpikes (if model.field.defenderSide.spikes == 1 then 0 else 1), model.field.defenderSide.spikes == 1 )
+    , ( "Spikes (2)", SetDefenderSideSpikes (if model.field.defenderSide.spikes == 2 then 0 else 2), model.field.defenderSide.spikes == 2 )
+    , ( "Spikes (3)", SetDefenderSideSpikes (if model.field.defenderSide.spikes == 3 then 0 else 3), model.field.defenderSide.spikes == 3 )
+    ]
 
 
 -- Show pills for all active field conditions
 -- Weather and terrain are now shown in the top damage results panel, not here
 viewActiveConditionPills : Model -> List (Html Msg)
 viewActiveConditionPills model =
-    let
-        gravityPill =
-            if model.field.isGravity then
-                [ viewConditionPill "Gravity" (SetFieldGravity False) ]
+    -- This function is kept for backwards compatibility but now just returns an empty list
+    -- Use viewAttackerConditionPills, viewBothConditionPills, viewDefenderConditionPills instead
+    []
 
-            else
-                []
 
-        attackerSidePills =
-            [ if model.field.attackerSide.isReflect then
-                Just (viewConditionPill "Reflect (A)" (SetAttackerSideReflect False))
+-- Pills for attacker side conditions (no (A) suffix needed since column makes it clear)
+viewAttackerConditionPills : Model -> List (Html Msg)
+viewAttackerConditionPills model =
+    [ if model.field.attackerSide.isReflect then
+        Just (viewConditionPill "Reflect" (SetAttackerSideReflect False))
 
-              else
-                Nothing
-            , if model.field.attackerSide.isLightScreen then
-                Just (viewConditionPill "Light Screen (A)" (SetAttackerSideLightScreen False))
+      else
+        Nothing
+    , if model.field.attackerSide.isLightScreen then
+        Just (viewConditionPill "Light Screen" (SetAttackerSideLightScreen False))
 
-              else
-                Nothing
-            , if model.field.attackerSide.isAuroraVeil then
-                Just (viewConditionPill "Aurora Veil (A)" (SetAttackerSideAuroraVeil False))
+      else
+        Nothing
+    , if model.field.attackerSide.isAuroraVeil then
+        Just (viewConditionPill "Aurora Veil" (SetAttackerSideAuroraVeil False))
 
-              else
-                Nothing
-            , if model.field.attackerSide.isTailwind then
-                Just (viewConditionPill "Tailwind (A)" (SetAttackerSideTailwind False))
+      else
+        Nothing
+    , if model.field.attackerSide.isTailwind then
+        Just (viewConditionPill "Tailwind" (SetAttackerSideTailwind False))
 
-              else
-                Nothing
-            , if model.field.attackerSide.isHelpingHand then
-                Just (viewConditionPill "Helping Hand (A)" (SetAttackerSideHelpingHand False))
+      else
+        Nothing
+    , if model.field.attackerSide.isHelpingHand then
+        Just (viewConditionPill "Helping Hand" (SetAttackerSideHelpingHand False))
 
-              else
-                Nothing
-            , if model.field.attackerSide.isSteathRock then
-                Just (viewConditionPill "Stealth Rock (A)" (SetAttackerSideStealthRock False))
+      else
+        Nothing
+    , if model.field.attackerSide.isSteathRock then
+        Just (viewConditionPill "Stealth Rock" (SetAttackerSideStealthRock False))
 
-              else
-                Nothing
-            , if model.field.attackerSide.spikes > 0 then
-                Just (viewConditionPill ("Spikes " ++ String.fromInt model.field.attackerSide.spikes ++ " (A)") (SetAttackerSideSpikes 0))
+      else
+        Nothing
+    , if model.field.attackerSide.spikes > 0 then
+        Just (viewConditionPill ("Spikes " ++ String.fromInt model.field.attackerSide.spikes) (SetAttackerSideSpikes 0))
 
-              else
-                Nothing
-            ]
-                |> List.filterMap identity
+      else
+        Nothing
+    ]
+        |> List.filterMap identity
 
-        defenderSidePills =
-            [ if model.field.defenderSide.isReflect then
-                Just (viewConditionPill "Reflect (D)" (SetDefenderSideReflect False))
 
-              else
-                Nothing
-            , if model.field.defenderSide.isLightScreen then
-                Just (viewConditionPill "Light Screen (D)" (SetDefenderSideLightScreen False))
+-- Pills for field-wide conditions (both sides)
+viewBothConditionPills : Model -> List (Html Msg)
+viewBothConditionPills model =
+    if model.field.isGravity then
+        [ viewConditionPill "Gravity" (SetFieldGravity False) ]
 
-              else
-                Nothing
-            , if model.field.defenderSide.isAuroraVeil then
-                Just (viewConditionPill "Aurora Veil (D)" (SetDefenderSideAuroraVeil False))
+    else
+        []
 
-              else
-                Nothing
-            , if model.field.defenderSide.isTailwind then
-                Just (viewConditionPill "Tailwind (D)" (SetDefenderSideTailwind False))
 
-              else
-                Nothing
-            , if model.field.defenderSide.isHelpingHand then
-                Just (viewConditionPill "Helping Hand (D)" (SetDefenderSideHelpingHand False))
+-- Pills for defender side conditions (no (D) suffix needed since column makes it clear)
+viewDefenderConditionPills : Model -> List (Html Msg)
+viewDefenderConditionPills model =
+    [ if model.field.defenderSide.isReflect then
+        Just (viewConditionPill "Reflect" (SetDefenderSideReflect False))
 
-              else
-                Nothing
-            , if model.field.defenderSide.isSteathRock then
-                Just (viewConditionPill "Stealth Rock (D)" (SetDefenderSideStealthRock False))
+      else
+        Nothing
+    , if model.field.defenderSide.isLightScreen then
+        Just (viewConditionPill "Light Screen" (SetDefenderSideLightScreen False))
 
-              else
-                Nothing
-            , if model.field.defenderSide.spikes > 0 then
-                Just (viewConditionPill ("Spikes " ++ String.fromInt model.field.defenderSide.spikes ++ " (D)") (SetDefenderSideSpikes 0))
+      else
+        Nothing
+    , if model.field.defenderSide.isAuroraVeil then
+        Just (viewConditionPill "Aurora Veil" (SetDefenderSideAuroraVeil False))
 
-              else
-                Nothing
-            ]
-                |> List.filterMap identity
-    in
-    gravityPill ++ attackerSidePills ++ defenderSidePills
+      else
+        Nothing
+    , if model.field.defenderSide.isTailwind then
+        Just (viewConditionPill "Tailwind" (SetDefenderSideTailwind False))
+
+      else
+        Nothing
+    , if model.field.defenderSide.isHelpingHand then
+        Just (viewConditionPill "Helping Hand" (SetDefenderSideHelpingHand False))
+
+      else
+        Nothing
+    , if model.field.defenderSide.isSteathRock then
+        Just (viewConditionPill "Stealth Rock" (SetDefenderSideStealthRock False))
+
+      else
+        Nothing
+    , if model.field.defenderSide.spikes > 0 then
+        Just (viewConditionPill ("Spikes " ++ String.fromInt model.field.defenderSide.spikes) (SetDefenderSideSpikes 0))
+
+      else
+        Nothing
+    ]
+        |> List.filterMap identity
 
 
 -- Render a single condition pill with X button
@@ -3462,71 +3902,6 @@ viewConditionPill label removeMsg =
             ]
             [ text "×" ]
         ]
-
-
--- Dropdown menu for adding field conditions
--- Weather and terrain have been moved to the top damage results panel
-viewFieldConditionsDropdownMenu : Model -> Html Msg
-viewFieldConditionsDropdownMenu model =
-    div [ class "p-2" ]
-        [ -- Field effects
-          div [ class "mb-3" ]
-            [ div [ class "text-xs font-semibold text-primary mb-1" ] [ text "Field Effects" ]
-            , div [ class "flex flex-col gap-1" ]
-                [ viewConditionOption "Gravity" (SetFieldGravity True) model.field.isGravity
-                ]
-            ]
-
-        -- Attacker side conditions
-        , div [ class "mb-3" ]
-            [ div [ class "text-xs font-semibold text-primary mb-1" ] [ text "Attacker Side" ]
-            , div [ class "flex flex-col gap-1" ]
-                [ viewConditionOption "Reflect" (SetAttackerSideReflect True) model.field.attackerSide.isReflect
-                , viewConditionOption "Light Screen" (SetAttackerSideLightScreen True) model.field.attackerSide.isLightScreen
-                , viewConditionOption "Aurora Veil" (SetAttackerSideAuroraVeil True) model.field.attackerSide.isAuroraVeil
-                , viewConditionOption "Tailwind" (SetAttackerSideTailwind True) model.field.attackerSide.isTailwind
-                , viewConditionOption "Helping Hand" (SetAttackerSideHelpingHand True) model.field.attackerSide.isHelpingHand
-                , viewConditionOption "Stealth Rock" (SetAttackerSideStealthRock True) model.field.attackerSide.isSteathRock
-                , viewConditionOption "Spikes (1 layer)" (SetAttackerSideSpikes 1) (model.field.attackerSide.spikes == 1)
-                , viewConditionOption "Spikes (2 layers)" (SetAttackerSideSpikes 2) (model.field.attackerSide.spikes == 2)
-                , viewConditionOption "Spikes (3 layers)" (SetAttackerSideSpikes 3) (model.field.attackerSide.spikes == 3)
-                ]
-            ]
-
-        -- Defender side conditions
-        , div []
-            [ div [ class "text-xs font-semibold text-primary mb-1" ] [ text "Defender Side" ]
-            , div [ class "flex flex-col gap-1" ]
-                [ viewConditionOption "Reflect" (SetDefenderSideReflect True) model.field.defenderSide.isReflect
-                , viewConditionOption "Light Screen" (SetDefenderSideLightScreen True) model.field.defenderSide.isLightScreen
-                , viewConditionOption "Aurora Veil" (SetDefenderSideAuroraVeil True) model.field.defenderSide.isAuroraVeil
-                , viewConditionOption "Tailwind" (SetDefenderSideTailwind True) model.field.defenderSide.isTailwind
-                , viewConditionOption "Helping Hand" (SetDefenderSideHelpingHand True) model.field.defenderSide.isHelpingHand
-                , viewConditionOption "Stealth Rock" (SetDefenderSideStealthRock True) model.field.defenderSide.isSteathRock
-                , viewConditionOption "Spikes (1 layer)" (SetDefenderSideSpikes 1) (model.field.defenderSide.spikes == 1)
-                , viewConditionOption "Spikes (2 layers)" (SetDefenderSideSpikes 2) (model.field.defenderSide.spikes == 2)
-                , viewConditionOption "Spikes (3 layers)" (SetDefenderSideSpikes 3) (model.field.defenderSide.spikes == 3)
-                ]
-            ]
-        ]
-
-
--- Render a single option in the dropdown menu
-viewConditionOption : String -> Msg -> Bool -> Html Msg
-viewConditionOption label onClickMsg isActive =
-    button
-        [ onClick onClickMsg
-        , class
-            ("w-full text-left px-2 py-1 text-xs hover:bg-base-300 rounded"
-                ++ (if isActive then
-                        " bg-primary text-primary-content"
-
-                    else
-                        ""
-                   )
-            )
-        ]
-        [ text label ]
 
 
 viewSideConditionsCompact : String -> SideConditions -> Bool -> Html Msg
@@ -3613,7 +3988,7 @@ viewAttackerColumn model =
         , viewTeamBoxSection model
 
         -- Base Stats (collapsed by default)
-        , viewCollapsibleSection "Base Stats" model.attackerBaseStatsCollapsed ToggleAttackerBaseStatsCollapsed (viewBaseStatsContent model.attacker model.pokemonList model.abilityList model.natureList model.generation True model.openDropdown)
+        , viewCollapsibleSection "Base Stats" model.attackerBaseStatsCollapsed ToggleAttackerBaseStatsCollapsed (viewBaseStatsContent model.attacker model.pokemonList model.abilityList model.natureList model.generation True model.openDropdown model.dropdownHighlightIndex)
         ]
 
 
@@ -3628,7 +4003,7 @@ viewDefenderColumn model =
         , viewTrainerSelectionSection model
 
         -- Base Stats (collapsed by default)
-        , viewCollapsibleSection "Base Stats" model.defenderBaseStatsCollapsed ToggleDefenderBaseStatsCollapsed (viewBaseStatsContent model.defender model.pokemonList model.abilityList model.natureList model.generation False model.openDropdown)
+        , viewCollapsibleSection "Base Stats" model.defenderBaseStatsCollapsed ToggleDefenderBaseStatsCollapsed (viewBaseStatsContent model.defender model.pokemonList model.abilityList model.natureList model.generation False model.openDropdown model.dropdownHighlightIndex)
         ]
 
 
@@ -3712,7 +4087,7 @@ viewTeamBoxSection model =
                         [ text "Color Code" ]
                     , button
                         [ class "btn btn-xs btn-ghost btn-circle"
-                        , title "Color Coding:\n• Green: Both OHKO each other\n• Red: Gets OHKO'd\n• Yellow: Can OHKO\n• Cyan: Hard Counter (survives 4+ hits, can OHKO)\n• Magenta: Wall (survives 4+ hits, outdamages)\n• Blue: Outspeeds\n• Purple: Speed Tie\n• Black: Slower"
+                        , onClick ShowColorCodeHelp
                         ]
                         [ text "?" ]
                     ]
@@ -3774,13 +4149,7 @@ viewTeamPokemonCompact model index pokemon =
                 Just data ->
                     img
                         [ src data.spriteUrl
-                        , class
-                            (if data.isPixelated then
-                                "w-8 h-8"
-
-                             else
-                                "w-8 h-8"
-                            )
+                        , class "h-8"
                         , style "image-rendering"
                             (if data.isPixelated then
                                 "pixelated"
@@ -3788,6 +4157,7 @@ viewTeamPokemonCompact model index pokemon =
                              else
                                 "auto"
                             )
+                        , style "width" "auto"
                         ]
                         []
 
@@ -3907,13 +4277,7 @@ viewBoxPokemonCompact model index pokemon =
                 Just data ->
                     img
                         [ src data.spriteUrl
-                        , class
-                            (if data.isPixelated then
-                                "w-8 h-8"
-
-                             else
-                                "w-8 h-8"
-                            )
+                        , class "h-8"
                         , style "image-rendering"
                             (if data.isPixelated then
                                 "pixelated"
@@ -3921,6 +4285,7 @@ viewBoxPokemonCompact model index pokemon =
                              else
                                 "auto"
                             )
+                        , style "width" "auto"
                         ]
                         []
 
@@ -4004,8 +4369,8 @@ viewLoadoutSection model =
         [ h3 [ class "text-sm font-semibold text-primary mb-3" ] [ text "Loadout" ]
 
         -- Level
-        , div [ class "mb-3 form-control" ]
-            [ label [ class "label py-1" ] [ span [ class "label-text text-xs" ] [ text "Level" ] ]
+        , div [ class "mb-3 flex items-center gap-2" ]
+            [ span [ class "label-text text-xs" ] [ text "Level" ]
             , input
                 [ type_ "number"
                 , value (String.fromInt model.attacker.level)
@@ -4082,11 +4447,17 @@ viewLoadoutSection model =
         , div [ class "mb-3" ]
             [ if model.generation >= 2 then
                 let
+                    -- Check if current input is an exact match to any item (user hasn't started typing yet)
+                    isExactMatch =
+                        List.any (\item -> item == model.attacker.item) model.itemList
+
                     filteredItems =
                         getFilteredItemList model.itemList
                             |> List.filter
                                 (\item ->
+                                    -- Show all if empty or exact match, otherwise filter by typing
                                     String.isEmpty model.attacker.item
+                                        || isExactMatch
                                         || String.contains (String.toLower model.attacker.item) (String.toLower item)
                                 )
                 in
@@ -4111,14 +4482,27 @@ viewLoadoutSection model =
                         ]
                     -- Custom dropdown
                     , if model.openDropdown == Just AttackerItemDropdown then
+                        let
+                            clampedHighlight =
+                                Basics.min model.dropdownHighlightIndex (List.length filteredItems - 1)
+                                    |> Basics.max 0
+                        in
                         div
                             [ class "absolute z-50 mt-1 w-full max-h-60 overflow-y-auto bg-base-100 border border-base-300 rounded shadow-lg"
                             ]
                             (filteredItems
-                                |> List.map
-                                    (\item ->
+                                |> List.indexedMap
+                                    (\itemIndex item ->
                                         div
-                                            [ class "px-3 py-2 hover:bg-base-200 cursor-pointer text-xs"
+                                            [ class
+                                                ("px-3 py-2 cursor-pointer text-xs "
+                                                    ++ (if itemIndex == clampedHighlight then
+                                                            "bg-primary text-primary-content"
+
+                                                        else
+                                                            "hover:bg-base-200"
+                                                       )
+                                                )
                                             , onClick (SetAttackerItem item)
                                             ]
                                             [ text item ]
@@ -4176,16 +4560,31 @@ viewLoadoutSection model =
                                                     || isExactMatch
                                                     || String.contains (String.toLower move.name) (String.toLower m.name)
                                             )
+
+                                -- Clamp highlight index to valid range
+                                clampedHighlight =
+                                    Basics.min model.dropdownHighlightIndex (List.length filteredMoves - 1)
+                                        |> Basics.max 0
                             in
                             div
                                 [ class "absolute z-50 mt-1 w-full max-h-60 overflow-y-auto bg-base-100 border border-base-300 rounded shadow-lg"
+                                , id ("dropdown-attacker-move-" ++ String.fromInt index)
                                 ]
                                 (filteredMoves
-                                    |> List.map
-                                        (\m ->
+                                    |> List.indexedMap
+                                        (\itemIndex m ->
                                             div
-                                                [ class "px-3 py-2 hover:bg-base-200 cursor-pointer text-xs"
+                                                [ class
+                                                    ("px-3 py-2 cursor-pointer text-xs "
+                                                        ++ (if itemIndex == clampedHighlight then
+                                                                "bg-primary text-primary-content"
+
+                                                            else
+                                                                "hover:bg-base-200"
+                                                           )
+                                                    )
                                                 , onClick (SetAttackerMove index m.name)
+                                                , id ("dropdown-item-" ++ String.fromInt itemIndex)
                                                 ]
                                                 [ text (m.name ++ getMoveSource model.attackerLearnset m.name) ]
                                         )
@@ -4218,7 +4617,7 @@ viewLoadoutSection model =
                                                     "—"
                                                )
                                             ++ " • Acc: "
-                                            ++ (if data.accuracy < 100 then
+                                            ++ (if data.accuracy > 0 && data.accuracy <= 100 then
                                                     String.fromInt data.accuracy ++ "%"
 
                                                 else
@@ -4310,8 +4709,8 @@ viewBattleStateSection title pokemon generation pokemonList isAttacker =
             ]
 
         -- Status
-        , div [ class "mb-3" ]
-            [ label [ class "label py-1" ] [ span [ class "label-text text-xs" ] [ text "Status" ] ]
+        , div [ class "mb-3 flex items-center gap-2" ]
+            [ span [ class "label-text text-xs" ] [ text "Status" ]
             , select
                 [ onInput
                     (if isAttacker then
@@ -4320,7 +4719,7 @@ viewBattleStateSection title pokemon generation pokemonList isAttacker =
                      else
                         SetDefenderStatus
                     )
-                , class "select select-bordered select-xs w-full"
+                , class "select select-bordered select-xs w-32"
                 ]
                 [ option [ value "", selected (pokemon.status == "") ] [ text "Healthy" ]
                 , option [ value "Paralysis", selected (pokemon.status == "Paralysis") ] [ text "Paralysis" ]
@@ -4333,8 +4732,8 @@ viewBattleStateSection title pokemon generation pokemonList isAttacker =
 
         -- Tera Type (Gen 9 only)
         , if generation >= 9 then
-            div [ class "mb-3" ]
-                [ label [ class "label py-1" ] [ span [ class "label-text text-xs" ] [ text "Tera Type" ] ]
+            div [ class "mb-3 flex items-center gap-2" ]
+                [ span [ class "label-text text-xs" ] [ text "Tera Type" ]
                 , input
                     [ type_ "text"
                     , value pokemon.teraType
@@ -4347,7 +4746,7 @@ viewBattleStateSection title pokemon generation pokemonList isAttacker =
                         )
                     , list (title ++ "TeraTypeList")
                     , placeholder "None"
-                    , class "input input-bordered input-xs w-full"
+                    , class "input input-bordered input-xs w-32"
                     ]
                     []
                 , datalist [ id (title ++ "TeraTypeList") ]
@@ -4516,6 +4915,22 @@ getEffectiveMoveType moveName moveType ability =
 
         _ ->
             moveType
+
+
+-- Helper to get the default (first) ability for a species
+getDefaultAbilityForSpecies : String -> List PokemonData -> String
+getDefaultAbilityForSpecies speciesName pokemonList =
+    let
+        speciesData =
+            List.filter (\p -> p.name == speciesName) pokemonList
+                |> List.head
+    in
+    case speciesData of
+        Just data ->
+            List.head data.abilities |> Maybe.withDefault ""
+
+        Nothing ->
+            ""
 
 
 -- Helper to get filtered ability list (Pokemon's actual abilities first, then others)
@@ -4784,8 +5199,8 @@ getFilteredItemList allItems =
 
 
 -- Base Stats content (for collapsible section)
-viewBaseStatsContent : PokemonState -> List PokemonData -> List String -> List NatureData -> Int -> Bool -> Maybe DropdownId -> Html Msg
-viewBaseStatsContent pokemon pokemonList abilityList natureList generation isAttacker openDropdown =
+viewBaseStatsContent : PokemonState -> List PokemonData -> List String -> List NatureData -> Int -> Bool -> Maybe DropdownId -> Int -> Html Msg
+viewBaseStatsContent pokemon pokemonList abilityList natureList generation isAttacker openDropdown highlightIndex =
     div [ class "flex flex-col gap-3" ]
         [ -- Species
           div [ class "form-control" ]
@@ -4825,8 +5240,8 @@ viewBaseStatsContent pokemon pokemonList abilityList natureList generation isAtt
 
         -- Level (Defender only - Attacker level is in Loadout section)
         , if not isAttacker then
-            div [ class "form-control" ]
-                [ label [ class "label py-1" ] [ span [ class "label-text text-xs" ] [ text "Level" ] ]
+            div [ class "flex items-center gap-2" ]
+                [ span [ class "label-text text-xs" ] [ text "Level" ]
                 , input
                     [ type_ "number"
                     , value (String.fromInt pokemon.level)
@@ -4885,11 +5300,17 @@ viewBaseStatsContent pokemon pokemonList abilityList natureList generation isAtt
                     else
                         DefenderAbilityDropdown
 
+                -- Check if current input is an exact match to any ability (user hasn't started typing yet)
+                isExactMatch =
+                    List.any (\a -> a == pokemon.ability) abilityList
+
                 filteredAbilities =
                     getFilteredAbilityList pokemon.species pokemonList abilityList
                         |> List.filter
                             (\a ->
+                                -- Show all if empty or exact match, otherwise filter by typing
                                 String.isEmpty pokemon.ability
+                                    || isExactMatch
                                     || String.contains (String.toLower pokemon.ability) (String.toLower a)
                             )
             in
@@ -4920,14 +5341,27 @@ viewBaseStatsContent pokemon pokemonList abilityList natureList generation isAtt
                     ]
                 -- Custom dropdown
                 , if openDropdown == Just dropdownId then
+                    let
+                        clampedHighlight =
+                            Basics.min highlightIndex (List.length filteredAbilities - 1)
+                                |> Basics.max 0
+                    in
                     div
                         [ class "absolute z-50 mt-1 w-full max-h-60 overflow-y-auto bg-base-100 border border-base-300 rounded shadow-lg"
                         ]
                         (filteredAbilities
-                            |> List.map
-                                (\a ->
+                            |> List.indexedMap
+                                (\itemIndex a ->
                                     div
-                                        [ class "px-3 py-2 hover:bg-base-200 cursor-pointer text-xs"
+                                        [ class
+                                            ("px-3 py-2 cursor-pointer text-xs "
+                                                ++ (if itemIndex == clampedHighlight then
+                                                        "bg-primary text-primary-content"
+
+                                                    else
+                                                        "hover:bg-base-200"
+                                                   )
+                                            )
                                         , onClick
                                             (if isAttacker then
                                                 SetAttackerAbility a
@@ -5156,7 +5590,7 @@ viewTrainerSelectionSection model =
         , div [ class "mt-3 pt-3 border-t border-base-300" ]
             [ button
                 [ onClick RequestResetGameData
-                , class "btn btn-xs btn-error btn-square"
+                , class "btn btn-xs btn-outline btn-error btn-square"
                 , title "Reset all data for this game (team, box, progress)"
                 ]
                 [ text "🚚" ]
@@ -5198,6 +5632,67 @@ viewDefenderInfoSection model =
                         [ id "defenderSpeciesListEdit" ]
                         (List.map (\p -> ( p.name, option [ value p.name ] [] )) model.pokemonList)
                     ]
+
+                -- Form switching buttons (for Mega evolutions, etc.)
+                , let
+                    defenderData =
+                        List.filter (\p -> p.name == model.defender.species) model.pokemonList
+                            |> List.head
+
+                    -- Get all available forms for this Pokemon (including current form)
+                    allForms =
+                        case defenderData of
+                            Just data ->
+                                case data.baseSpecies of
+                                    Just baseName ->
+                                        -- This is an alternate form - look up the base species
+                                        case List.filter (\p -> p.name == baseName) model.pokemonList |> List.head of
+                                            Just baseData ->
+                                                -- Include base form + all other forms (including current)
+                                                baseName :: baseData.otherFormes
+
+                                            Nothing ->
+                                                model.defender.species :: data.otherFormes
+
+                                    Nothing ->
+                                        -- This is a base form - include self + otherFormes
+                                        model.defender.species :: data.otherFormes
+
+                            Nothing ->
+                                []
+
+                    -- Filter out regional forms
+                    battleForms =
+                        getNonRegionalForms allForms
+                  in
+                  if List.length battleForms > 1 then
+                    div []
+                        [ label [ class "label py-1" ] [ span [ class "label-text text-xs" ] [ text "Form" ] ]
+                        , div [ class "flex flex-wrap gap-1" ]
+                            (battleForms
+                                |> List.map
+                                    (\form ->
+                                        let
+                                            isSelected =
+                                                form == model.defender.species
+                                        in
+                                        button
+                                            [ class
+                                                (if isSelected then
+                                                    "btn btn-xs btn-info"
+
+                                                 else
+                                                    "btn btn-xs btn-outline btn-info"
+                                                )
+                                            , onClick (SwitchDefenderForm form)
+                                            ]
+                                            [ text (getFormDisplayName form) ]
+                                    )
+                            )
+                        ]
+
+                  else
+                    text ""
 
                 -- Level
                 , div [ class "form-control" ]
@@ -5251,6 +5746,32 @@ viewDefenderInfoSection model =
 
           else
             -- Read-only compact view
+            let
+                defenderData =
+                    List.filter (\p -> p.name == model.defender.species) model.pokemonList
+                        |> List.head
+
+                allForms =
+                    case defenderData of
+                        Just data ->
+                            case data.baseSpecies of
+                                Just baseName ->
+                                    case List.filter (\p -> p.name == baseName) model.pokemonList |> List.head of
+                                        Just baseData ->
+                                            baseName :: baseData.otherFormes
+
+                                        Nothing ->
+                                            model.defender.species :: data.otherFormes
+
+                                Nothing ->
+                                    model.defender.species :: data.otherFormes
+
+                        Nothing ->
+                            []
+
+                battleForms =
+                    getNonRegionalForms allForms
+            in
             div [ class "text-xs" ]
                 [ div [ class "font-medium text-base-content" ]
                     [ text (model.defender.species ++ " L" ++ String.fromInt model.defender.level) ]
@@ -5272,6 +5793,31 @@ viewDefenderInfoSection model =
                             |> String.join ", "
                         )
                     ]
+                , if List.length battleForms > 1 then
+                    div [ class "flex flex-wrap gap-1 mt-2" ]
+                        (battleForms
+                            |> List.map
+                                (\form ->
+                                    let
+                                        isSelected =
+                                            form == model.defender.species
+                                    in
+                                    button
+                                        [ class
+                                            (if isSelected then
+                                                "btn btn-xs btn-info"
+
+                                             else
+                                                "btn btn-xs btn-outline btn-info"
+                                            )
+                                        , onClick (SwitchDefenderForm form)
+                                        ]
+                                        [ text (getFormDisplayName form) ]
+                                )
+                        )
+
+                  else
+                    text ""
                 ]
         ]
 

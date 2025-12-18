@@ -34,3 +34,8 @@ VanillaNuzlockeCalc/
 .mcp.json
 AGENTS.md
 CLAUDE.md
+
+# Test output
+test-results/
+playwright-report/
+.playwright-mcp/

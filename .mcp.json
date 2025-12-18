@@ -15,6 +15,10 @@
         "-c",
         "export PATH=\"$HOME/.local/bin:$PATH\" && uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant --project \"$(pwd)\""
       ]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp", "--browser", "firefox"]
     }
   }
 }

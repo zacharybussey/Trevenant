@@ -1,9 +1,0 @@
-## Extending the calc for different games
-
-So, we should start with the ones in the vanilla calc.  It has a bunch of content already.  We do need to add some way of finding the teams and trainers though.
-
-I remember the files are structured a bit weird.  Their UI matches up mons by the trainer name I think.  So it shows the 6 mons for the trainer on the right side similar to your team display and you can click between them.
-I think the best way to find the specific trainer would be to have a search which pulls the trainer name or the mon name.  Also, add the next/previous buttons to jump back and forth.
-Double battles should really be handled differently since its sometimes 2 trainers fighting you at the same time, one on the left and one on the right.  Take a look in the data but I doubt there is anyway to find that info.  Make a note of it, but we should come back to that later if needed.
-
-Feel free to design a new format for this information if needed.  I think its probably going to be needed as other things are ported in.  Besides the mainline games, there are some rom hacks which remix the old games in different ways or add pokemon moves and features, just including them in old games.  These custom games are often published with their own compainon content which is very often large spreadsheets with the trainer teams listed out.  It may also include some notes about the order or position or if it is a double/single battle.  Having a proper target format that these different games could be converted to would be very helpful.  We could then build conversion scripts for different games as needed.
