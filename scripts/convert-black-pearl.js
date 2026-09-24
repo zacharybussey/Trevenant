@@ -363,6 +363,10 @@ function parsePokemonBlock(lines) {
     if (atIndex !== -1) {
         item = firstLine.substring(atIndex + 1).trim();
     }
+    // "@ None" means no held item; the calc would treat "None" as a real (unknown) item
+    if (item.toLowerCase() === 'none') {
+        item = '';
+    }
 
     // Extract trainer name - it's between species and parentheses
     // The format is "Species TrainerName (Species) @ Item"

@@ -2131,7 +2131,7 @@
           "species": "Sandy Shocks",
           "level": 13,
           "ability": "Protosynthesis",
-          "item": "None",
+          "item": "",
           "nature": "Quirky",
           "ivs": {
             "hp": 15,

@@ -1,5 +1,5 @@
 import { Elm } from './Main.elm';
-import { calculate, Pokemon, Move, Field, Generations } from '@smogon/calc';
+import { calculate, Pokemon, Move, Field, Generations, toID } from '@smogon/calc';
 import { Dex } from '@pkmn/dex';
 import { Sprites } from '@pkmn/img';
 import trainerIndex from './data/trainers/index.json';
@@ -13,6 +13,15 @@ const app = Elm.Main.init({
     }
 });
 
+// Showdown-style exports write an empty held item as "@ None". @smogon/calc treats
+// any non-empty item as real and, in Gen 7+, dereferences its data for every move
+// (Knock Off check), so an item of "None" made every move against that Pokemon
+// throw and show 0 damage. Map the "no item" spellings to no item at the boundary.
+function normalizeItem(item) {
+    const id = toID(item || '');
+    return id === '' || id === 'none' || id === 'noitem' ? undefined : item;
+}
+
 // Port: Calculate damage
 // Receives calculation request from Elm, returns results for all moves in both directions
 app.ports.requestCalculation.subscribe(function(data) {
@@ -25,7 +34,7 @@ app.ports.requestCalculation.subscribe(function(data) {
             level: attacker.level,
             nature: attacker.nature,
             ability: attacker.ability,
-            item: attacker.item,
+            item: normalizeItem(attacker.item),
             evs: attacker.evs,
             ivs: attacker.ivs,
             boosts: attacker.boosts,
@@ -39,7 +48,7 @@ app.ports.requestCalculation.subscribe(function(data) {
             level: defender.level,
             nature: defender.nature,
             ability: defender.ability,
-            item: defender.item,
+            item: normalizeItem(defender.item),
             evs: defender.evs,
             ivs: defender.ivs,
             boosts: defender.boosts,
@@ -733,7 +742,7 @@ app.ports.requestBoxMatchup.subscribe(function(data) {
             level: attacker.level,
             nature: attacker.nature,
             ability: attacker.ability,
-            item: attacker.item,
+            item: normalizeItem(attacker.item),
             evs: attacker.evs,
             ivs: attacker.ivs,
             boosts: attacker.boosts,
@@ -747,7 +756,7 @@ app.ports.requestBoxMatchup.subscribe(function(data) {
             level: defender.level,
             nature: defender.nature,
             ability: defender.ability,
-            item: defender.item,
+            item: normalizeItem(defender.item),
             evs: defender.evs,
             ivs: defender.ivs,
             boosts: defender.boosts,
@@ -913,7 +922,7 @@ app.ports.requestTeamMatchup.subscribe(function(data) {
             level: attacker.level,
             nature: attacker.nature,
             ability: attacker.ability,
-            item: attacker.item,
+            item: normalizeItem(attacker.item),
             evs: attacker.evs,
             ivs: attacker.ivs,
             boosts: attacker.boosts,
@@ -927,7 +936,7 @@ app.ports.requestTeamMatchup.subscribe(function(data) {
             level: defender.level,
             nature: defender.nature,
             ability: defender.ability,
-            item: defender.item,
+            item: normalizeItem(defender.item),
             evs: defender.evs,
             ivs: defender.ivs,
             boosts: defender.boosts,
