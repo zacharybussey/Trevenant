@@ -5,6 +5,7 @@ import Json.Decode as Decode exposing (Decoder)
 import Types exposing (..)
 
 
+
 -- SETTINGS DECODERS
 
 
@@ -46,6 +47,7 @@ pokemonSourceDecoder =
             (Decode.field "index" Decode.int)
         , Decode.succeed Nothing
         ]
+
 
 
 -- CALCULATION RESULT DECODERS
@@ -91,6 +93,7 @@ boxMatchupResultDecoder =
         |> andMap (Decode.field "worstDamageTaken" Decode.float)
 
 
+
 -- POKEMON DATA DECODERS
 
 
@@ -133,6 +136,7 @@ statsDecoder =
         (Decode.field "spe" Decode.int)
 
 
+
 -- POKEMON STATE DECODERS
 
 
@@ -162,6 +166,7 @@ pokemonDecoder =
         |> Decode.andThen (\f -> Decode.map f (Decode.field "moves" (Decode.list moveStateDecoder)))
 
 
+
 -- MOVE DATA DECODERS
 
 
@@ -180,6 +185,7 @@ moveListDecoder =
         )
 
 
+
 -- ITEM AND ABILITY DECODERS
 
 
@@ -191,6 +197,7 @@ itemListDecoder =
 abilityListDecoder : Decoder (List String)
 abilityListDecoder =
     Decode.field "abilities" (Decode.list Decode.string)
+
 
 
 -- NATURE DECODERS
@@ -208,6 +215,7 @@ natureListDecoder =
         )
 
 
+
 -- LEARNSET DECODERS
 
 
@@ -221,6 +229,7 @@ learnsetDecoder =
         (Decode.field "egg" (Decode.list Decode.string))
         (Decode.field "other" (Decode.list Decode.string))
         (Decode.field "isAttacker" Decode.bool)
+
 
 
 -- TRAINER DATA DECODERS
@@ -259,6 +268,7 @@ trainerEncounterDecoder =
 trainerDataDecoder : Decoder (List TrainerEncounter)
 trainerDataDecoder =
     Decode.field "encounters" (Decode.list trainerEncounterDecoder)
+
 
 
 -- HELPER

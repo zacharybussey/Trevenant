@@ -5,6 +5,7 @@ import Json.Encode as Encode
 import Types exposing (..)
 
 
+
 -- SETTINGS ENCODERS
 
 
@@ -89,6 +90,7 @@ encodePokemonSource maybeSource =
             Encode.null
 
 
+
 -- CALCULATION REQUEST ENCODER
 
 
@@ -101,6 +103,7 @@ encodeCalculationRequest model =
         , ( "moves", Encode.list encodeMove model.attacker.moves )
         , ( "field", encodeField model.field )
         ]
+
 
 
 -- POKEMON STATE ENCODERS
@@ -144,6 +147,7 @@ encodeMove move =
         , ( "isCrit", Encode.bool move.isCrit )
         , ( "hits", Encode.int move.hits )
         ]
+
 
 
 -- FIELD STATE ENCODERS

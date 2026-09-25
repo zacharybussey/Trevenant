@@ -25,6 +25,7 @@
 ## Building
 
 - Use `npm run typecheck` to verify Elm type checking and compilation
+- Run `npm run format` (elm-format, installed as a devDependency) after editing any .elm file; `npm run format:check` fails if anything is unformatted
 - Do NOT run `npm run build` while the dev server is running (causes file locking issues on Windows)
 - The dev server will automatically rebuild on file changes
 

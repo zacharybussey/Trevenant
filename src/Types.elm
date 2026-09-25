@@ -3,6 +3,7 @@ module Types exposing (..)
 import Dict exposing (Dict)
 
 
+
 -- CORE MODEL TYPES
 
 
@@ -39,6 +40,7 @@ type alias Model =
     , dragState : Maybe PokemonSource
     , settingsLoaded : Bool
     , allGameData : Dict String GameSaveData
+
     -- UI collapse states for redesign
     , fieldCollapsed : Bool
     , battleStateCollapsed : Bool
@@ -46,23 +48,32 @@ type alias Model =
     , defenderBaseStatsCollapsed : Bool
     , boxCollapsed : Bool
     , defenderEditMode : Bool
+
     -- Dropdown states for custom dropdowns
     , openDropdown : Maybe DropdownId
     , dropdownHighlightIndex : Int
+
     -- Reset confirmation dialog
     , showResetConfirmDialog : Bool
+
     -- Color code help modal
     , showColorCodeHelp : Bool
+
     -- Level cap for ROM hacks
     , levelCap : Maybe Int
+
     -- Box matchup results
     , boxMatchupResults : Dict Int BoxMatchupResult
+
     -- Team matchup results (same structure as box)
     , teamMatchupResults : Dict Int BoxMatchupResult
+
     -- Color Code toggle: while on, matchups recalculate whenever the team, box, defender or field changes
     , colorCodeEnabled : Bool
+
     -- Display order of the box grid (does not change the stored box order)
     , boxSort : BoxSort
+
     -- Slot currently under a dragged Pokemon, for drop highlighting
     , dragOverTarget : Maybe DropTarget
     }
@@ -138,6 +149,7 @@ type Role
     | Defender
 
 
+
 -- POKEMON TYPES
 
 
@@ -175,6 +187,7 @@ type alias Stats =
     }
 
 
+
 -- FIELD TYPES
 
 
@@ -197,6 +210,7 @@ type alias SideConditions =
     , spikes : Int
     , isSteathRock : Bool
     }
+
 
 
 -- CALCULATION RESULT TYPES
@@ -239,6 +253,7 @@ type alias BoxMatchupResult =
     }
 
 
+
 -- DATA TYPES
 
 
@@ -258,6 +273,7 @@ type alias PokemonData =
     , spriteWidth : Int
     , spriteHeight : Int
     , isPixelated : Bool
+
     -- Offset of this species' 40x30 icon in Showdown's pokemonicons-sheet.png (team/box grid)
     , iconX : Int
     , iconY : Int
@@ -292,6 +308,7 @@ type alias LearnsetData =
     }
 
 
+
 -- TRAINER TYPES
 
 
@@ -318,6 +335,7 @@ type alias TrainerEncounter =
     }
 
 
+
 -- SETTINGS TYPES
 
 
@@ -336,6 +354,7 @@ type alias GameSaveData =
     , selectedTrainerIndex : Int
     , levelCap : Maybe Int
     }
+
 
 
 -- DEFAULT VALUES

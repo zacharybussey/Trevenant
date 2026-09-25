@@ -24,6 +24,7 @@ suite =
                         filterOptions query list =
                             if String.isEmpty query then
                                 list
+
                             else
                                 List.filter
                                     (\opt -> String.contains (String.toLower query) (String.toLower opt))
@@ -135,6 +136,7 @@ suite =
                         getNewDropdown item =
                             if List.member item itemList then
                                 Nothing
+
                             else
                                 currentDropdown
                     in
@@ -158,6 +160,7 @@ suite =
                         navigateDown index max =
                             if index >= max then
                                 0
+
                             else
                                 index + 1
                     in
@@ -176,6 +179,7 @@ suite =
                         navigateUp index max =
                             if index <= 0 then
                                 max
+
                             else
                                 index - 1
                     in
@@ -198,6 +202,7 @@ suite =
                         clampIndex index optionCount =
                             if optionCount <= 0 then
                                 0
+
                             else
                                 Basics.max 0 (Basics.min (optionCount - 1) index)
                     in
@@ -219,6 +224,7 @@ suite =
                         handleEsc wasOpen =
                             if wasOpen then
                                 False
+
                             else
                                 wasOpen
                     in
@@ -264,6 +270,7 @@ suite =
                         displayOptions =
                             if isExactMatch then
                                 options
+
                             else
                                 List.filter
                                     (\opt -> String.contains (String.toLower searchQuery) (String.toLower opt))
@@ -288,6 +295,7 @@ suite =
                         displayOptions =
                             if isExactMatch then
                                 options
+
                             else
                                 List.filter
                                     (\opt -> String.contains (String.toLower searchQuery) (String.toLower opt))
@@ -461,6 +469,7 @@ suite =
                         adjustIndex index count =
                             if index < count then
                                 index
+
                             else
                                 0
                     in
@@ -477,6 +486,7 @@ suite =
                         adjustIndex index count =
                             if index < count then
                                 index
+
                             else
                                 0
                     in
@@ -630,6 +640,7 @@ suite =
                         displayOptions =
                             if isExactMatch then
                                 allOptions
+
                             else
                                 List.filter
                                     (\opt -> String.contains (String.toLower currentValue) (String.toLower opt))

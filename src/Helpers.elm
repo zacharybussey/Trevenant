@@ -3,21 +3,12 @@ module Helpers exposing (..)
 import Types exposing (..)
 
 
+
 -- VALIDATION HELPERS
-
-
 -- FORMATTING HELPERS
-
-
 -- STATS HELPERS
-
-
 -- GAME/GENERATION HELPERS
-
-
 -- STARTER POKEMON HELPERS
-
-
 -- TRAINER HELPERS
 
 
@@ -30,23 +21,20 @@ findEncounterIndex target encounters =
         |> Maybe.map Tuple.first
 
 
+
 -- EVOLUTION HELPERS
 
 
 {-| Evolve a Pokemon into targetSpecies, keeping everything the player set up
 (level, nature, IVs/EVs, item, moves). An evolved mon keeps its moveset in game,
 
-
 so clearing moves here forced players to re-enter all four after every evolution.
 
 The ability is carried over by slot: if the evolution can have the current ability
 
-
 it is kept, otherwise the ability in the same slot (1 / 2 / hidden) of the evolved
 
-
 species is used, matching how abilities transfer on evolution in the games. Falls
-
 
 back to the evolution's first ability, or the current ability if no data is loaded.
 
@@ -89,7 +77,10 @@ evolvePokemon pokemonList targetSpecies pokemon =
     { pokemon | species = targetSpecies, ability = newAbility }
 
 
+
 -- ROSTER HELPERS (team / box)
+
+
 rosterGet : PokemonSource -> Roster -> Maybe PokemonState
 rosterGet source roster =
     case source of
@@ -130,8 +121,8 @@ rosterSet source pokemon roster =
 
 {-| Swap the Pokemon at two roster positions (team or box, any combination).
 
-
 The loaded attacker follows its Pokemon to the new position.
+
 -}
 swapInRoster : PokemonSource -> PokemonSource -> Roster -> Roster
 swapInRoster a b roster =
@@ -163,11 +154,10 @@ swapInRoster a b roster =
 
 {-| Remove the Pokemon at `from` and append it to the end of the team or box.
 
-
 Moving into a full team (6) from the box does nothing. Indices after the removed
 
-
 Pokemon shift down, and the loaded attacker keeps pointing at the same Pokemon.
+
 -}
 moveToEnd : PokemonSource -> Bool -> Roster -> Roster
 moveToEnd from toTeam roster =
@@ -236,9 +226,8 @@ moveToEnd from toTeam roster =
                 }
 
 
-{-| True when `toTeam` names the list the Pokemon at `from` is already in. -}
-
-
+{-| True when `toTeam` names the list the Pokemon at `from` is already in.
+-}
 isInList : PokemonSource -> Bool -> Bool
 isInList from toTeam =
     case from of
@@ -292,7 +281,10 @@ dropPokemon from target roster =
             toEnd False
 
 
+
 -- MATCHUP HELPERS (Color Code)
+
+
 matchupTier : BoxMatchupResult -> MatchupTier
 matchupTier result =
     if result.canOHKO && result.getsOHKOd then
@@ -316,8 +308,8 @@ matchupTier result =
 
 {-| Best-first order for the Matchup sort: safe OHKOs first, then trades, then
 
-
 neutral, and Pokemon that get OHKO'd last. Pokemon without a result sort last.
+
 -}
 matchupTierRank : Maybe BoxMatchupResult -> Int
 matchupTierRank maybeResult =
@@ -366,13 +358,14 @@ matchupTierLabel tier =
             "No OHKOs"
 
 
+
 -- STAT HELPERS
 
 
 {-| Unboosted Speed stat, used to sort the box by Speed.
 
-
 Gen 3+ uses IVs, EVs and nature; Gen 1-2 use DVs (0-15) and stat experience.
+
 -}
 speedStat : Int -> List PokemonData -> List NatureData -> PokemonState -> Int
 speedStat generation pokemonList natureList pokemon =
@@ -420,11 +413,10 @@ speedStat generation pokemonList natureList pokemon =
 
 {-| Box Pokemon paired with their real box index, in display order for the sort.
 
-
 Sorting only changes the display; actions and drags still use the real index.
 
-
 Ties keep box order.
+
 -}
 sortBox : BoxSort -> (PokemonState -> Int) -> (Int -> Maybe BoxMatchupResult) -> List PokemonState -> List ( Int, PokemonState )
 sortBox sort speedOf matchupOf box =
@@ -457,11 +449,15 @@ sortBox sort speedOf matchupOf box =
                 indexed
 
 
+
 -- Helper function to check if a move name exists in the move list
+
+
 isValidMove : String -> List MoveData -> Bool
 isValidMove moveName moveList =
     if String.isEmpty moveName then
         False
+
     else
         List.any (\move -> move.name == moveName) moveList
 
@@ -609,144 +605,347 @@ getPlayerStarterFromRival generation rivalPokemon =
         1 ->
             -- Gen 1: Rival picks type advantage
             case rivalPokemon of
-                "Charmander" -> "Bulbasaur"
-                "Squirtle" -> "Charmander"
-                "Bulbasaur" -> "Squirtle"
-                "Charmeleon" -> "Bulbasaur"
-                "Wartortle" -> "Charmander"
-                "Ivysaur" -> "Squirtle"
-                "Charizard" -> "Bulbasaur"
-                "Blastoise" -> "Charmander"
-                "Venusaur" -> "Squirtle"
-                _ -> "Bulbasaur"
+                "Charmander" ->
+                    "Bulbasaur"
+
+                "Squirtle" ->
+                    "Charmander"
+
+                "Bulbasaur" ->
+                    "Squirtle"
+
+                "Charmeleon" ->
+                    "Bulbasaur"
+
+                "Wartortle" ->
+                    "Charmander"
+
+                "Ivysaur" ->
+                    "Squirtle"
+
+                "Charizard" ->
+                    "Bulbasaur"
+
+                "Blastoise" ->
+                    "Charmander"
+
+                "Venusaur" ->
+                    "Squirtle"
+
+                _ ->
+                    "Bulbasaur"
 
         2 ->
             -- Gen 2: Rival picks type advantage
             case rivalPokemon of
-                "Cyndaquil" -> "Chikorita"
-                "Totodile" -> "Cyndaquil"
-                "Chikorita" -> "Totodile"
-                "Quilava" -> "Chikorita"
-                "Croconaw" -> "Cyndaquil"
-                "Bayleef" -> "Totodile"
-                "Typhlosion" -> "Chikorita"
-                "Feraligatr" -> "Cyndaquil"
-                "Meganium" -> "Totodile"
-                _ -> "Cyndaquil"
+                "Cyndaquil" ->
+                    "Chikorita"
+
+                "Totodile" ->
+                    "Cyndaquil"
+
+                "Chikorita" ->
+                    "Totodile"
+
+                "Quilava" ->
+                    "Chikorita"
+
+                "Croconaw" ->
+                    "Cyndaquil"
+
+                "Bayleef" ->
+                    "Totodile"
+
+                "Typhlosion" ->
+                    "Chikorita"
+
+                "Feraligatr" ->
+                    "Cyndaquil"
+
+                "Meganium" ->
+                    "Totodile"
+
+                _ ->
+                    "Cyndaquil"
 
         3 ->
             -- Gen 3: Rival picks type weakness (in RSE/FRLG)
             case rivalPokemon of
-                "Treecko" -> "Mudkip"
-                "Torchic" -> "Treecko"
-                "Mudkip" -> "Torchic"
-                "Grovyle" -> "Mudkip"
-                "Combusken" -> "Treecko"
-                "Marshtomp" -> "Torchic"
-                "Sceptile" -> "Mudkip"
-                "Blaziken" -> "Treecko"
-                "Swampert" -> "Torchic"
+                "Treecko" ->
+                    "Mudkip"
+
+                "Torchic" ->
+                    "Treecko"
+
+                "Mudkip" ->
+                    "Torchic"
+
+                "Grovyle" ->
+                    "Mudkip"
+
+                "Combusken" ->
+                    "Treecko"
+
+                "Marshtomp" ->
+                    "Torchic"
+
+                "Sceptile" ->
+                    "Mudkip"
+
+                "Blaziken" ->
+                    "Treecko"
+
+                "Swampert" ->
+                    "Torchic"
+
                 -- FRLG uses Gen 1 starters
-                "Charmander" -> "Bulbasaur"
-                "Squirtle" -> "Charmander"
-                "Bulbasaur" -> "Squirtle"
-                "Charizard" -> "Bulbasaur"
-                "Blastoise" -> "Charmander"
-                "Venusaur" -> "Squirtle"
-                _ -> "Treecko"
+                "Charmander" ->
+                    "Bulbasaur"
+
+                "Squirtle" ->
+                    "Charmander"
+
+                "Bulbasaur" ->
+                    "Squirtle"
+
+                "Charizard" ->
+                    "Bulbasaur"
+
+                "Blastoise" ->
+                    "Charmander"
+
+                "Venusaur" ->
+                    "Squirtle"
+
+                _ ->
+                    "Treecko"
 
         4 ->
             -- Gen 4
             case rivalPokemon of
-                "Turtwig" -> "Chimchar"
-                "Chimchar" -> "Piplup"
-                "Piplup" -> "Turtwig"
-                "Grotle" -> "Chimchar"
-                "Monferno" -> "Piplup"
-                "Prinplup" -> "Turtwig"
-                "Torterra" -> "Chimchar"
-                "Infernape" -> "Piplup"
-                "Empoleon" -> "Turtwig"
+                "Turtwig" ->
+                    "Chimchar"
+
+                "Chimchar" ->
+                    "Piplup"
+
+                "Piplup" ->
+                    "Turtwig"
+
+                "Grotle" ->
+                    "Chimchar"
+
+                "Monferno" ->
+                    "Piplup"
+
+                "Prinplup" ->
+                    "Turtwig"
+
+                "Torterra" ->
+                    "Chimchar"
+
+                "Infernape" ->
+                    "Piplup"
+
+                "Empoleon" ->
+                    "Turtwig"
+
                 -- HGSS uses Gen 2 starters
-                "Cyndaquil" -> "Chikorita"
-                "Totodile" -> "Cyndaquil"
-                "Chikorita" -> "Totodile"
-                _ -> "Turtwig"
+                "Cyndaquil" ->
+                    "Chikorita"
+
+                "Totodile" ->
+                    "Cyndaquil"
+
+                "Chikorita" ->
+                    "Totodile"
+
+                _ ->
+                    "Turtwig"
 
         5 ->
             case rivalPokemon of
-                "Snivy" -> "Tepig"
-                "Tepig" -> "Oshawott"
-                "Oshawott" -> "Snivy"
-                "Servine" -> "Tepig"
-                "Pignite" -> "Oshawott"
-                "Dewott" -> "Snivy"
-                "Serperior" -> "Tepig"
-                "Emboar" -> "Oshawott"
-                "Samurott" -> "Snivy"
-                _ -> "Snivy"
+                "Snivy" ->
+                    "Tepig"
+
+                "Tepig" ->
+                    "Oshawott"
+
+                "Oshawott" ->
+                    "Snivy"
+
+                "Servine" ->
+                    "Tepig"
+
+                "Pignite" ->
+                    "Oshawott"
+
+                "Dewott" ->
+                    "Snivy"
+
+                "Serperior" ->
+                    "Tepig"
+
+                "Emboar" ->
+                    "Oshawott"
+
+                "Samurott" ->
+                    "Snivy"
+
+                _ ->
+                    "Snivy"
 
         6 ->
             case rivalPokemon of
-                "Chespin" -> "Fennekin"
-                "Fennekin" -> "Froakie"
-                "Froakie" -> "Chespin"
-                "Quilladin" -> "Fennekin"
-                "Braixen" -> "Froakie"
-                "Frogadier" -> "Chespin"
-                "Chesnaught" -> "Fennekin"
-                "Delphox" -> "Froakie"
-                "Greninja" -> "Chespin"
+                "Chespin" ->
+                    "Fennekin"
+
+                "Fennekin" ->
+                    "Froakie"
+
+                "Froakie" ->
+                    "Chespin"
+
+                "Quilladin" ->
+                    "Fennekin"
+
+                "Braixen" ->
+                    "Froakie"
+
+                "Frogadier" ->
+                    "Chespin"
+
+                "Chesnaught" ->
+                    "Fennekin"
+
+                "Delphox" ->
+                    "Froakie"
+
+                "Greninja" ->
+                    "Chespin"
+
                 -- ORAS
-                "Treecko" -> "Mudkip"
-                "Torchic" -> "Treecko"
-                "Mudkip" -> "Torchic"
-                _ -> "Chespin"
+                "Treecko" ->
+                    "Mudkip"
+
+                "Torchic" ->
+                    "Treecko"
+
+                "Mudkip" ->
+                    "Torchic"
+
+                _ ->
+                    "Chespin"
 
         7 ->
             case rivalPokemon of
-                "Rowlet" -> "Litten"
-                "Litten" -> "Popplio"
-                "Popplio" -> "Rowlet"
-                "Dartrix" -> "Litten"
-                "Torracat" -> "Popplio"
-                "Brionne" -> "Rowlet"
-                "Decidueye" -> "Litten"
-                "Incineroar" -> "Popplio"
-                "Primarina" -> "Rowlet"
-                _ -> "Rowlet"
+                "Rowlet" ->
+                    "Litten"
+
+                "Litten" ->
+                    "Popplio"
+
+                "Popplio" ->
+                    "Rowlet"
+
+                "Dartrix" ->
+                    "Litten"
+
+                "Torracat" ->
+                    "Popplio"
+
+                "Brionne" ->
+                    "Rowlet"
+
+                "Decidueye" ->
+                    "Litten"
+
+                "Incineroar" ->
+                    "Popplio"
+
+                "Primarina" ->
+                    "Rowlet"
+
+                _ ->
+                    "Rowlet"
 
         8 ->
             case rivalPokemon of
-                "Grookey" -> "Scorbunny"
-                "Scorbunny" -> "Sobble"
-                "Sobble" -> "Grookey"
-                "Thwackey" -> "Scorbunny"
-                "Raboot" -> "Sobble"
-                "Drizzile" -> "Grookey"
-                "Rillaboom" -> "Scorbunny"
-                "Cinderace" -> "Sobble"
-                "Inteleon" -> "Grookey"
+                "Grookey" ->
+                    "Scorbunny"
+
+                "Scorbunny" ->
+                    "Sobble"
+
+                "Sobble" ->
+                    "Grookey"
+
+                "Thwackey" ->
+                    "Scorbunny"
+
+                "Raboot" ->
+                    "Sobble"
+
+                "Drizzile" ->
+                    "Grookey"
+
+                "Rillaboom" ->
+                    "Scorbunny"
+
+                "Cinderace" ->
+                    "Sobble"
+
+                "Inteleon" ->
+                    "Grookey"
+
                 -- BDSP
-                "Turtwig" -> "Chimchar"
-                "Chimchar" -> "Piplup"
-                "Piplup" -> "Turtwig"
-                _ -> "Grookey"
+                "Turtwig" ->
+                    "Chimchar"
+
+                "Chimchar" ->
+                    "Piplup"
+
+                "Piplup" ->
+                    "Turtwig"
+
+                _ ->
+                    "Grookey"
 
         9 ->
             case rivalPokemon of
-                "Sprigatito" -> "Fuecoco"
-                "Fuecoco" -> "Quaxly"
-                "Quaxly" -> "Sprigatito"
-                "Floragato" -> "Fuecoco"
-                "Crocalor" -> "Quaxly"
-                "Quaxwell" -> "Sprigatito"
-                "Meowscarada" -> "Fuecoco"
-                "Skeledirge" -> "Quaxly"
-                "Quaquaval" -> "Sprigatito"
+                "Sprigatito" ->
+                    "Fuecoco"
+
+                "Fuecoco" ->
+                    "Quaxly"
+
+                "Quaxly" ->
+                    "Sprigatito"
+
+                "Floragato" ->
+                    "Fuecoco"
+
+                "Crocalor" ->
+                    "Quaxly"
+
+                "Quaxwell" ->
+                    "Sprigatito"
+
+                "Meowscarada" ->
+                    "Fuecoco"
+
+                "Skeledirge" ->
+                    "Quaxly"
+
+                "Quaquaval" ->
+                    "Sprigatito"
+
                 -- Black Pearl ROM hack: Player gets Porygon vs Cynthia's Gible
-                "Gible" -> "Porygon"
-                _ -> "Sprigatito"
+                "Gible" ->
+                    "Porygon"
+
+                _ ->
+                    "Sprigatito"
 
         _ ->
             "Pikachu"
@@ -758,42 +957,97 @@ getStarterMoves species =
         moveName1 =
             case species of
                 -- Gen 1
-                "Bulbasaur" -> "Tackle"
-                "Charmander" -> "Scratch"
-                "Squirtle" -> "Tackle"
+                "Bulbasaur" ->
+                    "Tackle"
+
+                "Charmander" ->
+                    "Scratch"
+
+                "Squirtle" ->
+                    "Tackle"
+
                 -- Gen 2
-                "Chikorita" -> "Tackle"
-                "Cyndaquil" -> "Tackle"
-                "Totodile" -> "Scratch"
+                "Chikorita" ->
+                    "Tackle"
+
+                "Cyndaquil" ->
+                    "Tackle"
+
+                "Totodile" ->
+                    "Scratch"
+
                 -- Gen 3
-                "Treecko" -> "Pound"
-                "Torchic" -> "Scratch"
-                "Mudkip" -> "Tackle"
+                "Treecko" ->
+                    "Pound"
+
+                "Torchic" ->
+                    "Scratch"
+
+                "Mudkip" ->
+                    "Tackle"
+
                 -- Gen 4
-                "Turtwig" -> "Tackle"
-                "Chimchar" -> "Scratch"
-                "Piplup" -> "Pound"
+                "Turtwig" ->
+                    "Tackle"
+
+                "Chimchar" ->
+                    "Scratch"
+
+                "Piplup" ->
+                    "Pound"
+
                 -- Gen 5
-                "Snivy" -> "Tackle"
-                "Tepig" -> "Tackle"
-                "Oshawott" -> "Tackle"
+                "Snivy" ->
+                    "Tackle"
+
+                "Tepig" ->
+                    "Tackle"
+
+                "Oshawott" ->
+                    "Tackle"
+
                 -- Gen 6
-                "Chespin" -> "Tackle"
-                "Fennekin" -> "Scratch"
-                "Froakie" -> "Pound"
+                "Chespin" ->
+                    "Tackle"
+
+                "Fennekin" ->
+                    "Scratch"
+
+                "Froakie" ->
+                    "Pound"
+
                 -- Gen 7
-                "Rowlet" -> "Tackle"
-                "Litten" -> "Scratch"
-                "Popplio" -> "Pound"
+                "Rowlet" ->
+                    "Tackle"
+
+                "Litten" ->
+                    "Scratch"
+
+                "Popplio" ->
+                    "Pound"
+
                 -- Gen 8
-                "Grookey" -> "Scratch"
-                "Scorbunny" -> "Tackle"
-                "Sobble" -> "Pound"
+                "Grookey" ->
+                    "Scratch"
+
+                "Scorbunny" ->
+                    "Tackle"
+
+                "Sobble" ->
+                    "Pound"
+
                 -- Gen 9
-                "Sprigatito" -> "Scratch"
-                "Fuecoco" -> "Tackle"
-                "Quaxly" -> "Pound"
-                _ -> "Tackle"
+                "Sprigatito" ->
+                    "Scratch"
+
+                "Fuecoco" ->
+                    "Tackle"
+
+                "Quaxly" ->
+                    "Pound"
+
+                _ ->
+                    "Tackle"
     in
     [ { name = moveName1, isCrit = False, hits = 1 }
     , { name = "", isCrit = False, hits = 1 }

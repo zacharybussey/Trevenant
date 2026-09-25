@@ -15,6 +15,7 @@ import Json.Encode as Encode
 import Types exposing (..)
 
 
+
 -- MAIN
 
 
@@ -26,6 +27,7 @@ main =
         , subscriptions = subscriptions
         , view = view
         }
+
 
 
 -- PORTS
@@ -70,7 +72,10 @@ port receiveNatureList : (Decode.Value -> msg) -> Sub msg
 port saveToLocalStorage : Encode.Value -> Cmd msg
 
 
+
 -- Report a decode failure to the browser console (see index.js) instead of dropping it silently
+
+
 port logError : String -> Cmd msg
 
 
@@ -89,21 +94,30 @@ port requestAvailableGames : () -> Cmd msg
 port receiveAvailableGames : (Decode.Value -> msg) -> Sub msg
 
 
+
 -- Learnset ports
+
+
 port requestLearnset : { species : String, generation : Int, isAttacker : Bool } -> Cmd msg
 
 
 port receiveLearnset : (Decode.Value -> msg) -> Sub msg
 
 
+
 -- Box matchup ports
+
+
 port requestBoxMatchup : Encode.Value -> Cmd msg
 
 
 port receiveBoxMatchup : (Decode.Value -> msg) -> Sub msg
 
 
+
 -- Team matchup ports (reuses same calculation logic)
+
+
 port requestTeamMatchup : Encode.Value -> Cmd msg
 
 
@@ -147,6 +161,7 @@ init flags =
             , dragState = Nothing
             , settingsLoaded = False
             , allGameData = Dict.empty
+
             -- UI collapse states - collapsed by default for cleaner look
             , fieldCollapsed = True
             , battleStateCollapsed = True
@@ -177,6 +192,7 @@ init flags =
         , requestTrainerData initialGame
         ]
     )
+
 
 
 -- UPDATE
@@ -307,7 +323,10 @@ type Msg
     | KeyPressed String
 
 
+
 -- Helper function to get box Pokemon border color based on matchup results
+
+
 getBoxPokemonBorderColor : Maybe BoxMatchupResult -> String
 getBoxPokemonBorderColor maybeResult =
     case maybeResult of
@@ -343,14 +362,12 @@ matchupTierBorder tier =
 
 {-| Wraps `update` so Color Code stays current. While it's on, any change to the
 
-
 team, box, defender, field, generation or species data re-requests every
-
 
 team/box matchup, instead of each handler having to remember to. Results are
 
-
 keyed by list index, so entries past the end of a shrunk list are dropped.
+
 -}
 updateWithMatchups : Msg -> Model -> ( Model, Cmd Msg )
 updateWithMatchups msg model =
@@ -363,10 +380,14 @@ updateWithMatchups msg model =
 
         inputsChanged =
             rosterChanged
-                || newModel.defender /= model.defender
-                || newModel.field /= model.field
-                || newModel.generation /= model.generation
-                || newModel.pokemonList /= model.pokemonList
+                || newModel.defender
+                /= model.defender
+                || newModel.field
+                /= model.field
+                || newModel.generation
+                /= model.generation
+                || newModel.pokemonList
+                /= model.pokemonList
                 || (newModel.colorCodeEnabled && not model.colorCodeEnabled)
 
         -- Without a valid defender there is nothing to compare against, so old colors are cleared
@@ -386,9 +407,8 @@ updateWithMatchups msg model =
         ( newModel, cmd )
 
 
-{-| One matchup request per team and box Pokemon against the current defender. -}
-
-
+{-| One matchup request per team and box Pokemon against the current defender.
+-}
 matchupCommands : Model -> Cmd Msg
 matchupCommands model =
     let
@@ -419,14 +439,13 @@ hasValidDefender model =
         && List.any (\p -> p.name == model.defender.species) model.pokemonList
 
 
+
 -- Helper function to check if a form name is a regional variant (not a battle form)
-
-
 -- Helper function to filter out regional forms from a list (keep only battle forms)
-
-
 -- Helper function to get a shorter display name for forms
 -- e.g., "Charizard-Mega-X" → "Mega X", "Rotom-Wash" → "Wash", "Charizard" → "Base"
+
+
 getFormDisplayName : String -> String
 getFormDisplayName formName =
     case String.split "-" formName of
@@ -447,7 +466,10 @@ getFormDisplayName formName =
             formName
 
 
+
 -- Auto-trigger helper functions for abilities and items
+
+
 applyAbilityAutoTriggers : Model -> String -> Model
 applyAbilityAutoTriggers model ability =
     let
@@ -514,10 +536,12 @@ applyItemAutoTriggers model item isAttacker =
             model
 
 
+
 -- Helper function to update model and trigger calculation if both Pokemon are selected
-{-| Apply a team/box change (see the roster helpers in Helpers.elm) and save it. -}
 
 
+{-| Apply a team/box change (see the roster helpers in Helpers.elm) and save it.
+-}
 applyRoster : (Roster -> Roster) -> Model -> ( Model, Cmd Msg )
 applyRoster change model =
     let
@@ -599,8 +623,8 @@ updateAndCalculate updateFn model =
 
 {-| Get the message to dispatch when Enter is pressed on a dropdown.
 
-
 Returns Nothing if no dropdown is open or if there are no options.
+
 -}
 getEnterKeyMessage : Model -> Maybe Msg
 getEnterKeyMessage model =
@@ -795,6 +819,7 @@ update msg model =
                 newSource =
                     if speciesChanged then
                         Nothing
+
                     else
                         model.attackerSource
 
@@ -826,6 +851,7 @@ update msg model =
                                                 , defaultMove
                                                 ]
                                         }
+
                                     else
                                         { attacker | species = species }
                             in
@@ -859,6 +885,7 @@ update msg model =
                                 newAbility =
                                     if species /= m.defender.species then
                                         defaultAbility
+
                                     else
                                         defender.ability
                             in
@@ -933,6 +960,7 @@ update msg model =
                         newDropdown =
                             if isExactMatch then
                                 Nothing
+
                             else
                                 m.openDropdown
 
@@ -957,6 +985,7 @@ update msg model =
                         newDropdown =
                             if isExactMatch then
                                 Nothing
+
                             else
                                 m.openDropdown
 
@@ -981,6 +1010,7 @@ update msg model =
                         newDropdown =
                             if isExactMatch then
                                 Nothing
+
                             else
                                 m.openDropdown
 
@@ -1005,6 +1035,7 @@ update msg model =
                         newDropdown =
                             if isExactMatch then
                                 Nothing
+
                             else
                                 m.openDropdown
 
@@ -1063,6 +1094,7 @@ update msg model =
                         newDropdown =
                             if isExactMatch then
                                 Nothing
+
                             else
                                 m.openDropdown
                     in
@@ -1098,6 +1130,7 @@ update msg model =
                         newDropdown =
                             if isExactMatch then
                                 Nothing
+
                             else
                                 m.openDropdown
                     in
@@ -1165,6 +1198,7 @@ update msg model =
             in
             if shouldCalc then
                 ( model, requestCalculation (encodeCalculationRequest model) )
+
             else
                 ( model, Cmd.none )
 
@@ -1231,6 +1265,7 @@ update msg model =
                     in
                     if shouldCalc then
                         ( newModel, requestCalculation (encodeCalculationRequest newModel) )
+
                     else
                         ( newModel, Cmd.none )
 
@@ -1945,10 +1980,11 @@ update msg model =
                             List.any (\p -> p.name == speciesName) newModel.pokemonList
                     in
                     -- Trigger calculation with new Pokemon (only if Pokemon list is loaded)
-                    if not (String.isEmpty newAttacker.species)
-                        && not (String.isEmpty newDefender.species)
-                        && isValidSpecies newAttacker.species
-                        && isValidSpecies newDefender.species
+                    if
+                        not (String.isEmpty newAttacker.species)
+                            && not (String.isEmpty newDefender.species)
+                            && isValidSpecies newAttacker.species
+                            && isValidSpecies newDefender.species
                     then
                         ( newModel, requestCalculation (encodeCalculationRequest newModel) )
 
@@ -2215,6 +2251,7 @@ update msg model =
                         { model | box = newBox, attackerSource = Just (FromBox newIndex) }
                 in
                 ( newModel, saveToLocalStorage (encodeSettings newModel) )
+
             else
                 ( model, Cmd.none )
 
@@ -2287,6 +2324,7 @@ update msg model =
                         { model | team = newTeam, attackerSource = Just (FromTeam newIndex) }
                 in
                 ( newModel, saveToLocalStorage (encodeSettings newModel) )
+
             else
                 ( model, Cmd.none )
 
@@ -2665,7 +2703,6 @@ update msg model =
 
                                 Nothing ->
                                     model.attacker
-
                     in
                     updateAndCalculate
                         (\m ->
@@ -2769,12 +2806,13 @@ update msg model =
                     ( model, Cmd.none )
 
 
+
 -- Determine player's starter based on rival's Pokemon
 -- Gen 1-2: Rival picks type advantage (Charmander beats Bulbasaur)
 -- Gen 3+: Rival picks type weakness (but we still work backwards from their Pokemon)
-
-
 -- Create a starter Pokemon state for level 5 with appropriate stats
+
+
 createStarterPokemonState : Int -> String -> PokemonState
 createStarterPokemonState generation species =
     let
@@ -2793,9 +2831,10 @@ createStarterPokemonState generation species =
                 , atk = defaultDv * 2
                 , def = defaultDv * 2
                 , spa = defaultDv * 2
-                , spd = defaultDv * 2  -- Must match spa for Gen 1-2
+                , spd = defaultDv * 2 -- Must match spa for Gen 1-2
                 , spe = defaultDv * 2
                 }
+
             else
                 { hp = defaultIv
                 , atk = defaultIv
@@ -2832,9 +2871,8 @@ getSelectedEncounter model =
         |> List.head
 
 
+
 -- Find the index of an encounter in the full trainer list
-
-
 -- SUBSCRIPTIONS
 
 
@@ -2866,6 +2904,7 @@ subscriptions model =
 keyDecoder : Decoder String
 keyDecoder =
     Decode.field "key" Decode.string
+
 
 
 -- VIEW
@@ -3000,7 +3039,10 @@ viewHeader model =
         ]
 
 
+
 -- Helper for collapsible sections
+
+
 viewCollapsibleSection : String -> Bool -> Msg -> Html Msg -> Html Msg
 viewCollapsibleSection title isCollapsed toggleMsg content =
     div [ class "card bg-base-200 p-4" ]
@@ -3050,62 +3092,82 @@ viewMain model =
         ]
 
 
+
 -- Helper function to get background gradient based on weather and terrain
+
+
 getWeatherTerrainGradient : String -> String -> String
 getWeatherTerrainGradient weather terrain =
     let
         weatherColor =
             case weather of
                 "Sun" ->
-                    "rgba(255, 165, 0, 0.15)"  -- Orange for sun
+                    "rgba(255, 165, 0, 0.15)"
 
+                -- Orange for sun
                 "Rain" ->
-                    "rgba(100, 149, 237, 0.15)"  -- Blue for rain
+                    "rgba(100, 149, 237, 0.15)"
 
+                -- Blue for rain
                 "Sand" ->
-                    "rgba(210, 180, 140, 0.15)"  -- Tan for sand
+                    "rgba(210, 180, 140, 0.15)"
 
+                -- Tan for sand
                 "Snow" ->
-                    "rgba(173, 216, 230, 0.15)"  -- Light blue for snow
+                    "rgba(173, 216, 230, 0.15)"
 
+                -- Light blue for snow
                 _ ->
                     ""
 
         terrainColor =
             case terrain of
                 "Electric" ->
-                    "rgba(255, 215, 0, 0.15)"  -- Yellow for electric
+                    "rgba(255, 215, 0, 0.15)"
 
+                -- Yellow for electric
                 "Grassy" ->
-                    "rgba(34, 139, 34, 0.15)"  -- Green for grassy
+                    "rgba(34, 139, 34, 0.15)"
 
+                -- Green for grassy
                 "Psychic" ->
-                    "rgba(219, 112, 147, 0.15)"  -- Pink for psychic
+                    "rgba(219, 112, 147, 0.15)"
 
+                -- Pink for psychic
                 "Misty" ->
-                    "rgba(255, 182, 193, 0.15)"  -- Light pink for misty
+                    "rgba(255, 182, 193, 0.15)"
 
+                -- Light pink for misty
                 _ ->
                     ""
     in
     if not (String.isEmpty weather) && not (String.isEmpty terrain) then
         "linear-gradient(to bottom, " ++ weatherColor ++ ", " ++ terrainColor ++ ")"
+
     else if not (String.isEmpty weather) then
         "linear-gradient(to bottom, " ++ weatherColor ++ ", " ++ weatherColor ++ ")"
+
     else if not (String.isEmpty terrain) then
         "linear-gradient(to bottom, " ++ terrainColor ++ ", " ++ terrainColor ++ ")"
+
     else
         ""
 
 
+
 -- New top-level damage results panel
+
+
 viewDamageResultsPanel : Model -> Html Msg
 viewDamageResultsPanel model =
     let
-        gradient = getWeatherTerrainGradient model.field.weather model.field.terrain
+        gradient =
+            getWeatherTerrainGradient model.field.weather model.field.terrain
+
         backgroundStyle =
             if String.isEmpty gradient then
                 []
+
             else
                 [ style "background" gradient ]
     in
@@ -3166,7 +3228,10 @@ viewDamageResultsPanel model =
         ]
 
 
+
 -- Column of 4 move buttons
+
+
 viewMoveButtonColumn : List MoveData -> List PokemonData -> String -> List MoveResult -> Int -> Int -> MoveSource -> MoveSource -> Int -> Html Msg
 viewMoveButtonColumn moveList pokemonList pokemonName results mySpeed theirSpeed source selectedSource selectedIndex =
     let
@@ -3184,7 +3249,6 @@ viewMoveButtonColumn moveList pokemonList pokemonName results mySpeed theirSpeed
         pokemonData =
             List.filter (\p -> p.name == pokemonName) pokemonList
                 |> List.head
-
     in
     div [ class "flex flex-col gap-1" ]
         [ -- Header with Pokemon sprite, name and speed indicator
@@ -3197,6 +3261,7 @@ viewMoveButtonColumn moveList pokemonList pokemonName results mySpeed theirSpeed
                         , style "image-rendering"
                             (if data.isPixelated then
                                 "pixelated"
+
                              else
                                 "auto"
                             )
@@ -3211,8 +3276,10 @@ viewMoveButtonColumn moveList pokemonList pokemonName results mySpeed theirSpeed
                 [ class
                     (if mySpeed > theirSpeed then
                         "badge badge-success badge-xs"
+
                      else if mySpeed < theirSpeed then
                         "badge badge-error badge-xs"
+
                      else
                         "badge badge-warning badge-xs"
                     )
@@ -3256,7 +3323,10 @@ viewMoveButtonColumn moveList pokemonList pokemonName results mySpeed theirSpeed
         ]
 
 
+
 -- Center panel with damage numbers and details
+
+
 viewDamageDetailsCenter : CalculationResult -> MoveSource -> Int -> PokemonState -> PokemonState -> Html Msg
 viewDamageDetailsCenter result selectedSource selectedIndex attacker defender =
     let
@@ -3280,6 +3350,7 @@ viewDamageDetailsCenter result selectedSource selectedIndex attacker defender =
                             [ text (formatDamagePercent moveResult.damagePercent) ]
                         , if not (String.isEmpty moveResult.koChance) then
                             div [ class "text-xs text-success" ] [ text moveResult.koChance ]
+
                           else
                             text ""
                         ]
@@ -3303,6 +3374,7 @@ viewDamageDetailsCenter result selectedSource selectedIndex attacker defender =
                             [ text (formatDamagePercent moveResult.critDamagePercent) ]
                         , if not (String.isEmpty moveResult.critKoChance) then
                             div [ class "text-xs text-warning" ] [ text moveResult.critKoChance ]
+
                           else
                             text ""
                         ]
@@ -3326,8 +3398,11 @@ viewDamageDetailsCenter result selectedSource selectedIndex attacker defender =
         ]
 
 
+
 -- Field conditions content (for collapsible) - Tags/Pills UI
 -- Format, Weather, and Terrain have been moved to the damage results panel
+
+
 viewFieldConditionsContent : Model -> Html Msg
 viewFieldConditionsContent model =
     div [ class "flex flex-col gap-3" ]
@@ -3338,7 +3413,7 @@ viewFieldConditionsContent model =
                 [ -- Attacker pills
                   div [ class "flex flex-wrap gap-1 min-h-[2rem]" ]
                     (viewAttackerConditionPills model)
-                
+
                 -- Attacker dropdown
                 , viewFieldConditionDropdown
                     "Attacker"
@@ -3353,7 +3428,7 @@ viewFieldConditionsContent model =
                 [ -- Both pills
                   div [ class "flex flex-wrap gap-1 min-h-[2rem]" ]
                     (viewBothConditionPills model)
-                
+
                 -- Both dropdown
                 , viewFieldConditionDropdown
                     "Both"
@@ -3368,7 +3443,7 @@ viewFieldConditionsContent model =
                 [ -- Defender pills
                   div [ class "flex flex-wrap gap-1 min-h-[2rem]" ]
                     (viewDefenderConditionPills model)
-                
+
                 -- Defender dropdown
                 , viewFieldConditionDropdown
                     "Defender"
@@ -3381,7 +3456,10 @@ viewFieldConditionsContent model =
         ]
 
 
+
 -- Helper to render a field condition dropdown button with menu
+
+
 viewFieldConditionDropdown : String -> DropdownId -> Maybe DropdownId -> Int -> List ( String, Msg, Bool ) -> Html Msg
 viewFieldConditionDropdown label dropdownId openDropdown highlightIndex options =
     div [ class "relative flex-1" ]
@@ -3428,7 +3506,10 @@ viewFieldConditionDropdown label dropdownId openDropdown highlightIndex options 
         ]
 
 
+
 -- Get attacker side condition options as (label, msg, isActive) tuples
+
+
 getAttackerConditionOptions : Model -> List ( String, Msg, Bool )
 getAttackerConditionOptions model =
     [ ( "Reflect", SetAttackerSideReflect (not model.field.attackerSide.isReflect), model.field.attackerSide.isReflect )
@@ -3437,20 +3518,53 @@ getAttackerConditionOptions model =
     , ( "Tailwind", SetAttackerSideTailwind (not model.field.attackerSide.isTailwind), model.field.attackerSide.isTailwind )
     , ( "Helping Hand", SetAttackerSideHelpingHand (not model.field.attackerSide.isHelpingHand), model.field.attackerSide.isHelpingHand )
     , ( "Stealth Rock", SetAttackerSideStealthRock (not model.field.attackerSide.isSteathRock), model.field.attackerSide.isSteathRock )
-    , ( "Spikes (1)", SetAttackerSideSpikes (if model.field.attackerSide.spikes == 1 then 0 else 1), model.field.attackerSide.spikes == 1 )
-    , ( "Spikes (2)", SetAttackerSideSpikes (if model.field.attackerSide.spikes == 2 then 0 else 2), model.field.attackerSide.spikes == 2 )
-    , ( "Spikes (3)", SetAttackerSideSpikes (if model.field.attackerSide.spikes == 3 then 0 else 3), model.field.attackerSide.spikes == 3 )
+    , ( "Spikes (1)"
+      , SetAttackerSideSpikes
+            (if model.field.attackerSide.spikes == 1 then
+                0
+
+             else
+                1
+            )
+      , model.field.attackerSide.spikes == 1
+      )
+    , ( "Spikes (2)"
+      , SetAttackerSideSpikes
+            (if model.field.attackerSide.spikes == 2 then
+                0
+
+             else
+                2
+            )
+      , model.field.attackerSide.spikes == 2
+      )
+    , ( "Spikes (3)"
+      , SetAttackerSideSpikes
+            (if model.field.attackerSide.spikes == 3 then
+                0
+
+             else
+                3
+            )
+      , model.field.attackerSide.spikes == 3
+      )
     ]
 
 
+
 -- Get "both" (field-wide) condition options
+
+
 getBothConditionOptions : Model -> List ( String, Msg, Bool )
 getBothConditionOptions model =
     [ ( "Gravity", SetFieldGravity (not model.field.isGravity), model.field.isGravity )
     ]
 
 
+
 -- Get defender side condition options
+
+
 getDefenderConditionOptions : Model -> List ( String, Msg, Bool )
 getDefenderConditionOptions model =
     [ ( "Reflect", SetDefenderSideReflect (not model.field.defenderSide.isReflect), model.field.defenderSide.isReflect )
@@ -3459,17 +3573,45 @@ getDefenderConditionOptions model =
     , ( "Tailwind", SetDefenderSideTailwind (not model.field.defenderSide.isTailwind), model.field.defenderSide.isTailwind )
     , ( "Helping Hand", SetDefenderSideHelpingHand (not model.field.defenderSide.isHelpingHand), model.field.defenderSide.isHelpingHand )
     , ( "Stealth Rock", SetDefenderSideStealthRock (not model.field.defenderSide.isSteathRock), model.field.defenderSide.isSteathRock )
-    , ( "Spikes (1)", SetDefenderSideSpikes (if model.field.defenderSide.spikes == 1 then 0 else 1), model.field.defenderSide.spikes == 1 )
-    , ( "Spikes (2)", SetDefenderSideSpikes (if model.field.defenderSide.spikes == 2 then 0 else 2), model.field.defenderSide.spikes == 2 )
-    , ( "Spikes (3)", SetDefenderSideSpikes (if model.field.defenderSide.spikes == 3 then 0 else 3), model.field.defenderSide.spikes == 3 )
+    , ( "Spikes (1)"
+      , SetDefenderSideSpikes
+            (if model.field.defenderSide.spikes == 1 then
+                0
+
+             else
+                1
+            )
+      , model.field.defenderSide.spikes == 1
+      )
+    , ( "Spikes (2)"
+      , SetDefenderSideSpikes
+            (if model.field.defenderSide.spikes == 2 then
+                0
+
+             else
+                2
+            )
+      , model.field.defenderSide.spikes == 2
+      )
+    , ( "Spikes (3)"
+      , SetDefenderSideSpikes
+            (if model.field.defenderSide.spikes == 3 then
+                0
+
+             else
+                3
+            )
+      , model.field.defenderSide.spikes == 3
+      )
     ]
+
 
 
 -- Show pills for all active field conditions
 -- Weather and terrain are now shown in the top damage results panel, not here
-
-
 -- Pills for attacker side conditions (no (A) suffix needed since column makes it clear)
+
+
 viewAttackerConditionPills : Model -> List (Html Msg)
 viewAttackerConditionPills model =
     [ if model.field.attackerSide.isReflect then
@@ -3511,7 +3653,10 @@ viewAttackerConditionPills model =
         |> List.filterMap identity
 
 
+
 -- Pills for field-wide conditions (both sides)
+
+
 viewBothConditionPills : Model -> List (Html Msg)
 viewBothConditionPills model =
     if model.field.isGravity then
@@ -3521,7 +3666,10 @@ viewBothConditionPills model =
         []
 
 
+
 -- Pills for defender side conditions (no (D) suffix needed since column makes it clear)
+
+
 viewDefenderConditionPills : Model -> List (Html Msg)
 viewDefenderConditionPills model =
     [ if model.field.defenderSide.isReflect then
@@ -3563,7 +3711,10 @@ viewDefenderConditionPills model =
         |> List.filterMap identity
 
 
+
 -- Render a single condition pill with X button
+
+
 viewConditionPill : String -> Msg -> Html Msg
 viewConditionPill label removeMsg =
     div [ class "badge badge-primary gap-1 py-3 px-2" ]
@@ -3577,7 +3728,10 @@ viewConditionPill label removeMsg =
         ]
 
 
+
 -- Left column: Attacker side
+
+
 viewAttackerColumn : Model -> Html Msg
 viewAttackerColumn model =
     div [ class "flex flex-col gap-4" ]
@@ -3592,7 +3746,10 @@ viewAttackerColumn model =
         ]
 
 
+
 -- Right column: Defender side
+
+
 viewDefenderColumn : Model -> Html Msg
 viewDefenderColumn model =
     div [ class "flex flex-col gap-4" ]
@@ -3607,7 +3764,10 @@ viewDefenderColumn model =
         ]
 
 
+
 -- Team & Box combined section
+
+
 viewTeamBoxSection : Model -> Html Msg
 viewTeamBoxSection model =
     div [ class "card bg-base-200 p-4 flex flex-col gap-4" ]
@@ -3618,11 +3778,10 @@ viewTeamBoxSection model =
 
 {-| Team as 6 fixed slots, like the in-game party. Drag a team Pokemon onto another
 
-
 slot to swap them (to line the team up with the opponent's), or drag a box Pokemon
 
-
 onto a slot to swap it in.
+
 -}
 viewTeamPanel : Model -> Html Msg
 viewTeamPanel model =
@@ -3664,11 +3823,10 @@ viewTeamPanel model =
 
 {-| The box as a PC-style icon grid. Clicking loads the Pokemon as the attacker;
 
-
 its evolve/send/release actions live in the Loadout bar. Sorting only changes the
 
-
 display order.
+
 -}
 viewBoxPanel : Model -> Html Msg
 viewBoxPanel model =
@@ -3800,8 +3958,8 @@ viewColorCodeLegend =
 
 {-| One team or box Pokemon: its box icon and level. The border shows (in order)
 
-
 the loaded attacker, the slot being dragged over, or the Color Code matchup.
+
 -}
 viewRosterTile : Model -> PokemonSource -> PokemonState -> Html Msg
 viewRosterTile model source pokemon =
@@ -3869,11 +4027,9 @@ viewRosterTile model source pokemon =
 
 {-| dragover/drop handlers for a drop target. They stop propagation so dropping on
 
-
 a slot doesn't also count as dropping on the surrounding team/box area.
+
 -}
-
-
 dropTargetAttributes : DropTarget -> List (Attribute Msg)
 dropTargetAttributes target =
     [ Html.Events.custom "dragover" (Decode.succeed { message = DragOverTarget target, stopPropagation = True, preventDefault = True })
@@ -3881,9 +4037,8 @@ dropTargetAttributes target =
     ]
 
 
-{-| Showdown's 40x30 box icon for a species (from pokemonicons-sheet.png). -}
-
-
+{-| Showdown's 40x30 box icon for a species (from pokemonicons-sheet.png).
+-}
 viewPokemonIcon : List PokemonData -> String -> Html msg
 viewPokemonIcon pokemonList species =
     let
@@ -3908,8 +4063,8 @@ viewPokemonIcon pokemonList species =
 
 {-| The loaded attacker's team/box actions (evolve, send, release), shown once at
 
-
 the top of Loadout instead of on every team/box row.
+
 -}
 viewLoadedPokemonBar : Model -> Html Msg
 viewLoadedPokemonBar model =
@@ -4016,7 +4171,10 @@ viewLoadedPokemonBar model =
                 ]
 
 
+
 -- Loadout section (Level + Item + Moves)
+
+
 viewLoadoutSection : Model -> Html Msg
 viewLoadoutSection model =
     div [ class "card bg-base-200 p-4" ]
@@ -4131,6 +4289,7 @@ viewLoadoutSection model =
                             ]
                             []
                         ]
+
                     -- Custom dropdown
                     , if model.openDropdown == Just AttackerItemDropdown then
                         let
@@ -4189,6 +4348,7 @@ viewLoadoutSection model =
                                 ]
                                 []
                             ]
+
                         -- Custom dropdown
                         , if model.openDropdown == Just (AttackerMoveDropdown index) then
                             let
@@ -4246,6 +4406,7 @@ viewLoadoutSection model =
                                     typeDisplay =
                                         if effectiveType /= data.moveType then
                                             effectiveType ++ " (" ++ data.moveType ++ " → " ++ effectiveType ++ ")"
+
                                         else
                                             effectiveType
                                 in
@@ -4311,7 +4472,10 @@ viewLoadoutSection model =
         ]
 
 
+
 -- Battle State content for collapsible section (shows both attacker and defender side-by-side)
+
+
 viewBattleStatesContent : Model -> Html Msg
 viewBattleStatesContent model =
     div [ class "grid grid-cols-1 lg:grid-cols-2 gap-4" ]
@@ -4320,7 +4484,10 @@ viewBattleStatesContent model =
         ]
 
 
+
 -- Battle State section (HP, Status, Boosts, Tera)
+
+
 viewBattleStateSection : String -> PokemonState -> Int -> List PokemonData -> Bool -> Html Msg
 viewBattleStateSection title pokemon generation pokemonList isAttacker =
     div [ class "card bg-base-200 p-4" ]
@@ -4450,7 +4617,10 @@ viewBattleStateSection title pokemon generation pokemonList isAttacker =
         ]
 
 
+
 -- Helper to calculate max HP based on stats
+
+
 calculateMaxHP : PokemonState -> List PokemonData -> Int
 calculateMaxHP pokemon pokemonList =
     -- HP formula: floor((2 * Base + IV + floor(EV / 4)) * Level / 100) + Level + 10
@@ -4465,26 +4635,41 @@ calculateMaxHP pokemon pokemonList =
                     data.baseStats.hp
 
                 Nothing ->
-                    100  -- Default if species not found
+                    100
 
-        iv = pokemon.ivs.hp
-        ev = pokemon.evs.hp
-        level = pokemon.level
+        -- Default if species not found
+        iv =
+            pokemon.ivs.hp
+
+        ev =
+            pokemon.evs.hp
+
+        level =
+            pokemon.level
     in
     floor (toFloat ((2 * baseHP + iv + (ev // 4)) * level) / 100) + level + 10
 
 
+
 -- Helper to calculate current HP from percentage
+
+
 calculateCurrentHP : PokemonState -> List PokemonData -> Int
 calculateCurrentHP pokemon pokemonList =
     let
-        maxHP = calculateMaxHP pokemon pokemonList
-        percentage = toFloat pokemon.curHP / 100
+        maxHP =
+            calculateMaxHP pokemon pokemonList
+
+        percentage =
+            toFloat pokemon.curHP / 100
     in
     floor (toFloat maxHP * percentage)
 
 
+
 -- Helper to check if a move is a sound-based move
+
+
 isSoundMove : String -> Bool
 isSoundMove moveName =
     List.member moveName
@@ -4521,37 +4706,45 @@ isSoundMove moveName =
         ]
 
 
+
 -- Helper to get the effective move type after applying type-changing abilities
+
+
 getEffectiveMoveType : String -> String -> String -> String
 getEffectiveMoveType moveName moveType ability =
     case ability of
         "Aerilate" ->
             if moveType == "Normal" then
                 "Flying"
+
             else
                 moveType
 
         "Galvanize" ->
             if moveType == "Normal" then
                 "Electric"
+
             else
                 moveType
 
         "Pixilate" ->
             if moveType == "Normal" then
                 "Fairy"
+
             else
                 moveType
 
         "Refrigerate" ->
             if moveType == "Normal" then
                 "Ice"
+
             else
                 moveType
 
         "Liquid Voice" ->
             if isSoundMove moveName then
                 "Water"
+
             else
                 moveType
 
@@ -4562,7 +4755,10 @@ getEffectiveMoveType moveName moveType ability =
             moveType
 
 
+
 -- Helper to get the default (first) ability for a species
+
+
 getDefaultAbilityForSpecies : String -> List PokemonData -> String
 getDefaultAbilityForSpecies speciesName pokemonList =
     let
@@ -4578,7 +4774,10 @@ getDefaultAbilityForSpecies speciesName pokemonList =
             ""
 
 
+
 -- Helper to get filtered ability list (Pokemon's actual abilities first, then others)
+
+
 getFilteredAbilityList : String -> List PokemonData -> List String -> List String
 getFilteredAbilityList speciesName pokemonList allAbilities =
     let
@@ -4600,7 +4799,10 @@ getFilteredAbilityList speciesName pokemonList allAbilities =
     actualAbilities ++ otherAbilities
 
 
+
 -- Helper to get filtered move list (Learnset moves first, organized by source, then all others)
+
+
 getFilteredMoveList : Maybe LearnsetData -> List MoveData -> List MoveData
 getFilteredMoveList maybeLearnset allMoves =
     case maybeLearnset of
@@ -4635,7 +4837,10 @@ getFilteredMoveList maybeLearnset allMoves =
             allMoves
 
 
+
 -- Helper to get move source indicator
+
+
 getMoveSource : Maybe LearnsetData -> String -> String
 getMoveSource maybeLearnset moveName =
     case maybeLearnset of
@@ -4674,13 +4879,13 @@ getMoveSource maybeLearnset moveName =
             ""
 
 
+
 -- ITEM SORTING FOR NUZLOCKE
 -- Priority items grouped by usefulness for in-game/Nuzlocke play
 
 
-{-| Choice items - powerful but lock you into one move -}
-
-
+{-| Choice items - powerful but lock you into one move
+-}
 choiceItems : List String
 choiceItems =
     [ "Choice Band"
@@ -4689,9 +4894,8 @@ choiceItems =
     ]
 
 
-{-| Utility items - general survivability and status -}
-
-
+{-| Utility items - general survivability and status
+-}
 utilityItems : List String
 utilityItems =
     [ "Leftovers"
@@ -4716,9 +4920,8 @@ utilityItems =
     ]
 
 
-{-| Damage boosting items - general offense -}
-
-
+{-| Damage boosting items - general offense
+-}
 damageBoostItems : List String
 damageBoostItems =
     [ "Life Orb"
@@ -4732,9 +4935,8 @@ damageBoostItems =
     ]
 
 
-{-| Type-specific damage boosters -}
-
-
+{-| Type-specific damage boosters
+-}
 typeBoostItems : List String
 typeBoostItems =
     [ "Charcoal"
@@ -4758,9 +4960,8 @@ typeBoostItems =
     ]
 
 
-{-| Status-inducing items (for Guts, Facade, etc.) -}
-
-
+{-| Status-inducing items (for Guts, Facade, etc.)
+-}
 statusItems : List String
 statusItems =
     [ "Flame Orb"
@@ -4768,9 +4969,8 @@ statusItems =
     ]
 
 
-{-| Useful berries for competitive/Nuzlocke -}
-
-
+{-| Useful berries for competitive/Nuzlocke
+-}
 usefulBerries : List String
 usefulBerries =
     [ "Sitrus Berry"
@@ -4797,36 +4997,34 @@ usefulBerries =
     ]
 
 
-{-| Species-specific items that boost particular Pokemon -}
-
-
+{-| Species-specific items that boost particular Pokemon
+-}
 speciesSpecificItems : List String
 speciesSpecificItems =
-    [ "Light Ball"          -- Pikachu
-    , "Thick Club"          -- Cubone/Marowak
-    , "Soul Dew"            -- Latios/Latias (pre-Gen 7)
-    , "Metal Powder"        -- Ditto
-    , "Quick Powder"        -- Ditto
-    , "Stick"               -- Farfetch'd
-    , "Leek"                -- Farfetch'd (Gen 8+)
-    , "Lucky Punch"         -- Chansey
-    , "Deep Sea Scale"      -- Clamperl
-    , "Deep Sea Tooth"      -- Clamperl
-    , "Adamant Orb"         -- Dialga
-    , "Lustrous Orb"        -- Palkia
-    , "Griseous Orb"        -- Giratina
-    , "Griseous Core"       -- Giratina (SV)
-    , "Adamant Crystal"     -- Dialga (SV)
-    , "Lustrous Globe"      -- Palkia (SV)
-    , "Rusted Sword"        -- Zacian
-    , "Rusted Shield"       -- Zamazenta
-    , "Booster Energy"      -- Paradox Pokemon
+    [ "Light Ball" -- Pikachu
+    , "Thick Club" -- Cubone/Marowak
+    , "Soul Dew" -- Latios/Latias (pre-Gen 7)
+    , "Metal Powder" -- Ditto
+    , "Quick Powder" -- Ditto
+    , "Stick" -- Farfetch'd
+    , "Leek" -- Farfetch'd (Gen 8+)
+    , "Lucky Punch" -- Chansey
+    , "Deep Sea Scale" -- Clamperl
+    , "Deep Sea Tooth" -- Clamperl
+    , "Adamant Orb" -- Dialga
+    , "Lustrous Orb" -- Palkia
+    , "Griseous Orb" -- Giratina
+    , "Griseous Core" -- Giratina (SV)
+    , "Adamant Crystal" -- Dialga (SV)
+    , "Lustrous Globe" -- Palkia (SV)
+    , "Rusted Sword" -- Zacian
+    , "Rusted Shield" -- Zamazenta
+    , "Booster Energy" -- Paradox Pokemon
     ]
 
 
-{-| All priority items in order -}
-
-
+{-| All priority items in order
+-}
 allPriorityItems : List String
 allPriorityItems =
     choiceItems
@@ -4839,7 +5037,7 @@ allPriorityItems =
 
 
 {-| Get filtered and sorted item list for dropdowns.
-    Priority items appear first (in category order), then remaining items alphabetically.
+Priority items appear first (in category order), then remaining items alphabetically.
 -}
 getFilteredItemList : List String -> List String
 getFilteredItemList allItems =
@@ -4858,7 +5056,10 @@ getFilteredItemList allItems =
     availablePriorityItems ++ remainingItems
 
 
+
 -- Base Stats content (for collapsible section)
+
+
 viewBaseStatsContent : PokemonState -> List PokemonData -> List String -> List NatureData -> Int -> Bool -> Maybe DropdownId -> Int -> Html Msg
 viewBaseStatsContent pokemon pokemonList abilityList natureList generation isAttacker openDropdown highlightIndex =
     div [ class "flex flex-col gap-3" ]
@@ -4912,6 +5113,7 @@ viewBaseStatsContent pokemon pokemonList abilityList natureList generation isAtt
                     ]
                     []
                 ]
+
           else
             text ""
 
@@ -4993,6 +5195,7 @@ viewBaseStatsContent pokemon pokemonList abilityList natureList generation isAtt
                         ]
                         []
                     ]
+
                 -- Custom dropdown
                 , if openDropdown == Just dropdownId then
                     let
@@ -5044,6 +5247,7 @@ viewBaseStatsContent pokemon pokemonList abilityList natureList generation isAtt
         -- Add to Box button (Attacker only)
         , if isAttacker then
             button [ onClick AddToBox, class "btn btn-sm btn-primary w-full mt-4" ] [ text "+ Add to Box" ]
+
           else
             text ""
         ]
@@ -5140,7 +5344,10 @@ viewIVsCompact pokemon generation isAttacker =
         ]
 
 
+
 -- Trainer Selection section
+
+
 viewTrainerSelectionSection : Model -> Html Msg
 viewTrainerSelectionSection model =
     div [ class "card bg-base-200 p-4" ]
@@ -5217,6 +5424,7 @@ viewTrainerSelectionSection model =
                                                     , style "image-rendering"
                                                         (if data.isPixelated then
                                                             "pixelated"
+
                                                          else
                                                             "auto"
                                                         )
@@ -5252,7 +5460,10 @@ viewTrainerSelectionSection model =
         ]
 
 
+
 -- Defender Info section (compact read-only or edit mode)
+
+
 viewDefenderInfoSection : Model -> Html Msg
 viewDefenderInfoSection model =
     div [ class "card bg-base-200 p-4" ]
@@ -5474,5 +5685,3 @@ viewDefenderInfoSection model =
                     text ""
                 ]
         ]
-
-
