@@ -166,12 +166,10 @@ init flags =
             , battlePaneOpen = False
             , attackerBaseStatsCollapsed = False
             , defenderBaseStatsCollapsed = False
-            , boxCollapsed = True
             , defenderEditMode = False
             , openDropdown = Nothing
             , dropdownHighlightIndex = 0
             , showResetConfirmDialog = False
-            , showColorCodeHelp = False
             , levelCap = Nothing
             , boxMatchupResults = Dict.empty
             , teamMatchupResults = Dict.empty
@@ -299,7 +297,6 @@ type Msg
     | ToggleBattlePane
     | ToggleAttackerBaseStatsCollapsed
     | ToggleDefenderBaseStatsCollapsed
-    | ToggleBoxCollapsed
     | ToggleDefenderEditMode
       -- Dropdown toggles
     | ToggleDropdown DropdownId
@@ -321,9 +318,6 @@ type Msg
     | ResetBattleState
     | ReceivedBoxMatchupResult Decode.Value
     | ReceivedTeamMatchupResult Decode.Value
-      -- Color code help modal
-    | ShowColorCodeHelp
-    | HideColorCodeHelp
       -- Keyboard events
     | KeyPressed String
 
@@ -401,13 +395,13 @@ updateWithMatchups msg model =
                 || (wantColors && not model.colorCodeEnabled)
 
         wantBoard =
-            newModel.boxView == BoxBoard && not newModel.boxCollapsed
+            newModel.boxView == BoxBoard
 
         boardInputsChanged =
             sharedChanged
                 || opponentTeam newModel
                 /= opponentTeam model
-                || (wantBoard && not (model.boxView == BoxBoard && not model.boxCollapsed))
+                || (wantBoard && model.boxView /= BoxBoard)
 
         opponentCount =
             List.length (opponentTeam newModel)
@@ -2665,9 +2659,6 @@ update msg model =
         ToggleDefenderBaseStatsCollapsed ->
             ( { model | defenderBaseStatsCollapsed = not model.defenderBaseStatsCollapsed }, Cmd.none )
 
-        ToggleBoxCollapsed ->
-            ( { model | boxCollapsed = not model.boxCollapsed }, Cmd.none )
-
         ToggleDefenderEditMode ->
             ( { model | defenderEditMode = not model.defenderEditMode }, Cmd.none )
 
@@ -2884,12 +2875,6 @@ update msg model =
                 Err err ->
                     ( model, logError ("ReceivedTeamMatchupResult: " ++ Decode.errorToString err) )
 
-        ShowColorCodeHelp ->
-            ( { model | showColorCodeHelp = True }, Cmd.none )
-
-        HideColorCodeHelp ->
-            ( { model | showColorCodeHelp = False }, Cmd.none )
-
         KeyPressed key ->
             case key of
                 "Escape" ->
@@ -3084,52 +3069,6 @@ view model =
                             , class "btn btn-sm btn-error"
                             ]
                             [ text "Yes, Reset Game Data" ]
-                        ]
-                    ]
-                ]
-
-          else
-            text ""
-
-        -- Color code help modal
-        , if model.showColorCodeHelp then
-            div
-                [ class "fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-                , onClick HideColorCodeHelp
-                ]
-                [ div
-                    [ class "bg-base-200 p-6 rounded-lg shadow-xl max-w-md"
-                    , Html.Events.stopPropagationOn "click" (Decode.succeed ( HideColorCodeHelp, True ))
-                    ]
-                    [ h3 [ class "text-lg font-bold mb-4" ] [ text "Color Coding Guide" ]
-                    , div [ class "space-y-2 text-sm" ]
-                        [ div [ class "flex items-center gap-2" ]
-                            [ span [ class "w-4 h-4 bg-teal-400 rounded" ] []
-                            , text "Teal - Both can OHKO each other"
-                            ]
-                        , div [ class "flex items-center gap-2" ]
-                            [ span [ class "w-4 h-4 bg-orange-500 rounded" ] []
-                            , text "Orange - Both might OHKO each other"
-                            ]
-                        , div [ class "flex items-center gap-2" ]
-                            [ span [ class "w-4 h-4 bg-red-500 rounded" ] []
-                            , text "Red - Gets OHKO'd by defender"
-                            ]
-                        , div [ class "flex items-center gap-2" ]
-                            [ span [ class "w-4 h-4 bg-yellow-400 rounded" ] []
-                            , text "Yellow - Can OHKO defender"
-                            ]
-                        , div [ class "flex items-center gap-2" ]
-                            [ span [ class "w-4 h-4 bg-yellow-600 rounded" ] []
-                            , text "Dark Yellow - Might OHKO defender"
-                            ]
-                        ]
-                    , div [ class "flex justify-end mt-4" ]
-                        [ button
-                            [ onClick HideColorCodeHelp
-                            , class "btn btn-sm btn-primary"
-                            ]
-                            [ text "Got it!" ]
                         ]
                     ]
                 ]
@@ -5495,18 +5434,9 @@ viewBoxPanel model =
     in
     div (class "flex flex-col gap-2 md:flex-1 md:min-h-0" :: dropTargetAttributes BoxArea)
         [ div [ class "flex items-center gap-2 flex-wrap" ]
-            [ button [ onClick ToggleBoxCollapsed, class "flex items-center gap-2 text-left" ]
-                [ h3 [ class "text-sm font-semibold text-base-content/60" ] [ text "Box" ]
-                , span [ class "text-xs text-base-content/60 tabular-nums" ] [ text (String.fromInt (List.length model.box)) ]
-                , span [ class "text-xs text-base-content/60" ]
-                    [ text
-                        (if model.boxCollapsed then
-                            "▼"
-
-                         else
-                            "▲"
-                        )
-                    ]
+            [ h3 [ class "text-sm font-semibold text-base-content/60 flex items-center gap-2" ]
+                [ text "Box"
+                , span [ class "text-xs font-normal tabular-nums" ] [ text (String.fromInt (List.length model.box)) ]
                 ]
             , div [ class "join" ]
                 [ viewButton BoxGrid "Grid"
@@ -5545,18 +5475,13 @@ viewBoxPanel model =
                         "Color Code"
                     )
                 ]
-            , button [ class "btn btn-xs btn-ghost btn-circle", onClick ShowColorCodeHelp, attribute "aria-label" "What the colors mean" ] [ text "?" ]
             ]
-        , if model.boxCollapsed then
-            text ""
+        , case model.boxView of
+            BoxGrid ->
+                viewBoxGrid model
 
-          else
-            case model.boxView of
-                BoxGrid ->
-                    viewBoxGrid model
-
-                BoxBoard ->
-                    viewMatchupBoard model
+            BoxBoard ->
+                viewMatchupBoard model
         ]
 
 

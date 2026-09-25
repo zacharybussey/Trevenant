@@ -46,7 +46,6 @@ type alias Model =
     , battlePaneOpen : Bool
     , attackerBaseStatsCollapsed : Bool
     , defenderBaseStatsCollapsed : Bool
-    , boxCollapsed : Bool
     , defenderEditMode : Bool
 
     -- Dropdown states for custom dropdowns
@@ -55,9 +54,6 @@ type alias Model =
 
     -- Reset confirmation dialog
     , showResetConfirmDialog : Bool
-
-    -- Color code help modal
-    , showColorCodeHelp : Bool
 
     -- Level cap for ROM hacks
     , levelCap : Maybe Int
