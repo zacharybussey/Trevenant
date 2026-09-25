@@ -3989,37 +3989,6 @@ viewLoadoutSection model =
                 )
                 model.attacker.moves
             )
-
-        -- Level cap section (for ROM hacks)
-        , div [ class "mt-4 pt-3 border-t border-base-300" ]
-            [ div [ class "text-xs font-semibold text-primary mb-2" ] [ text "Level Cap" ]
-            , div [ class "flex items-center gap-2" ]
-                [ input
-                    [ type_ "number"
-                    , value (Maybe.map String.fromInt model.levelCap |> Maybe.withDefault "")
-                    , onInput
-                        (\v ->
-                            if String.isEmpty v then
-                                SetLevelCap Nothing
-
-                            else
-                                SetLevelCap (String.toInt v)
-                        )
-                    , placeholder "No cap"
-                    , Html.Attributes.min "1"
-                    , Html.Attributes.max "100"
-                    , class "input input-bordered input-xs w-20"
-                    ]
-                    []
-                , button
-                    [ onClick ApplyLevelCapToAll
-                    , class "btn btn-xs btn-primary flex-1"
-                    , disabled (model.levelCap == Nothing)
-                    , title "Apply to All"
-                    ]
-                    [ text "Apply to All" ]
-                ]
-            ]
         ]
 
 
@@ -5094,9 +5063,9 @@ viewMain model =
             [ viewTeamBoxSection model
             , div [ class "flex flex-col gap-3 md:min-h-0 md:overflow-y-auto" ]
                 [ viewOpponentSection model
-                , viewDefenderInfoSection model
                 , viewLoadoutSection model
                 , viewCollapsibleSection "Attacker Stats" model.attackerBaseStatsCollapsed ToggleAttackerBaseStatsCollapsed (viewBaseStatsContent model.attacker model.pokemonList model.abilityList model.natureList model.generation True model.openDropdown model.dropdownHighlightIndex)
+                , viewDefenderInfoSection model
                 , viewCollapsibleSection "Defender Stats" model.defenderBaseStatsCollapsed ToggleDefenderBaseStatsCollapsed (viewBaseStatsContent model.defender model.pokemonList model.abilityList model.natureList model.generation False model.openDropdown model.dropdownHighlightIndex)
                 ]
             ]
@@ -5165,6 +5134,15 @@ viewMoveChips pokemonList pokemon results mySpeed theirSpeed source selectedSour
             , span [ class "text-sm font-medium truncate" ] [ text pokemon.species ]
             , span [ class "text-xs text-base-content/60 tabular-nums" ] [ text ("L" ++ String.fromInt pokemon.level) ]
             , span [ class ("badge badge-xs font-mono whitespace-nowrap " ++ speedBadge), title "Effective Speed" ] [ text ("Spe " ++ String.fromInt mySpeed) ]
+            , -- Ability and item, colored as in the Defender Info card
+              span [ class "text-xs truncate min-w-0 flex items-center gap-1" ]
+                ([ ( pokemon.ability, "text-secondary", "Ability" )
+                 , ( pokemon.item, "text-warning", "Item" )
+                 ]
+                    |> List.filter (\( v, _, _ ) -> not (String.isEmpty v))
+                    |> List.map (\( v, color, hint ) -> span [ class (color ++ " truncate"), title hint ] [ text v ])
+                    |> List.intersperse (span [ class "text-base-content/40" ] [ text "·" ])
+                )
             ]
         , div [ class "grid grid-cols-2 gap-1" ]
             (List.indexedMap
@@ -5399,6 +5377,42 @@ viewTeamBoxSection model =
     div [ class "card bg-base-200 p-4 flex flex-col gap-4 md:min-h-0 md:h-full" ]
         [ viewTeamPanel model
         , viewBoxPanel model
+        , viewLevelCap model
+        ]
+
+
+{-| The level cap applies to the whole roster (ROM hacks cap levels per badge),
+so it lives at the bottom of the Team + Box card. "Apply to all" sets every
+team and box Pokemon to the cap.
+-}
+viewLevelCap : Model -> Html Msg
+viewLevelCap model =
+    div [ class "flex items-center gap-2 pt-3 border-t border-base-300" ]
+        [ span [ class "text-xs font-semibold text-primary" ] [ text "Level cap" ]
+        , input
+            [ type_ "number"
+            , value (Maybe.map String.fromInt model.levelCap |> Maybe.withDefault "")
+            , onInput
+                (\v ->
+                    if String.isEmpty v then
+                        SetLevelCap Nothing
+
+                    else
+                        SetLevelCap (String.toInt v)
+                )
+            , placeholder "No cap"
+            , Html.Attributes.min "1"
+            , Html.Attributes.max "100"
+            , class "input input-bordered input-xs w-20"
+            ]
+            []
+        , button
+            [ onClick ApplyLevelCapToAll
+            , class "btn btn-xs btn-outline btn-primary"
+            , disabled (model.levelCap == Nothing)
+            , title "Set every team and box Pokemon to the level cap"
+            ]
+            [ text "Apply to all" ]
         ]
 
 
@@ -5434,12 +5448,8 @@ viewBoxPanel model =
     in
     div (class "flex flex-col gap-2 md:flex-1 md:min-h-0" :: dropTargetAttributes BoxArea)
         [ div [ class "flex items-center gap-2 flex-wrap" ]
-            [ h3 [ class "text-sm font-semibold text-base-content/60 flex items-center gap-2" ]
-                [ text "Box"
-                , span [ class "text-xs font-normal tabular-nums" ] [ text (String.fromInt (List.length model.box)) ]
-                ]
-            , div [ class "join" ]
-                [ viewButton BoxGrid "Icons"
+            [ div [ class "join" ]
+                [ viewButton BoxGrid "Box"
                 , viewButton BoxBoard "Matchups"
                 ]
             , div [ class "flex-1" ] []
