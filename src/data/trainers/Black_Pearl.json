@@ -4140,7 +4140,7 @@
           "species": "Shedinja",
           "level": 30,
           "ability": "Wonder Guard",
-          "item": "Heavy Duty Boots",
+          "item": "Heavy-Duty Boots",
           "nature": "Quirky",
           "ivs": {
             "hp": 15,
@@ -4886,7 +4886,7 @@
           "species": "Glaceon",
           "level": 30,
           "ability": "",
-          "item": "Never Melt Ice",
+          "item": "Never-Melt Ice",
           "nature": "Quirky",
           "ivs": {
             "hp": 15,
@@ -5895,7 +5895,7 @@
           "species": "Ponyta",
           "level": 30,
           "ability": "",
-          "item": "Kings Rock",
+          "item": "King's Rock",
           "nature": "Quirky",
           "ivs": {
             "hp": 15,
@@ -13912,7 +13912,7 @@
         {
           "species": "Sandaconda",
           "level": 48,
-          "ability": "Sand Pit",
+          "ability": "Sand Spit",
           "item": "",
           "nature": "Quirky",
           "ivs": {
@@ -19518,7 +19518,7 @@
           ]
         },
         {
-          "species": "Sirfetch'd",
+          "species": "Sirfetch’d",
           "level": 48,
           "ability": "Scrappy",
           "item": "Life Orb",
@@ -24652,7 +24652,7 @@
           "species": "Togekiss",
           "level": 57,
           "ability": "Super Luck",
-          "item": "Kings Rock",
+          "item": "King's Rock",
           "nature": "Quirky",
           "ivs": {
             "hp": 15,
@@ -29477,7 +29477,7 @@
           "species": "Durant",
           "level": 57,
           "ability": "Hustle",
-          "item": "Kings Rock",
+          "item": "King's Rock",
           "nature": "Quirky",
           "ivs": {
             "hp": 15,
@@ -33314,7 +33314,7 @@
           "species": "Zapdos",
           "level": 60,
           "ability": "Pressure",
-          "item": "Heavy Duty Boots",
+          "item": "Heavy-Duty Boots",
           "nature": "Quirky",
           "ivs": {
             "hp": 15,
@@ -33953,7 +33953,7 @@
         {
           "species": "Ursaluna-Bloodmoon",
           "level": 66,
-          "ability": "Minds Eye",
+          "ability": "Mind's Eye",
           "item": "",
           "nature": "Quirky",
           "ivs": {
@@ -35007,7 +35007,7 @@
           "species": "Togekiss",
           "level": 66,
           "ability": "Serene Grace",
-          "item": "Kings Rock",
+          "item": "King's Rock",
           "nature": "Quirky",
           "ivs": {
             "hp": 15,
@@ -35234,7 +35234,7 @@
           "species": "Dudunsparce",
           "level": 66,
           "ability": "Serene Grace",
-          "item": "Kings Rock",
+          "item": "King's Rock",
           "nature": "Quirky",
           "ivs": {
             "hp": 15,
@@ -36615,7 +36615,7 @@
           ]
         },
         {
-          "species": "Farfetch'd",
+          "species": "Farfetch’d",
           "level": 66,
           "ability": "",
           "item": "Focus Sash",
@@ -45198,7 +45198,7 @@
           "species": "Togekiss",
           "level": 75,
           "ability": "Serene Grace",
-          "item": "Kings Rock",
+          "item": "King's Rock",
           "nature": "Quirky",
           "ivs": {
             "hp": 15,
@@ -46397,7 +46397,7 @@
         {
           "species": "Gholdengo",
           "level": 75,
-          "ability": "Good As Gold",
+          "ability": "Good as Gold",
           "item": "Air Balloon",
           "nature": "Quirky",
           "ivs": {
@@ -46712,7 +46712,7 @@
           "species": "Togekiss",
           "level": 87,
           "ability": "Serene Grace",
-          "item": "Kings Rock",
+          "item": "King's Rock",
           "nature": "Quirky",
           "ivs": {
             "hp": 15,
@@ -49531,7 +49531,7 @@
           "species": "Dragonite",
           "level": 90,
           "ability": "Multiscale",
-          "item": "Heavy Duty Boots",
+          "item": "Heavy-Duty Boots",
           "nature": "Quirky",
           "ivs": {
             "hp": 15,
@@ -70943,7 +70943,7 @@
         {
           "species": "Palafin",
           "level": 76,
-          "ability": "Zero To Hero",
+          "ability": "Zero to Hero",
           "item": "Leftovers",
           "nature": "Quirky",
           "ivs": {

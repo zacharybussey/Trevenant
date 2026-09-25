@@ -16,6 +16,19 @@
 
 const fs = require('fs');
 const path = require('path');
+const { Generations, toID } = require('@smogon/calc');
+
+// The app calculates with @smogon/calc, so every name in the output must be spelled the
+// way the calc spells it. Names are matched by id (case, spaces, punctuation and the
+// apostrophe glyph are ignored), so "Kings Rock" -> "King's Rock", "Never Melt Ice" ->
+// "Never-Melt Ice", "Farfetch'd" -> "Farfetch’d". Unknown names pass through and are
+// reported by the validation step.
+const GEN9 = Generations.get(9);
+function canonical(table, name) {
+    if (!name) return name;
+    const found = table.get(toID(name));
+    return found ? found.name : name;
+}
 
 // Species name mappings from Black Pearl format to smogon/calc format
 const speciesNameMappings = {
@@ -452,14 +465,14 @@ function parsePokemonBlock(lines) {
     return {
         trainerName,
         pokemon: {
-            species,
+            species: canonical(GEN9.species, species),
             level,
-            ability,
-            item,
+            ability: canonical(GEN9.abilities, ability),
+            item: canonical(GEN9.items, item),
             nature,
             ivs,
             evs,
-            moves: moves.slice(0, 4)
+            moves: moves.slice(0, 4).map(move => (move === 'No Move' ? move : canonical(GEN9.moves, move)))
         }
     };
 }
@@ -564,10 +577,12 @@ function convertToTrevenantFormat(pokemonByTrainer) {
 /**
  * Validate the converted data against known species/moves
  */
-function validateData(data, speciesSet, movesSet) {
+function validateData(data, speciesSet, movesSet, itemsSet, abilitiesSet) {
     const issues = {
         unknownSpecies: new Set(),
         unknownMoves: new Set(),
+        unknownItems: new Set(),
+        unknownAbilities: new Set(),
         warnings: []
     };
 
@@ -580,6 +595,14 @@ function validateData(data, speciesSet, movesSet) {
 
             if (speciesSet && !speciesSet.has(pokemon.species)) {
                 issues.unknownSpecies.add(pokemon.species);
+            }
+
+            if (itemsSet && pokemon.item && !itemsSet.has(pokemon.item)) {
+                issues.unknownItems.add(pokemon.item);
+            }
+
+            if (abilitiesSet && pokemon.ability && !abilitiesSet.has(pokemon.ability)) {
+                issues.unknownAbilities.add(pokemon.ability);
             }
 
             for (const move of pokemon.moves) {
@@ -602,57 +625,18 @@ function validateData(data, speciesSet, movesSet) {
 }
 
 /**
- * Load species and moves from smogon/calc for validation
+ * Species, moves and items the calc actually knows for Gen 9, from the installed
+ * @smogon/calc (the same data the app uses). An unknown name here would break
+ * every calculation against that Pokemon in the app.
  */
 function loadValidationData() {
-    const speciesPath = path.join(__dirname, '..', 'damage-calc', 'calc', 'src', 'data', 'species.ts');
-    const movesPath = path.join(__dirname, '..', 'damage-calc', 'calc', 'src', 'data', 'moves.ts');
-
-    const speciesSet = new Set();
-    const movesSet = new Set();
-
-    try {
-        const speciesContent = fs.readFileSync(speciesPath, 'utf-8');
-        // Extract species names from the TypeScript file
-        // Match both quoted and unquoted keys: "Pikachu:" or "'Mr. Mime':"
-        // Pattern: start of object property (indented), followed by key (quoted or not), colon, opening brace
-        const speciesMatches = speciesContent.matchAll(/^\s{2}(['"]?)([^'":,\n]+)\1\s*:\s*\{/gm);
-        for (const match of speciesMatches) {
-            const name = match[2].trim();
-            // Filter out type annotations and other non-species entries
-            if (name && !name.includes('types') && !name.includes('bs') && !name.includes('weightkg') &&
-                !name.includes('nfe') && !name.includes('otherFormes') && !name.includes('baseSpecies') &&
-                !name.includes('abilities') && !name.includes('gender') && name.length > 1) {
-                speciesSet.add(name);
-            }
-        }
-    } catch (e) {
-        console.warn('Could not load species data for validation:', e.message);
-    }
-
-    try {
-        const movesContent = fs.readFileSync(movesPath, 'utf-8');
-        // Extract move names - both quoted 'Move Name': and unquoted MoveName:
-        // Quoted names (multi-word): 'Aurora Beam': or "Aurora Beam":
-        const quotedMoveMatches = movesContent.matchAll(/^\s{2}['"]([^'"]+)['"]\s*:\s*\{/gm);
-        for (const match of quotedMoveMatches) {
-            movesSet.add(match[1]);
-        }
-        // Unquoted single-word names: Absorb:
-        const unquotedMoveMatches = movesContent.matchAll(/^\s{2}([A-Z][a-zA-Z0-9]*)\s*:\s*\{/gm);
-        for (const match of unquotedMoveMatches) {
-            const name = match[1];
-            // Filter out type annotations
-            if (name && name !== 'readonly' && name !== 'type' && name !== 'bp' &&
-                name !== 'category' && name.length > 1) {
-                movesSet.add(name);
-            }
-        }
-    } catch (e) {
-        console.warn('Could not load moves data for validation:', e.message);
-    }
-
-    return { speciesSet, movesSet };
+    const names = iterable => new Set(Array.from(iterable, entry => entry.name));
+    return {
+        speciesSet: names(GEN9.species),
+        movesSet: names(GEN9.moves),
+        itemsSet: names(GEN9.items),
+        abilitiesSet: names(GEN9.abilities),
+    };
 }
 
 /**
@@ -678,11 +662,11 @@ function main() {
 
     // Load validation data
     console.log('Loading validation data...');
-    const { speciesSet, movesSet } = loadValidationData();
+    const { speciesSet, movesSet, itemsSet, abilitiesSet } = loadValidationData();
 
     // Validate
     console.log('Validating...');
-    const validation = validateData(data, speciesSet, movesSet);
+    const validation = validateData(data, speciesSet, movesSet, itemsSet, abilitiesSet);
 
     // Write output
     console.log(`Writing ${outputPath}...`);
@@ -704,6 +688,18 @@ function main() {
         console.log(`\n[WARNING] Unknown moves (${validation.issues.unknownMoves.size}):`);
         const sorted = Array.from(validation.issues.unknownMoves).sort();
         sorted.forEach(m => console.log(`  - ${m}`));
+    }
+
+    if (validation.issues.unknownItems.size > 0) {
+        console.log(`\n[WARNING] Unknown items (${validation.issues.unknownItems.size}):`);
+        const sorted = Array.from(validation.issues.unknownItems).sort();
+        sorted.forEach(i => console.log(`  - ${i}`));
+    }
+
+    if (validation.issues.unknownAbilities.size > 0) {
+        console.log(`\n[WARNING] Unknown abilities (${validation.issues.unknownAbilities.size}):`);
+        const sorted = Array.from(validation.issues.unknownAbilities).sort();
+        sorted.forEach(a => console.log(`  - ${a}`));
     }
 
     console.log('\nDone!');
