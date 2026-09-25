@@ -3037,7 +3037,7 @@ keyDecoder =
 
 view : Model -> Html Msg
 view model =
-    div [ class "mx-auto w-full max-w-[1600px] p-3 flex flex-col gap-3 lg:h-screen lg:overflow-hidden" ]
+    div [ class "mx-auto w-full max-w-[1600px] p-3 flex flex-col gap-3 md:h-screen md:overflow-hidden" ]
         [ -- Backdrop for click-outside to close dropdowns
           if model.openDropdown /= Nothing then
             div
@@ -4095,7 +4095,7 @@ or screens change and the numbers update right above.
 -}
 viewBattlePane : Model -> Html Msg
 viewBattlePane model =
-    div [ class "card bg-base-200 px-4 py-3 flex flex-col gap-3 lg:max-h-[48vh] lg:overflow-y-auto" ]
+    div [ class "card bg-base-200 px-4 py-3 flex flex-col gap-3 md:max-h-[48vh] md:overflow-y-auto" ]
         [ div [ class "flex items-center gap-3 flex-wrap" ]
             [ h3 [ class "text-sm font-semibold text-primary" ] [ text "Battle & Field" ]
             , span [ class "text-xs text-base-content/60" ]
@@ -4105,7 +4105,7 @@ viewBattlePane model =
             , button [ onClick ToggleBattlePane, class "btn btn-xs btn-ghost btn-circle", attribute "aria-label" "Close" ] [ text "✕" ]
             ]
         , viewFieldConditionsContent model
-        , div [ class "grid grid-cols-1 lg:grid-cols-2 gap-4 border-t border-base-300 pt-3" ]
+        , div [ class "grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-base-300 pt-3" ]
             [ viewBattleStateSection "Attacker" model.attacker model.generation model.pokemonList True
             , viewBattleStateSection "Defender" model.defender model.generation model.pokemonList False
             ]
@@ -5144,16 +5144,16 @@ a normal scrolling page.
 -}
 viewMain : Model -> Html Msg
 viewMain model =
-    main_ [ class "flex flex-col gap-3 lg:flex-1 lg:min-h-0" ]
+    main_ [ class "flex flex-col gap-3 md:flex-1 md:min-h-0" ]
         [ viewDamageStrip model
         , if model.battlePaneOpen then
             viewBattlePane model
 
           else
             text ""
-        , div [ class "grid grid-cols-1 lg:grid-cols-2 gap-3 lg:flex-1 lg:min-h-0" ]
+        , div [ class "grid grid-cols-1 md:grid-cols-2 gap-3 md:flex-1 md:min-h-0" ]
             [ viewTeamBoxSection model
-            , div [ class "flex flex-col gap-3 lg:min-h-0 lg:overflow-y-auto" ]
+            , div [ class "flex flex-col gap-3 md:min-h-0 md:overflow-y-auto" ]
                 [ viewOpponentSection model
                 , viewDefenderInfoSection model
                 , viewLoadoutSection model
@@ -5188,7 +5188,7 @@ viewDamageStrip model =
                     [ text "Select Pokemon and moves to see damage calculations" ]
 
             Just result ->
-                div [ class "grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-4 items-start" ]
+                div [ class "grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 items-start" ]
                     [ viewMoveChips model.pokemonList model.attacker result.attackerResults result.attackerSpeed result.defenderSpeed AttackerMove model.selectedMoveSource model.selectedMoveIndex
                     , viewDamageDetailsCenter result model.selectedMoveSource model.selectedMoveIndex model.attacker model.defender
                     , viewMoveChips model.pokemonList model.defender result.defenderResults result.defenderSpeed result.attackerSpeed DefenderMove model.selectedMoveSource model.selectedMoveIndex
@@ -5318,7 +5318,7 @@ viewDamageDetailsCenter result selectedSource selectedIndex attacker defender =
         rolls list =
             list |> List.map String.fromInt |> String.join ", "
     in
-    div [ class "flex flex-col items-center justify-center text-center lg:min-w-[15rem] lg:pt-8" ]
+    div [ class "flex flex-col items-center justify-center text-center md:min-w-[15rem] md:pt-8" ]
         (case selectedResult of
             Just moveResult ->
                 [ div [ class "text-[11px] text-base-content/60" ]
@@ -5457,7 +5457,7 @@ opponentTeam model =
 
 viewTeamBoxSection : Model -> Html Msg
 viewTeamBoxSection model =
-    div [ class "card bg-base-200 p-4 flex flex-col gap-4 lg:min-h-0 lg:h-full" ]
+    div [ class "card bg-base-200 p-4 flex flex-col gap-4 md:min-h-0 md:h-full" ]
         [ viewTeamPanel model
         , viewBoxPanel model
         ]
@@ -5493,7 +5493,7 @@ viewBoxPanel model =
                 ]
                 [ text labelText ]
     in
-    div (class "flex flex-col gap-2 lg:flex-1 lg:min-h-0" :: dropTargetAttributes BoxArea)
+    div (class "flex flex-col gap-2 md:flex-1 md:min-h-0" :: dropTargetAttributes BoxArea)
         [ div [ class "flex items-center gap-2 flex-wrap" ]
             [ button [ onClick ToggleBoxCollapsed, class "flex items-center gap-2 text-left" ]
                 [ h3 [ class "text-sm font-semibold text-base-content/60" ] [ text "Box" ]
@@ -5591,7 +5591,7 @@ viewBoxGrid model =
                 ]
                 [ text labelText ]
     in
-    div [ class "flex flex-col gap-2 lg:flex-1 lg:min-h-0" ]
+    div [ class "flex flex-col gap-2 md:flex-1 md:min-h-0" ]
         [ div [ class "flex items-center gap-2 flex-wrap" ]
             [ span [ class "text-xs text-base-content/60" ] [ text "Sort" ]
             , div [ class "join" ]
@@ -5605,7 +5605,7 @@ viewBoxGrid model =
             div [ class "text-xs text-base-content/60 text-center py-2" ] [ text "Box is empty. Use + Add to Box under Attacker Stats to save the current attacker." ]
 
           else
-            div [ class "grid grid-cols-[repeat(auto-fill,minmax(3.25rem,1fr))] gap-1 p-0.5 overflow-y-auto max-h-60 lg:max-h-none lg:flex-1 lg:min-h-0 content-start" ]
+            div [ class "grid grid-cols-[repeat(auto-fill,minmax(3.25rem,1fr))] gap-1 p-0.5 overflow-y-auto max-h-60 md:max-h-none md:flex-1 md:min-h-0 content-start" ]
                 (List.map (\( i, pokemon ) -> viewRosterTile model (FromBox i) pokemon) sorted)
         , if model.colorCodeEnabled then
             viewColorCodeLegend
@@ -5752,7 +5752,7 @@ viewMatchupBoard model =
         div [ class "text-xs text-base-content/60 text-center py-4" ] [ text "Add Pokemon to your team or box to see matchups." ]
 
     else
-        div [ class "flex flex-col gap-2 lg:flex-1 lg:min-h-0" ]
+        div [ class "flex flex-col gap-2 md:flex-1 md:min-h-0" ]
             [ div [ class "flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-base-content/60" ]
                 (span [] [ text "Each cell: ", span [ class "text-base-content" ] [ text "best % dealt" ], text " / ", span [ class "text-orange-400" ] [ text "worst % taken" ] ]
                     :: List.map
@@ -5764,7 +5764,7 @@ viewMatchupBoard model =
                         )
                         [ AlwaysOHKOs, MightOHKO, TradeOHKOs, MaybeTradeOHKOs, GetsOHKOd ]
                 )
-            , div [ class "overflow-auto max-h-96 lg:max-h-none lg:flex-1 lg:min-h-0" ]
+            , div [ class "overflow-auto max-h-96 md:max-h-none md:flex-1 md:min-h-0" ]
                 [ table [ class "border-separate border-spacing-0.5" ]
                     [ thead []
                         [ tr [] (th [ class "sticky left-0 top-0 bg-base-200 z-20" ] [] :: List.indexedMap headerCell opponents) ]
@@ -5811,17 +5811,25 @@ button with the active conditions as pills next to it.
 viewFieldConditionsContent : Model -> Html Msg
 viewFieldConditionsContent model =
     let
-        column labelText dropdownId options pills =
-            div [ class "flex flex-wrap items-center gap-1 min-w-0" ]
-                (div [ class "shrink-0 w-28" ]
-                    [ viewFieldConditionDropdown labelText dropdownId model.openDropdown model.dropdownHighlightIndex options ]
-                    :: pills
-                )
+        addButton labelText dropdownId options =
+            div [ class "shrink-0 w-28" ]
+                [ viewFieldConditionDropdown labelText dropdownId model.openDropdown model.dropdownHighlightIndex options ]
     in
-    div [ class "grid grid-cols-1 lg:grid-cols-3 gap-2" ]
-        [ column "Attacker" FieldConditionsAttackerDropdown (getAttackerConditionOptions model) (viewAttackerConditionPills model)
-        , column "Both" FieldConditionsBothDropdown (getBothConditionOptions model) (viewBothConditionPills model)
-        , column "Defender" FieldConditionsDefenderDropdown (getDefenderConditionOptions model) (viewDefenderConditionPills model)
+    -- Attacker on the left, field-wide in the middle, Defender on the right, at every width;
+    -- the pills sit on the inner side of each button so the buttons stay on their edges
+    div [ class "grid grid-cols-3 gap-2" ]
+        [ div [ class "flex flex-wrap items-center justify-start gap-1 min-w-0" ]
+            (addButton "Attacker" FieldConditionsAttackerDropdown (getAttackerConditionOptions model)
+                :: viewAttackerConditionPills model
+            )
+        , div [ class "flex flex-wrap items-center justify-center gap-1 min-w-0" ]
+            (addButton "Both" FieldConditionsBothDropdown (getBothConditionOptions model)
+                :: viewBothConditionPills model
+            )
+        , div [ class "flex flex-wrap items-center justify-end gap-1 min-w-0" ]
+            (viewDefenderConditionPills model
+                ++ [ addButton "Defender" FieldConditionsDefenderDropdown (getDefenderConditionOptions model) ]
+            )
         ]
 
 

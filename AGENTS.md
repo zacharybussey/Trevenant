@@ -59,7 +59,7 @@
 
 ## Layout
 
-- The page is a one-screen workspace at `lg` and up (`lg:h-screen`, no page scroll): toolbar, damage strip, then Team+Box (left) and Opponent / Defender / Loadout / collapsibles (right, scrolls on its own). Keep new right-column content inside that column; anything that must stay visible while browsing the box belongs in the damage strip. Field conditions and battle state live in the Battle & Field pane (toolbar toggle, opens under the strip).
+- The page is a one-screen workspace at `md` (768px) and up (`md:h-screen`, no page scroll; the user runs it in roughly half a monitor, sometimes under 1024px): toolbar, damage strip, then Team+Box (left) and Opponent / Defender / Loadout / collapsibles (right, scrolls on its own). Keep new right-column content inside that column; anything that must stay visible while browsing the box belongs in the damage strip. Field conditions and battle state live in the Battle & Field pane (toolbar toggle, opens under the strip).
 - Box panel has two views: Grid (icons, sort, Color Code vs the current defender) and Board (every team/box Pokemon vs every Pokemon of the selected trainer). Board results reuse the matchup ports with a `defenderIndex` echo; see `updateWithMatchups` / `boardCommands` in Main.elm.
 - Headless layout check: `node layout-check.mjs` in the scratch `h` folder builds a roster against Black Pearl Dan and reports page scroll, strip height, board cells and right-column overflow at 1280x1280 (see the puppeteer scripts there for the pattern: esbuild bundle of src/index.js + `npx elm make` output + PostCSS-built styles).
 
