@@ -2044,7 +2044,7 @@
           "species": "Diglett",
           "level": 15,
           "ability": "Sand Veil",
-          "item": "Eviolite",
+          "item": "",
           "nature": "Quirky",
           "ivs": {
             "hp": 15,
@@ -2150,7 +2150,7 @@
             "spe": 0
           },
           "moves": [
-            "Mud Shot",
+            "Sand Tomb",
             "Shock Wave",
             "Light Screen",
             "Gravity"
@@ -8449,9 +8449,9 @@
             "spe": 0
           },
           "moves": [
-            "Sunny Day",
+            "Quick Attack",
             "Endeavor",
-            "Temper Flare",
+            "Lava Plume",
             "No Move"
           ]
         },
@@ -8481,7 +8481,7 @@
             "Crunch",
             "Extreme Speed",
             "Fire Fang",
-            "Wild Charge"
+            "Thunder Fang"
           ]
         },
         {
@@ -19613,7 +19613,7 @@
             "Scorching Sands",
             "Psychic",
             "Ancient Power",
-            "No Move"
+            "Ice Beam"
           ]
         },
         {
@@ -19640,7 +19640,7 @@
           },
           "moves": [
             "Trick",
-            "Rest",
+            "Focus Blast",
             "Psychic",
             "Thunderbolt"
           ]
@@ -19671,7 +19671,7 @@
             "Calm Mind",
             "Psyshock",
             "Draining Kiss",
-            "Nuzzle"
+            "Mystical Fire"
           ]
         },
         {
@@ -19755,10 +19755,10 @@
             "spe": 0
           },
           "moves": [
-            "Psychic",
+            "Luster Purge",
             "Roost",
             "Ice Beam",
-            "Dragon Pulse"
+            "Draco Meteor"
           ]
         }
       ]
@@ -43914,7 +43914,7 @@
           },
           "moves": [
             "Swords Dance",
-            "Shadow Claw",
+            "Earthquake",
             "Extreme Speed",
             "Recover"
           ]
@@ -43943,9 +43943,9 @@
           },
           "moves": [
             "Facade",
-            "Earthquake",
-            "Fire Punch",
-            "Trailblaze"
+            "Protect",
+            "Headlong Rush",
+            "Crunch"
           ]
         },
         {
@@ -43972,8 +43972,8 @@
           },
           "moves": [
             "Soft-Boiled",
-            "Toxic",
-            "Protect",
+            "Stealth Rock",
+            "Thunder Wave",
             "Seismic Toss"
           ]
         },
@@ -44002,8 +44002,8 @@
           "moves": [
             "Shadow Ball",
             "Hyper Voice",
-            "Psychic",
-            "U-turn"
+            "Focus Blast",
+            "Flamethrower"
           ]
         },
         {
@@ -46465,9 +46465,9 @@
       "isRotation": false,
       "team": [
         {
-          "species": "Gengar",
+          "species": "Gholdengo",
           "level": 78,
-          "ability": "Cursed Body",
+          "ability": "Good as Gold",
           "item": "Air Balloon",
           "nature": "Quirky",
           "ivs": {
@@ -46487,39 +46487,10 @@
             "spe": 0
           },
           "moves": [
-            "Sludge Bomb",
             "Shadow Ball",
-            "Toxic Spikes",
-            "Thunderbolt"
-          ]
-        },
-        {
-          "species": "Banette",
-          "level": 78,
-          "ability": "Cursed Body",
-          "item": "Banettite",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "Poltergeist",
-            "Will-O-Wisp",
-            "Encore",
-            "Destiny Bond"
+            "Make It Rain",
+            "Recover",
+            "Nasty Plot"
           ]
         },
         {
@@ -46527,7 +46498,7 @@
           "level": 78,
           "ability": "Weak Armor",
           "item": "Focus Sash",
-          "nature": "Quirky",
+          "nature": "Jolly",
           "ivs": {
             "hp": 15,
             "atk": 15,
@@ -46546,17 +46517,17 @@
           },
           "moves": [
             "Bitter Blade",
-            "Swords Dance",
-            "Poltergeist",
+            "Sunny Day",
+            "Shadow Sneak",
             "Destiny Bond"
           ]
         },
         {
-          "species": "Poltchageist",
+          "species": "Gengar",
           "level": 78,
-          "ability": "Heatproof",
-          "item": "Covert Cloak",
-          "nature": "Quirky",
+          "ability": "Cursed Body",
+          "item": "Gengarite",
+          "nature": "Timid",
           "ivs": {
             "hp": 15,
             "atk": 15,
@@ -46574,17 +46545,17 @@
             "spe": 0
           },
           "moves": [
-            "Calm Mind",
-            "Strength Sap",
-            "Matcha Gotcha",
-            "Shadow Ball"
+            "Sludge Bomb",
+            "Shadow Ball",
+            "Icy Wind",
+            "Substitute"
           ]
         },
         {
-          "species": "Mimikyu",
+          "species": "Annihilape",
           "level": 78,
-          "ability": "Disguise",
-          "item": "Red Card",
+          "ability": "Defiant",
+          "item": "Chesto Berry",
           "nature": "Quirky",
           "ivs": {
             "hp": 15,
@@ -46603,16 +46574,16 @@
             "spe": 0
           },
           "moves": [
+            "Bulk Up",
             "Drain Punch",
-            "Swords Dance",
-            "Shadow Claw",
-            "Play Rough"
+            "Rage Fist",
+            "Rest"
           ]
         },
         {
-          "species": "Lunala",
+          "species": "Flutter Mane",
           "level": 78,
-          "ability": "Shadow Shield",
+          "ability": "Protosynthesis",
           "item": "Leftovers",
           "nature": "Quirky",
           "ivs": {
@@ -46632,10 +46603,39 @@
             "spe": 0
           },
           "moves": [
-            "Calm Mind",
-            "Moongeist Beam",
-            "Roost",
-            "Psychic"
+            "Shadow Ball",
+            "Moonblast",
+            "Power Gem",
+            "Mystical Fire"
+          ]
+        },
+        {
+          "species": "Dragapult",
+          "level": 78,
+          "ability": "Infiltrator",
+          "item": "Focus Sash",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Dragon Darts",
+            "Hex",
+            "U-turn",
+            "Will-O-Wisp"
           ]
         }
       ]
@@ -48697,96 +48697,9 @@
       "isRotation": false,
       "team": [
         {
-          "species": "Gyarados",
-          "level": 90,
-          "ability": "Intimidate",
-          "item": "Leftovers",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "Outrage",
-            "Dragon Dance",
-            "Waterfall",
-            "Earthquake"
-          ]
-        },
-        {
-          "species": "Torterra",
-          "level": 90,
-          "ability": "Overgrow",
-          "item": "Lum Berry",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "Rock Polish",
-            "Wood Hammer",
-            "Earthquake",
-            "Stone Edge"
-          ]
-        },
-        {
           "species": "Staraptor",
           "level": 90,
-          "ability": "Intimidate",
-          "item": "Rocky Helmet",
-          "nature": "Quirky",
-          "ivs": {
-            "hp": 15,
-            "atk": 15,
-            "def": 15,
-            "spa": 15,
-            "spd": 15,
-            "spe": 15
-          },
-          "evs": {
-            "hp": 0,
-            "atk": 0,
-            "def": 0,
-            "spa": 0,
-            "spd": 0,
-            "spe": 0
-          },
-          "moves": [
-            "Brave Bird",
-            "Roost",
-            "U-turn",
-            "Defog"
-          ]
-        },
-        {
-          "species": "Azumarill",
-          "level": 90,
-          "ability": "Huge Power",
+          "ability": "Reckless",
           "item": "Choice Band",
           "nature": "Quirky",
           "ivs": {
@@ -48806,10 +48719,97 @@
             "spe": 0
           },
           "moves": [
-            "Play Rough",
+            "Brave Bird",
+            "Close Combat",
+            "U-turn",
+            "Double-Edge"
+          ]
+        },
+        {
+          "species": "Gyarados",
+          "level": 90,
+          "ability": "Intimidate",
+          "item": "Lum Berry",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Ice Fang",
+            "Dragon Dance",
             "Waterfall",
+            "Earthquake"
+          ]
+        },
+        {
+          "species": "Torterra",
+          "level": 90,
+          "ability": "Shell Armor",
+          "item": "Weakness Policy",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 15,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Swords Dance",
+            "Wood Hammer",
+            "Headlong Rush",
+            "Stone Edge"
+          ]
+        },
+        {
+          "species": "Azumarill",
+          "level": 90,
+          "ability": "Huge Power",
+          "item": "Sitrus Berry",
+          "nature": "Quirky",
+          "ivs": {
+            "hp": 16,
+            "atk": 15,
+            "def": 15,
+            "spa": 15,
+            "spd": 15,
+            "spe": 15
+          },
+          "evs": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Play Rough",
+            "Belly Drum",
             "Aqua Jet",
-            "Superpower"
+            "Knock Off"
           ]
         },
         {
@@ -48835,10 +48835,10 @@
             "spe": 0
           },
           "moves": [
-            "Volt Switch",
-            "Extreme Speed",
+            "Fake Out",
+            "Volt Tackle",
             "Surf",
-            "Grass Knot"
+            "Knock Off"
           ]
         },
         {
@@ -48864,9 +48864,9 @@
             "spe": 0
           },
           "moves": [
-            "Psychic",
-            "Dragon Pulse",
-            "Calm Mind",
+            "Draco Meteor",
+            "Psyshock",
+            "Ice Beam",
             "Roost"
           ]
         }
@@ -48885,7 +48885,7 @@
         {
           "species": "Quagsire",
           "level": 90,
-          "ability": "Water Absorb",
+          "ability": "Unaware",
           "item": "Leftovers",
           "nature": "Quirky",
           "ivs": {
@@ -48907,7 +48907,7 @@
           "moves": [
             "Earthquake",
             "Liquidation",
-            "Ice Punch",
+            "Recover",
             "Toxic Spikes"
           ]
         },
@@ -48915,7 +48915,7 @@
           "species": "Altaria",
           "level": 90,
           "ability": "Natural Cure",
-          "item": "Focus Band",
+          "item": "Altarianite",
           "nature": "Quirky",
           "ivs": {
             "hp": 15,
@@ -48935,16 +48935,16 @@
           },
           "moves": [
             "Dragon Dance",
-            "Outrage",
-            "Brave Bird",
+            "Double-Edge",
+            "Roost",
             "Earthquake"
           ]
         },
         {
           "species": "Suicune",
           "level": 90,
-          "ability": "Inner Focus",
-          "item": "Chesto Berry",
+          "ability": "Pressure",
+          "item": "Leftovers",
           "nature": "Quirky",
           "ivs": {
             "hp": 15,
@@ -48966,14 +48966,14 @@
             "Rest",
             "Scald",
             "Calm Mind",
-            "Ice Beam"
+            "Sleep Talk"
           ]
         },
         {
           "species": "Houndoom",
           "level": 90,
           "ability": "Flash Fire",
-          "item": "Houndoominite",
+          "item": "Life Orb",
           "nature": "Quirky",
           "ivs": {
             "hp": 15,
@@ -49022,9 +49022,9 @@
           },
           "moves": [
             "Moonblast",
-            "Psychic",
+            "Psyshock",
             "Thunderbolt",
-            "Energy Ball"
+            "Mystical Fire"
           ]
         },
         {
@@ -49053,7 +49053,7 @@
             "Iron Head",
             "Zen Headbutt",
             "Body Slam",
-            "Play Rough"
+            "U-turn"
           ]
         }
       ]

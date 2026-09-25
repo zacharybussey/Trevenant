@@ -623,7 +623,7 @@ Quirky Nature
 - Mega Drain
 - Sand Tomb
 
-Diglett Dan (Diglett) @ Eviolite
+Diglett Dan (Diglett) @
 Level: 15
 Ability: Sand Veil
 EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
@@ -662,7 +662,7 @@ Ability: Protosynthesis
 EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
 IVs: 15 Hp / 15 Atk / 15 Def / 15 SpA  / 15 SpD / 15 Spe
 Quirky Nature
-- Mud Shot
+- Sand Tomb
 - Shock Wave
 - Light Screen
 - Gravity
@@ -2618,9 +2618,9 @@ Ability: Blaze
 EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
 IVs: 15 Hp / 15 Atk / 15 Def / 15 SpA  / 15 SpD / 15 Spe
 Quirky Nature
-- Sunny Day
+- Quick Attack
 - Endeavor
-- Temper Flare
+- Lava Plume
 
 Arcanine DHill (Arcanine) @ Charcoal
 Level: 33
@@ -2631,7 +2631,7 @@ Quirky Nature
 - Crunch
 - Extreme Speed
 - Fire Fang
-- Wild Charge
+- Thunder Fang
 
 Ninetales DHill (Ninetales) @ Heat Rock
 Level: 33
@@ -6327,6 +6327,7 @@ Quirky Nature
 - Scorching Sands
 - Psychic
 - Ancient Power
+- Ice Beam
 
 Gothitelle Jordan (Gothitelle) @ Choice Specs
 Level: 50
@@ -6335,7 +6336,7 @@ EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
 IVs: 15 Hp / 15 Atk / 15 Def / 15 SpA  / 15 SpD / 15 Spe
 Quirky Nature
 - Trick
-- Rest
+- Focus Blast
 - Psychic
 - Thunderbolt
 
@@ -6348,7 +6349,7 @@ Quirky Nature
 - Calm Mind
 - Psyshock
 - Draining Kiss
-- Nuzzle
+- Mystical Fire
 
 Metagross Jordan (Metagross) @ Leftovers
 Level: 51
@@ -6378,10 +6379,10 @@ Ability: Levitate
 EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
 IVs: 15 Hp / 15 Atk / 15 Def / 15 SpA  / 15 SpD / 15 Spe
 Quirky Nature
-- Psychic
+- Luster Purge
 - Roost
 - Ice Beam
-- Dragon Pulse
+- Draco Meteor
 
 Pangoro Koichi (Pangoro) @
 Level: 57
@@ -14357,7 +14358,7 @@ EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
 IVs: 15 Hp / 15 Atk / 15 Def / 15 SpA  / 15 SpD / 15 Spe
 Quirky Nature
 - Swords Dance
-- Shadow Claw
+- Earthquake
 - Extreme Speed
 - Recover
 
@@ -14368,9 +14369,9 @@ EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
 IVs: 15 Hp / 15 Atk / 15 Def / 15 SpA  / 15 SpD / 15 Spe
 Quirky Nature
 - Facade
-- Earthquake
-- Fire Punch
-- Trailblaze
+- Protect
+- Headlong Rush
+- Crunch
 
 Blissey Jesse (Blissey) @ Leftovers
 Level: 69
@@ -14379,8 +14380,8 @@ EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
 IVs: 15 Hp / 15 Atk / 15 Def / 15 SpA  / 15 SpD / 15 Spe
 Quirky Nature
 - Soft-Boiled
-- Toxic
-- Protect
+- Stealth Rock
+- Thunder Wave
 - Seismic Toss
 
 Zoroark Hisuian Jesse (Zoroark Hisuian) @ Choice Specs
@@ -14391,8 +14392,8 @@ IVs: 15 Hp / 15 Atk / 15 Def / 15 SpA  / 15 SpD / 15 Spe
 Quirky Nature
 - Shadow Ball
 - Hyper Voice
-- Psychic
-- U-turn
+- Focus Blast
+- Flamethrower
 
 Slaking Jesse (Slaking) @ Choice Band
 Level: 69
@@ -15208,71 +15209,71 @@ Quirky Nature
 - Magical Leaf
 - Sucker Punch
 
-Gengar Rea (Gengar) @ Air Balloon
+Gholdengo Rea (Gholdengo) @ Air Balloon
 Level: 78
-Ability: Cursed Body
+Ability: Good as Gold
 EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
 IVs: 15 Hp / 15 Atk / 15 Def / 15 SpA  / 15 SpD / 15 Spe
 Quirky Nature
-- Sludge Bomb
 - Shadow Ball
-- Toxic Spikes
-- Thunderbolt
-
-Banette Rea (Banette) @ Banettite
-Level: 78
-Ability: Cursed Body
-EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
-IVs: 15 Hp / 15 Atk / 15 Def / 15 SpA  / 15 SpD / 15 Spe
-Quirky Nature
-- Poltergeist
-- Will-O-Wisp
-- Encore
-- Destiny Bond
+- Make It Rain
+- Recover
+- Nasty Plot
 
 Ceruledge Rea (Ceruledge) @ Focus Sash
 Level: 78
 Ability: Weak Armor
 EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
 IVs: 15 Hp / 15 Atk / 15 Def / 15 SpA  / 15 SpD / 15 Spe
-Quirky Nature
+Jolly Nature
 - Bitter Blade
-- Swords Dance
-- Poltergeist
+- Sunny Day
+- Shadow Sneak
 - Destiny Bond
 
-Poltchageist Rea (Poltchageist) @ Covert Cloak
+Gengar Rea (Gengar) @ Gengarite
 Level: 78
-Ability: Heatproof
+Ability: Cursed Body
 EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
 IVs: 15 Hp / 15 Atk / 15 Def / 15 SpA  / 15 SpD / 15 Spe
-Quirky Nature
-- Calm Mind
-- Strength Sap
-- Matcha Gotcha
+Timid Nature
+- Sludge Bomb
 - Shadow Ball
+- Icy Wind
+- Substitute
 
-Mimikyu Rea (Mimikyu) @ Red Card
+Annihilape Rea (Annihilape) @ Chesto Berry
 Level: 78
-Ability: Disguise
+Ability: Defiant
 EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
 IVs: 15 Hp / 15 Atk / 15 Def / 15 SpA  / 15 SpD / 15 Spe
 Quirky Nature
+- Bulk Up
 - Drain Punch
-- Swords Dance
-- Shadow Claw
-- Play Rough
+- Rage Fist
+- Rest
 
-Lunala Rea (Lunala) @ Leftovers
+Flutter Mane Rea (Flutter Mane) @ Leftovers
 Level: 78
-Ability: Shadow Shield
+Ability: Protosynthesis
 EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
 IVs: 15 Hp / 15 Atk / 15 Def / 15 SpA  / 15 SpD / 15 Spe
 Quirky Nature
-- Calm Mind
-- Moongeist Beam
-- Roost
-- Psychic
+- Shadow Ball
+- Moonblast
+- Power Gem
+- Mystical Fire
+
+Dragapult Rea (Dragapult) @ Focus Sash
+Level: 78
+Ability: Infiltrator
+EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
+IVs: 15 Hp / 15 Atk / 15 Def / 15 SpA  / 15 SpD / 15 Spe
+Quirky Nature
+- Dragon Darts
+- Hex
+- U-turn
+- Will-O-Wisp
 
 Spiritomb CynthiaVR (Spiritomb) @ Black Glasses
 Level: 87
@@ -16000,49 +16001,49 @@ Quirky Nature
 - Spirit Break
 - Poison Jab
 
-Gyarados Steve (Gyarados) @ Leftovers
+Staraptor Steve (Staraptor) @ Choice Band
 Level: 90
-Ability: Intimidate
-EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
-IVs: 15 Hp / 15 Atk / 15 Def / 15 SpA  / 15 SpD / 15 Spe
-Quirky Nature
-- Outrage
-- Dragon Dance
-- Waterfall
-- Earthquake
-
-Torterra Steve (Torterra) @ Lum Berry
-Level: 90
-Ability: Overgrow
-EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
-IVs: 15 Hp / 15 Atk / 15 Def / 15 SpA  / 15 SpD / 15 Spe
-Quirky Nature
-- Rock Polish
-- Wood Hammer
-- Earthquake
-- Stone Edge
-
-Staraptor Steve (Staraptor) @ Rocky Helmet
-Level: 90
-Ability: Intimidate
+Ability: Reckless
 EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
 IVs: 15 Hp / 15 Atk / 15 Def / 15 SpA  / 15 SpD / 15 Spe
 Quirky Nature
 - Brave Bird
-- Roost
+- Close Combat
 - U-turn
-- Defog
+- Double-Edge
 
-Azumarill Steve (Azumarill) @ Choice Band
+Gyarados Steve (Gyarados) @ Lum Berry
 Level: 90
-Ability: Huge Power
+Ability: Intimidate
 EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
 IVs: 15 Hp / 15 Atk / 15 Def / 15 SpA  / 15 SpD / 15 Spe
 Quirky Nature
-- Play Rough
+- Ice Fang
+- Dragon Dance
 - Waterfall
+- Earthquake
+
+Torterra Steve (Torterra) @ Weakness Policy
+Level: 90
+Ability: Shell Armor
+EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
+IVs: 15 Hp / 15 Atk / 15 Def / 15 SpA  / 15 SpD / 15 Spe
+Quirky Nature
+- Swords Dance
+- Wood Hammer
+- Headlong Rush
+- Stone Edge
+
+Azumarill Steve (Azumarill) @ Sitrus Berry
+Level: 90
+Ability: Huge Power
+EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
+IVs: 16 Hp / 15 Atk / 15 Def / 15 SpA  / 15 SpD / 15 Spe
+Quirky Nature
+- Play Rough
+- Belly Drum
 - Aqua Jet
-- Superpower
+- Knock Off
 
 Pikachu Steve (Pikachu) @ Light Ball
 Level: 90
@@ -16050,10 +16051,10 @@ Ability: Lightning Rod
 EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
 IVs: 15 Hp / 15 Atk / 15 Def / 15 SpA  / 15 SpD / 15 Spe
 Quirky Nature
-- Volt Switch
-- Extreme Speed
+- Fake Out
+- Volt Tackle
 - Surf
-- Grass Knot
+- Knock Off
 
 Latias Steve (Latias) @ Latiasite
 Level: 90
@@ -16061,45 +16062,45 @@ Ability: Levitate
 EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
 IVs: 15 Hp / 15 Atk / 15 Def / 15 SpA  / 15 SpD / 15 Spe
 Quirky Nature
-- Psychic
-- Dragon Pulse
-- Calm Mind
+- Draco Meteor
+- Psyshock
+- Ice Beam
 - Roost
 
 Quagsire CaptainCole (Quagsire) @ Leftovers
 Level: 90
-Ability: Water Absorb
+Ability: Unaware
 EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
 IVs: 15 Hp / 15 Atk / 15 Def / 15 SpA  / 15 SpD / 15 Spe
 Quirky Nature
 - Earthquake
 - Liquidation
-- Ice Punch
+- Recover
 - Toxic Spikes
 
-Altaria CaptainCole (Altaria) @ Focus Band
+Altaria CaptainCole (Altaria) @ Altarianite
 Level: 90
 Ability: Natural Cure
 EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
 IVs: 15 Hp / 15 Atk / 15 Def / 15 SpA  / 15 SpD / 15 Spe
 Quirky Nature
 - Dragon Dance
-- Outrage
-- Brave Bird
+- Double-Edge
+- Roost
 - Earthquake
 
-Suicune CaptainCole (Suicune) @ Chesto Berry
+Suicune CaptainCole (Suicune) @ Leftovers
 Level: 90
-Ability: Inner Focus
+Ability: Pressure
 EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
 IVs: 15 Hp / 15 Atk / 15 Def / 15 SpA  / 15 SpD / 15 Spe
 Quirky Nature
 - Rest
 - Scald
 - Calm Mind
-- Ice Beam
+- Sleep Talk
 
-Houndoom CaptainCole (Houndoom) @ Houndoominite
+Houndoom CaptainCole (Houndoom) @ Life Orb
 Level: 90
 Ability: Flash Fire
 EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
@@ -16117,9 +16118,9 @@ EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
 IVs: 15 Hp / 15 Atk / 15 Def / 15 SpA  / 15 SpD / 15 Spe
 Quirky Nature
 - Moonblast
-- Psychic
+- Psyshock
 - Thunderbolt
-- Energy Ball
+- Mystical Fire
 
 Jirachi CaptainCole (Jirachi) @ Choice Scarf
 Level: 90
@@ -16130,7 +16131,7 @@ Quirky Nature
 - Iron Head
 - Zen Headbutt
 - Body Slam
-- Play Rough
+- U-turn
 
 Celesteela Wake (Celesteela) @ Leftovers
 Level: 90
