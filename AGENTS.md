@@ -5,7 +5,7 @@
 
 ## WSL Development Setup
 
-- **WSL is recommended** for this project to avoid Windows-specific issues (file watching, elm-test ENOENT errors)
+- WSL is optional. Build, typecheck and tests all work natively on Windows.
 - See `WSL_SETUP.md` for complete setup instructions
 - VSCode Extension: Install `ms-vscode-remote.remote-wsl`
 - Open project in WSL: Run `code .` from WSL terminal or use "WSL: Open Folder in WSL..." command
@@ -46,8 +46,8 @@
 - Tests must import and exercise the real modules (Helpers, Types). Tests that re-implement the logic inside the test pass no matter what the app does.
   - EvolutionTests.elm - Evolving keeps moves/IVs/etc. and maps ability by slot
   - RosterTests.elm - Team/box drag-drop swaps, box sorting, Speed stat
-- elm-test must stay on the 0.19.1-revisionN line: elm-test 0.19.2 targets the Elm 0.19.2 compiler and fails with "ELM VERSION MISMATCH" against this project's Elm 0.19.1.
-- Windows: plain `npm test` fails with ENOENT (elm-test can't spawn `elm` without the .cmd extension). Run `npx elm-test --compiler "$(cygpath -w $PWD/node_modules/.bin/elm.cmd)"` from Git Bash instead; this works without WSL.
+- Elm compiler is 0.19.2 (`elm` devDependency, `elm-version` in elm.json) with elm-test 0.19.2-1. parcel-transformer-elm still declares a peer dependency on elm ^0.19.1-5, which the 0.19.2 prerelease tag does not satisfy, so package.json has an `overrides` entry pointing it at the root `elm`. Keep that override until parcel-transformer-elm updates its peer range.
+- `npm test` works on Windows. The old ENOENT failure was caused by a compiled `elm.js` committed in the repo root: Windows `which("elm")` checks the current directory with PATHEXT (.JS), so elm-test "ran" elm.js instead of the compiler. Never write compiled Elm output to the repo root (both names are now gitignored).
 
 ## Code layout
 

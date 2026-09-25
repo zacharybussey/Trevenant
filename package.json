@@ -26,11 +26,17 @@
     "@tailwindcss/postcss": "^4.1.17",
     "autoprefixer": "^10.4.22",
     "daisyui": "^5.5.5",
+    "elm": "^0.19.2-0",
     "elm-format": "^0.8.8",
-    "elm-test": "^0.19.1-revision17",
+    "elm-test": "^0.19.2-1",
     "parcel": "^2.12.0",
     "parcel-transformer-elm": "^0.0.6",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.17"
+  },
+  "overrides": {
+    "parcel-transformer-elm": {
+      "elm": "$elm"
+    }
   }
 }

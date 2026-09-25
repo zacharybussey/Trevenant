@@ -39,3 +39,8 @@ CLAUDE.md
 test-results/
 playwright-report/
 .playwright-mcp/
+
+# Compiled Elm output must not live in the repo root: on Windows, elm-test resolves "elm"
+# via PATHEXT (.JS) and would run elm.js instead of the compiler.
+/elm.js
+/elm-test.js
