@@ -505,6 +505,24 @@ function parseBlackPearlFile(content) {
     return pokemonByTrainer;
 }
 
+// Source token -> [trainer class, display name] for the Black Pearl League (gyms in order,
+// then the Elite Four in battle order, then the Champion).
+const LEAGUE_TRAINERS = {
+    Dan: ['Leader', 'Dan'],
+    CMT: ['Leader', 'CMT'],
+    LeaderDylan: ['Leader', 'Dylan'],
+    DavidWojo: ['Leader', 'David'],
+    Jordan: ['Leader', 'Jordan'],
+    Phuffzone: ['Leader', 'Phuffzone'],
+    Jesse: ['Leader', 'Jesse'],
+    Rea: ['Leader', 'Rea'],
+    Steve: ['Elite Four', 'Steve'],
+    CaptainCole: ['Elite Four', 'Captain Cole'],
+    Wake: ['Elite Four', 'Wake'],
+    CD: ['Elite Four', 'CD'],
+    Pantelis: ['Champion', 'Pantelis'],
+};
+
 /**
  * Convert to Trevenant JSON format
  */
@@ -518,14 +536,15 @@ function convertToTrevenantFormat(pokemonByTrainer) {
         // IMPORTANT: Do NOT sort the team - preserve original order from source document
         // The order in the source reflects the actual battle order (lead Pokemon first)
 
-        // Trainer names in the source are single tokens. A "Leader" prefix (LeaderDylan) is
-        // the trainer class, so the app shows "Leader Dylan" and search finds "Dylan".
-        const classMatch = /^Leader([A-Z].*)$/.exec(trainerName);
+        // Trainer names in the source are single tokens with no class. The League is
+        // labelled here (as in the Black Pearl v2 docs) so the app shows "Leader Dan",
+        // "Elite Four Captain Cole", "Champion Pantelis" and search finds them by class.
+        const [trainerClass, displayName] = LEAGUE_TRAINERS[trainerName] || ['', trainerName];
 
         encounters.push({
             id: `blackpearl-${id++}`,
-            trainerClass: classMatch ? 'Leader' : '',
-            trainerName: classMatch ? classMatch[1] : trainerName,
+            trainerClass: trainerClass,
+            trainerName: displayName,
             location: '',
             game: gameName,
             isDouble: false,

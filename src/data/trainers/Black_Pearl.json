@@ -1974,7 +1974,7 @@
     },
     {
       "id": "blackpearl-24",
-      "trainerClass": "",
+      "trainerClass": "Leader",
       "trainerName": "Dan",
       "location": "",
       "game": "Black Pearl",
@@ -3237,7 +3237,7 @@
     },
     {
       "id": "blackpearl-35",
-      "trainerClass": "",
+      "trainerClass": "Leader",
       "trainerName": "CMT",
       "location": "",
       "game": "Black Pearl",
@@ -13476,8 +13476,8 @@
     },
     {
       "id": "blackpearl-156",
-      "trainerClass": "",
-      "trainerName": "DavidWojo",
+      "trainerClass": "Leader",
+      "trainerName": "David",
       "location": "",
       "game": "Black Pearl",
       "isDouble": false,
@@ -19579,7 +19579,7 @@
     },
     {
       "id": "blackpearl-203",
-      "trainerClass": "",
+      "trainerClass": "Leader",
       "trainerName": "Jordan",
       "location": "",
       "game": "Black Pearl",
@@ -33186,7 +33186,7 @@
     },
     {
       "id": "blackpearl-334",
-      "trainerClass": "",
+      "trainerClass": "Leader",
       "trainerName": "Phuffzone",
       "location": "",
       "game": "Black Pearl",
@@ -43853,7 +43853,7 @@
     },
     {
       "id": "blackpearl-452",
-      "trainerClass": "",
+      "trainerClass": "Leader",
       "trainerName": "Jesse",
       "location": "",
       "game": "Black Pearl",
@@ -46456,7 +46456,7 @@
     },
     {
       "id": "blackpearl-478",
-      "trainerClass": "",
+      "trainerClass": "Leader",
       "trainerName": "Rea",
       "location": "",
       "game": "Black Pearl",
@@ -48688,7 +48688,7 @@
     },
     {
       "id": "blackpearl-490",
-      "trainerClass": "",
+      "trainerClass": "Elite Four",
       "trainerName": "Steve",
       "location": "",
       "game": "Black Pearl",
@@ -48874,8 +48874,8 @@
     },
     {
       "id": "blackpearl-491",
-      "trainerClass": "",
-      "trainerName": "CaptainCole",
+      "trainerClass": "Elite Four",
+      "trainerName": "Captain Cole",
       "location": "",
       "game": "Black Pearl",
       "isDouble": false,
@@ -49060,7 +49060,7 @@
     },
     {
       "id": "blackpearl-492",
-      "trainerClass": "",
+      "trainerClass": "Elite Four",
       "trainerName": "Wake",
       "location": "",
       "game": "Black Pearl",
@@ -49246,7 +49246,7 @@
     },
     {
       "id": "blackpearl-493",
-      "trainerClass": "",
+      "trainerClass": "Elite Four",
       "trainerName": "CD",
       "location": "",
       "game": "Black Pearl",
@@ -49432,7 +49432,7 @@
     },
     {
       "id": "blackpearl-494",
-      "trainerClass": "",
+      "trainerClass": "Champion",
       "trainerName": "Pantelis",
       "location": "",
       "game": "Black Pearl",
