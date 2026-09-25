@@ -283,10 +283,18 @@ app.ports.requestItemList.subscribe(function(generation) {
         const gen = Generations.get(generation);
         const items = Array.from(gen.items).map(i => i.name);
 
+        // Mega Stones from @pkmn/dex (item.megaStone maps base species -> Mega form), limited to
+        // Mega forms the calc knows in this generation. Elm switches a trainer's Pokemon to its
+        // Mega form when it holds the matching stone (Helpers.applyMegaStone).
+        const megaStones = Dex.forGen(generation).items.all()
+            .flatMap(i => i.megaStone ? Object.entries(i.megaStone).map(([from, to]) => ({ item: i.name, from, to })) : [])
+            .filter(s => gen.species.get(toID(s.to)));
+
         app.ports.receiveItemList.send({
             success: true,
             generation: generation,
-            items: items
+            items: items,
+            megaStones: megaStones
         });
     } catch (error) {
         app.ports.receiveItemList.send({

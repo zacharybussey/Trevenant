@@ -78,6 +78,52 @@ evolvePokemon pokemonList targetSpecies pokemon =
 
 
 
+-- BATTLE STATE HELPERS
+
+
+{-| Everything that only lasts for one battle: stat stages, status, current
+HP, Tera and Dynamax. Level, item, moves, nature and stats stay.
+-}
+clearBattleState : PokemonState -> PokemonState
+clearBattleState pokemon =
+    { pokemon
+        | boosts = defaultStats
+        , status = ""
+        , curHP = 100
+        , teraType = ""
+        , isDynamaxed = False
+    }
+
+
+{-| A trainer's Pokemon holding its own Mega Stone battles as the Mega form:
+the species switches and the Mega's ability replaces the base one. Any other
+item, or a stone for a different species, changes nothing. Applied wherever a
+trainer's Pokemon becomes the defender, including the matchup board columns,
+so Color Code and the board see the same Pokemon the calc does.
+-}
+applyMegaStone : List MegaStone -> List PokemonData -> PokemonState -> PokemonState
+applyMegaStone stones pokemonList pokemon =
+    let
+        matches stone =
+            String.toLower stone.item == String.toLower pokemon.item && stone.from == pokemon.species
+    in
+    case List.head (List.filter matches stones) of
+        Just stone ->
+            let
+                megaAbility =
+                    pokemonList
+                        |> List.filter (\p -> p.name == stone.to)
+                        |> List.head
+                        |> Maybe.andThen (.abilities >> List.head)
+                        |> Maybe.withDefault pokemon.ability
+            in
+            { pokemon | species = stone.to, ability = megaAbility }
+
+        Nothing ->
+            pokemon
+
+
+
 -- ROSTER HELPERS (team / box)
 
 

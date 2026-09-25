@@ -195,6 +195,23 @@ itemListDecoder =
     Decode.field "items" (Decode.list Decode.string)
 
 
+{-| Mega Stones travel with the item list; older payloads without them decode as none.
+-}
+megaStonesDecoder : Decoder (List MegaStone)
+megaStonesDecoder =
+    Decode.oneOf
+        [ Decode.field "megaStones"
+            (Decode.list
+                (Decode.map3 MegaStone
+                    (Decode.field "item" Decode.string)
+                    (Decode.field "from" Decode.string)
+                    (Decode.field "to" Decode.string)
+                )
+            )
+        , Decode.succeed []
+        ]
+
+
 abilityListDecoder : Decoder (List String)
 abilityListDecoder =
     Decode.field "abilities" (Decode.list Decode.string)

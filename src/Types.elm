@@ -83,12 +83,26 @@ type alias Model =
     -- Matchup board results keyed by ( box index, opponent team index ) / ( team index, opponent team index )
     , boardResults : Dict ( Int, Int ) BoxMatchupResult
     , teamBoardResults : Dict ( Int, Int ) BoxMatchupResult
+
+    -- Mega Stones known to the current generation (see applyMegaStone)
+    , megaStones : List MegaStone
     }
 
 
 type BoxView
     = BoxGrid
     | BoxBoard
+
+
+{-| A Mega Stone: holding `item` turns species `from` into `to` (e.g.
+Charizardite X: Charizard -> Charizard-Mega-X). Sent by index.js with the
+item list for the current generation.
+-}
+type alias MegaStone =
+    { item : String
+    , from : String
+    , to : String
+    }
 
 
 {-| Color Code category of a team/box Pokemon against the current defender.

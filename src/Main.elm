@@ -182,6 +182,7 @@ init flags =
             , boxView = BoxGrid
             , boardResults = Dict.empty
             , teamBoardResults = Dict.empty
+            , megaStones = []
             }
     in
     ( initialModel
@@ -319,6 +320,7 @@ type Msg
     | SetBoxSort BoxSort
     | SetBoxView BoxView
     | SelectPairing PokemonSource Int -- roster Pokemon vs the opponent team member at this index
+    | ResetBattleState
     | ReceivedBoxMatchupResult Decode.Value
     | ReceivedTeamMatchupResult Decode.Value
       -- Color code help modal
@@ -489,6 +491,29 @@ matchupRequest model port_ defenderIndex defender index pokemon =
             , ( "field", encodeField model.field )
             ]
         )
+
+
+{-| A trainer's Pokemon as the defender: calc-ready state, and if it holds its own
+Mega Stone, the Mega form (see Helpers.applyMegaStone).
+-}
+defenderFromTrainer : Model -> TrainerPokemon -> PokemonState
+defenderFromTrainer model trainerPokemon =
+    trainerPokemonToState trainerPokemon
+        |> applyMegaStone model.megaStones model.pokemonList
+
+
+{-| Changing trainers starts a new battle: stat stages, status, HP, Tera and
+Dynamax are per battle, so they reset on the attacker, the defender and every
+team/box Pokemon. Level, item, moves and stats stay.
+-}
+startNewBattle : Model -> Model
+startNewBattle model =
+    { model
+        | attacker = clearBattleState model.attacker
+        , defender = clearBattleState model.defender
+        , team = List.map clearBattleState model.team
+        , box = List.map clearBattleState model.box
+    }
 
 
 hasValidDefender : Model -> Bool
@@ -1341,7 +1366,12 @@ update msg model =
         ReceivedItemList value ->
             case Decode.decodeValue itemListDecoder value of
                 Ok itemList ->
-                    ( { model | itemList = itemList }, Cmd.none )
+                    ( { model
+                        | itemList = itemList
+                        , megaStones = Decode.decodeValue megaStonesDecoder value |> Result.withDefault []
+                      }
+                    , Cmd.none
+                    )
 
                 Err err ->
                     ( model, logError ("ReceivedItemList: " ++ Decode.errorToString err) )
@@ -2013,7 +2043,7 @@ update msg model =
 
                                                     -- Create defender state from rival's Pokemon
                                                     defender =
-                                                        trainerPokemonToState rivalPokemon
+                                                        defenderFromTrainer model rivalPokemon
                                                 in
                                                 ( attacker, defender, 0 )
 
@@ -2186,7 +2216,7 @@ update msg model =
                         -- Same as Prev/Next: the trainer's lead becomes the defender
                         newDefender =
                             List.head encounter.team
-                                |> Maybe.map trainerPokemonToState
+                                |> Maybe.map (defenderFromTrainer model)
                                 |> Maybe.withDefault model.defender
 
                         newModel =
@@ -2197,7 +2227,7 @@ update msg model =
                                 , filteredEncounters = model.trainerEncounters
                             }
                     in
-                    updateAndCalculate (\m -> m) newModel
+                    updateAndCalculate startNewBattle newModel
                         |> (\( m, cmd ) -> ( m, Cmd.batch [ cmd, saveToLocalStorage (encodeSettings m) ] ))
 
                 Nothing ->
@@ -2231,7 +2261,7 @@ update msg model =
                         Just encounter ->
                             case List.head encounter.team of
                                 Just trainerPokemon ->
-                                    trainerPokemonToState trainerPokemon
+                                    defenderFromTrainer model trainerPokemon
 
                                 Nothing ->
                                     model.defender
@@ -2242,7 +2272,7 @@ update msg model =
                 newModel =
                     { model | selectedTrainerIndex = newIndex, defender = newDefender }
             in
-            updateAndCalculate (\m -> m) newModel
+            updateAndCalculate startNewBattle newModel
                 |> (\( m, cmd ) -> ( m, Cmd.batch [ cmd, saveToLocalStorage (encodeSettings m) ] ))
 
         PrevTrainer ->
@@ -2265,7 +2295,7 @@ update msg model =
                         Just encounter ->
                             case List.head encounter.team of
                                 Just trainerPokemon ->
-                                    trainerPokemonToState trainerPokemon
+                                    defenderFromTrainer model trainerPokemon
 
                                 Nothing ->
                                     model.defender
@@ -2276,7 +2306,7 @@ update msg model =
                 newModel =
                     { model | selectedTrainerIndex = newIndex, defender = newDefender }
             in
-            updateAndCalculate (\m -> m) newModel
+            updateAndCalculate startNewBattle newModel
                 |> (\( m, cmd ) -> ( m, Cmd.batch [ cmd, saveToLocalStorage (encodeSettings m) ] ))
 
         LoadTrainerToDefender pokemonIndex ->
@@ -2286,7 +2316,7 @@ update msg model =
                         Just trainerPokemon ->
                             let
                                 newDefender =
-                                    trainerPokemonToState trainerPokemon
+                                    defenderFromTrainer model trainerPokemon
                             in
                             updateAndCalculate
                                 (\m -> { m | defender = newDefender })
@@ -2693,7 +2723,7 @@ update msg model =
                                             createStarterPokemonState model.generation playerStarter
 
                                         defender =
-                                            trainerPokemonToState rivalPokemon
+                                            defenderFromTrainer model rivalPokemon
                                     in
                                     ( attacker, defender )
 
@@ -2808,6 +2838,9 @@ update msg model =
               }
             , Cmd.none
             )
+
+        ResetBattleState ->
+            updateAndCalculate startNewBattle model
 
         SetBoxView boxView ->
             ( { model | boxView = boxView }, Cmd.none )
@@ -4120,9 +4153,15 @@ viewLoadoutSection model =
 
 viewBattleStatesContent : Model -> Html Msg
 viewBattleStatesContent model =
-    div [ class "grid grid-cols-1 lg:grid-cols-2 gap-4" ]
-        [ viewBattleStateSection "Attacker" model.attacker model.generation model.pokemonList True
-        , viewBattleStateSection "Defender" model.defender model.generation model.pokemonList False
+    div [ class "flex flex-col gap-3" ]
+        [ div [ class "flex items-center justify-between gap-2 text-xs text-base-content/60" ]
+            [ text "Stat stages, status, HP, Tera and Dynamax. They reset for every Pokemon when you change trainers."
+            , button [ onClick ResetBattleState, class "btn btn-xs btn-outline" ] [ text "Reset now" ]
+            ]
+        , div [ class "grid grid-cols-1 lg:grid-cols-2 gap-4" ]
+            [ viewBattleStateSection "Attacker" model.attacker model.generation model.pokemonList True
+            , viewBattleStateSection "Defender" model.defender model.generation model.pokemonList False
+            ]
         ]
 
 
@@ -5556,7 +5595,11 @@ species and level as the trainer entry.
 -}
 isCurrentDefender : Model -> TrainerPokemon -> Bool
 isCurrentDefender model trainerPokemon =
-    model.defender.species == trainerPokemon.species && model.defender.level == trainerPokemon.level
+    let
+        expected =
+            defenderFromTrainer model trainerPokemon
+    in
+    model.defender.species == expected.species && model.defender.level == expected.level
 
 
 {-| The selected trainer's team as calc-ready states, in team order. Empty
@@ -5565,7 +5608,7 @@ when no trainer is selected (custom defender).
 opponentTeam : Model -> List PokemonState
 opponentTeam model =
     getSelectedEncounter model
-        |> Maybe.map (.team >> List.map trainerPokemonToState)
+        |> Maybe.map (.team >> List.map (defenderFromTrainer model))
         |> Maybe.withDefault []
 
 
@@ -5781,20 +5824,41 @@ viewMatchupBoard model =
                 ]
 
         rowHeader source pokemon =
+            let
+                target =
+                    case source of
+                        FromTeam i ->
+                            TeamSlot i
+
+                        FromBox i ->
+                            BoxSlot i
+
+                isDragOver =
+                    model.dragOverTarget == Just target && model.dragState /= Just source
+            in
             th [ class "text-left font-normal pr-2 sticky left-0 bg-base-200 z-10" ]
                 [ button
-                    [ onClick (loadMsg source)
-                    , class
-                        ("flex items-center gap-1 rounded px-1 hover:bg-base-300 whitespace-nowrap "
-                            ++ (if model.attackerSource == Just source then
-                                    "text-primary"
+                    ([ onClick (loadMsg source)
+                     , class
+                        ("flex items-center gap-1 rounded border-2 px-1 hover:bg-base-300 whitespace-nowrap cursor-grab active:cursor-grabbing "
+                            ++ (if isDragOver then
+                                    "border-info bg-info/10"
+
+                                else if model.attackerSource == Just source then
+                                    "border-transparent text-primary"
 
                                 else
-                                    ""
+                                    "border-transparent"
                                )
                         )
-                    , title ("Load " ++ pokemon.species ++ " as the attacker")
-                    ]
+                     , title ("Load " ++ pokemon.species ++ " as the attacker. Drag onto a team slot to swap it in.")
+                     , draggable "true"
+                     , attribute "data-roster-drag" ""
+                     , on "dragstart" (Decode.succeed (DragStart source))
+                     , on "dragend" (Decode.succeed DragEnd)
+                     ]
+                        ++ dropTargetAttributes target
+                    )
                     [ span [ class "scale-75 -m-1" ] [ viewPokemonIcon model.pokemonList pokemon.species ]
                     , span [ class "text-xs" ] [ text pokemon.species ]
                     , span [ class "text-[10px] text-base-content/60 tabular-nums" ] [ text ("L" ++ String.fromInt pokemon.level) ]
