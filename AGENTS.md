@@ -40,9 +40,18 @@
 - Run tests with `npm test`
 - Test framework: elm-test (elm-explorations/test 2.2.0)
 - Test files:
-  - DamageCalcTests.elm - Stats and Pokemon state validation
-  - TrainerDataTests.elm - Trainer search and navigation tests
-- Note: There is a known Windows ENOENT issue with elm-test. If tests fail to run on Windows, try using WSL or check permissions on elm-stuff directory.
+  - TrainerDataTests.elm - gameToGeneration, trainer search, encounter lookup, trainer → defender conversion
+  - DropdownTests.elm - re-implements dropdown logic inline (does not import the app); convert when the helpers are extracted
+- Tests must import and exercise the real modules (Helpers, Types). Tests that re-implement the logic inside the test pass no matter what the app does.
+  - EvolutionTests.elm - Evolving keeps moves/IVs/etc. and maps ability by slot
+  - RosterTests.elm - Team/box drag-drop swaps, box sorting, Speed stat
+- Windows: plain `npm test` fails with ENOENT (elm-test can't spawn `elm` without the .cmd extension). Run `npx elm-test --compiler "$(cygpath -w $PWD/node_modules/.bin/elm.cmd)"` from Git Bash instead; this works without WSL.
+
+## Code layout
+
+- One definition per helper: shared pure functions live in `src/Helpers.elm`, types in `src/Types.elm`. `Main.elm` imports both with `exposing (..)`; a duplicate definition in Main.elm silently shadows the Helpers one, so never copy a helper into Main.elm.
+- Decode failures on any port are reported through the `logError` port to the browser console. Check the console first when data seems to be missing.
+- `src/index.js`: `buildPokemon`/`buildField`/`damageOf` are the single place @smogon/calc objects are built; all three calc ports use them.
 
 ## Key Features
 
@@ -59,3 +68,8 @@
   - Priority system prevents duplicates: Level > TM > Tutor > Egg (move only appears in highest priority category)
   - Generation fallback: If no moves found in current gen, searches backwards to earlier gens
   - Evolution moves (level 0) are labeled as [Evolve]
+
+## Git / Deploy
+
+- Work on `main` (remote `trevenant`). Pushing `main` deploys via the Azure Static Web Apps workflow (`npm run build:prod`, output `dist`).
+- `archive/master-old` is a stale, unrelated local history; never push it.

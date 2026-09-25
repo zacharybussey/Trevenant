@@ -1,7 +1,7 @@
 import { Elm } from './Main.elm';
 import { calculate, Pokemon, Move, Field, Generations, toID } from '@smogon/calc';
 import { Dex } from '@pkmn/dex';
-import { Sprites } from '@pkmn/img';
+import { Sprites, Icons } from '@pkmn/img';
 import trainerIndex from './data/trainers/index.json';
 
 // Initialize Elm application
@@ -22,219 +22,152 @@ function normalizeItem(item) {
     return id === '' || id === 'none' || id === 'noitem' ? undefined : item;
 }
 
+// The HP slider in the UI is a percentage (0-100), but @smogon/calc expects absolute HP.
+// Passing the percentage straight through meant the calc clamped it to max HP (so most
+// slider positions looked like full HP) and 0 was treated as "unset" (also full HP), so
+// KO chances and HP-based moves (Flail, Reversal, Eruption, Water Spout...) never changed.
+// Convert using the same floor(maxHP * pct / 100) as the UI's "≈ X / Y HP" readout, with
+// a minimum of 1 HP since a fainted Pokemon has nothing to calculate.
+function applyCurrentHP(pokemon, percent) {
+    const maxHP = pokemon.rawStats.hp;
+    const pct = Math.min(100, Math.max(0, Number.isFinite(percent) ? percent : 100));
+    pokemon.originalCurHP = Math.max(1, Math.floor(maxHP * pct / 100));
+    return pokemon;
+}
+
+// ---- Shared calc setup ------------------------------------------------------
+// The damage calc, the box matchups and the team matchups all build the same
+// @smogon/calc objects from the same Elm-encoded records (see Encoders.elm).
+
+function buildPokemon(generation, data) {
+    const pokemon = new Pokemon(generation, data.species, {
+        level: data.level,
+        nature: data.nature,
+        ability: data.ability,
+        item: normalizeItem(data.item),
+        evs: data.evs,
+        ivs: data.ivs,
+        boosts: data.boosts,
+        status: data.status,
+        teraType: data.teraType,
+        isDynamaxed: data.isDynamaxed
+    });
+    applyCurrentHP(pokemon, data.curHP);
+    return pokemon;
+}
+
+function buildField(field) {
+    if (!field) return undefined;
+    return new Field({
+        gameType: field.gameType,
+        weather: field.weather,
+        terrain: field.terrain,
+        isGravity: field.isGravity,
+        attackerSide: field.attackerSide,
+        defenderSide: field.defenderSide
+    });
+}
+
+// Speed after stat stages, Tailwind and paralysis (halved in Gen 7+, quartered before).
+function effectiveSpeed(generation, pokemon, data, side) {
+    let speed = pokemon.stats.spe;
+    const boost = data.boosts.spe || 0;
+    if (boost > 0) {
+        speed = Math.floor(speed * (2 + boost) / 2);
+    } else if (boost < 0) {
+        speed = Math.floor(speed * 2 / (2 - boost));
+    }
+    if (side && side.isTailwind) {
+        speed = speed * 2;
+    }
+    if (data.status === 'par') {
+        speed = Math.floor(speed / (generation >= 7 ? 2 : 4));
+    }
+    return speed;
+}
+
+// One move's damage: [min, max], as % of the defender's max HP, and every roll.
+function damageOf(generation, attacker, defender, move, field) {
+    const result = calculate(generation, attacker, defender, move, field);
+    const range = result.range();
+    const maxHP = defender.maxHP();
+    const percent = hp => (maxHP > 0 ? (hp / maxHP) * 100 : 0);
+    return {
+        result,
+        range,
+        percent: [percent(range[0]), percent(range[1])],
+        rolls: !result.damage ? [] : Array.isArray(result.damage) ? result.damage.flat() : [result.damage]
+    };
+}
+
+function koChanceText(result) {
+    try {
+        const ko = result.kochance();
+        return ko && ko.text ? ko.text : '';
+    } catch (e) {
+        return ''; // KO chance isn't available for every calculation
+    }
+}
+
+const EMPTY_MOVE_RESULT = {
+    moveName: '(No Move)',
+    damage: [0, 0],
+    damagePercent: [0, 0],
+    critDamage: [0, 0],
+    critDamagePercent: [0, 0],
+    description: '',
+    koChance: '',
+    critKoChance: '',
+    damageRolls: [],
+    critDamageRolls: []
+};
+
+// Normal and crit damage for one move slot, in the shape Decoders.moveResultDecoder expects.
+function moveResult(generation, attacker, defender, moveData, field) {
+    if (!moveData.name) {
+        return EMPTY_MOVE_RESULT;
+    }
+    try {
+        const withCrit = isCrit => damageOf(generation, attacker, defender, new Move(generation, moveData.name, { isCrit, hits: moveData.hits }), field);
+        const normal = withCrit(false);
+        const crit = withCrit(true);
+        return {
+            moveName: moveData.name,
+            damage: normal.range,
+            damagePercent: normal.percent,
+            critDamage: crit.range,
+            critDamagePercent: crit.percent,
+            description: normal.result.fullDesc(),
+            koChance: koChanceText(normal.result),
+            critKoChance: koChanceText(crit.result),
+            damageRolls: normal.rolls,
+            critDamageRolls: crit.rolls
+        };
+    } catch (moveError) {
+        console.error('Error calculating move:', moveData.name, moveError);
+        return { ...EMPTY_MOVE_RESULT, moveName: moveData.name, description: 'Error: ' + moveError.message };
+    }
+}
+
 // Port: Calculate damage
 // Receives calculation request from Elm, returns results for all moves in both directions
 app.ports.requestCalculation.subscribe(function(data) {
     console.log('Calculation request received:', data);
     try {
         const { generation, attacker, defender, moves, field } = data;
+        const attackerPokemon = buildPokemon(generation, attacker);
+        const defenderPokemon = buildPokemon(generation, defender);
+        const fieldObj = buildField(field);
 
-        // Create Pokemon objects
-        const attackerPokemon = new Pokemon(generation, attacker.species, {
-            level: attacker.level,
-            nature: attacker.nature,
-            ability: attacker.ability,
-            item: normalizeItem(attacker.item),
-            evs: attacker.evs,
-            ivs: attacker.ivs,
-            boosts: attacker.boosts,
-            status: attacker.status,
-            curHP: attacker.curHP,
-            teraType: attacker.teraType,
-            isDynamaxed: attacker.isDynamaxed
-        });
-
-        const defenderPokemon = new Pokemon(generation, defender.species, {
-            level: defender.level,
-            nature: defender.nature,
-            ability: defender.ability,
-            item: normalizeItem(defender.item),
-            evs: defender.evs,
-            ivs: defender.ivs,
-            boosts: defender.boosts,
-            status: defender.status,
-            curHP: defender.curHP,
-            teraType: defender.teraType,
-            isDynamaxed: defender.isDynamaxed
-        });
-
-        // Create Field object if provided
-        let fieldObj = undefined;
-        if (field) {
-            fieldObj = new Field({
-                gameType: field.gameType,
-                weather: field.weather,
-                terrain: field.terrain,
-                isGravity: field.isGravity,
-                attackerSide: field.attackerSide,
-                defenderSide: field.defenderSide
-            });
-        }
-
-        // Helper function to calculate moves and return results with percentages
-        function calculateMoves(attackingPokemon, defendingPokemon, moveList, targetMaxHP) {
-            return moveList.map(moveData => {
-                if (!moveData.name || moveData.name === "") {
-                    return {
-                        moveName: "(No Move)",
-                        damage: [0, 0],
-                        damagePercent: [0, 0],
-                        critDamage: [0, 0],
-                        critDamagePercent: [0, 0],
-                        description: "",
-                        koChance: "",
-                        critKoChance: "",
-                        damageRolls: [],
-                        critDamageRolls: []
-                    };
-                }
-
-                try {
-                    // Calculate normal damage (non-crit)
-                    const normalMoveObj = new Move(generation, moveData.name, {
-                        isCrit: false,
-                        hits: moveData.hits
-                    });
-                    const normalResult = calculate(generation, attackingPokemon, defendingPokemon, normalMoveObj, fieldObj);
-                    const normalDamageRange = normalResult.range();
-                    const normalMinPercent = targetMaxHP > 0 ? (normalDamageRange[0] / targetMaxHP) * 100 : 0;
-                    const normalMaxPercent = targetMaxHP > 0 ? (normalDamageRange[1] / targetMaxHP) * 100 : 0;
-
-                    // Get normal damage rolls
-                    let normalDamageRolls = [];
-                    if (normalResult.damage) {
-                        if (Array.isArray(normalResult.damage)) {
-                            normalDamageRolls = normalResult.damage.flat();
-                        } else {
-                            normalDamageRolls = [normalResult.damage];
-                        }
-                    }
-
-                    // Get normal KO chance
-                    let normalKoChanceText = "";
-                    try {
-                        const kochance = normalResult.kochance();
-                        if (kochance && kochance.text) {
-                            normalKoChanceText = kochance.text;
-                        }
-                    } catch (e) {
-                        // KO chance not available
-                    }
-
-                    // Calculate crit damage
-                    const critMoveObj = new Move(generation, moveData.name, {
-                        isCrit: true,
-                        hits: moveData.hits
-                    });
-                    const critResult = calculate(generation, attackingPokemon, defendingPokemon, critMoveObj, fieldObj);
-                    const critDamageRange = critResult.range();
-                    const critMinPercent = targetMaxHP > 0 ? (critDamageRange[0] / targetMaxHP) * 100 : 0;
-                    const critMaxPercent = targetMaxHP > 0 ? (critDamageRange[1] / targetMaxHP) * 100 : 0;
-
-                    // Get crit damage rolls
-                    let critDamageRolls = [];
-                    if (critResult.damage) {
-                        if (Array.isArray(critResult.damage)) {
-                            critDamageRolls = critResult.damage.flat();
-                        } else {
-                            critDamageRolls = [critResult.damage];
-                        }
-                    }
-
-                    // Get crit KO chance
-                    let critKoChanceText = "";
-                    try {
-                        const kochance = critResult.kochance();
-                        if (kochance && kochance.text) {
-                            critKoChanceText = kochance.text;
-                        }
-                    } catch (e) {
-                        // KO chance not available
-                    }
-
-                    return {
-                        moveName: moveData.name,
-                        damage: normalDamageRange,
-                        damagePercent: [normalMinPercent, normalMaxPercent],
-                        critDamage: critDamageRange,
-                        critDamagePercent: [critMinPercent, critMaxPercent],
-                        description: normalResult.fullDesc(),
-                        koChance: normalKoChanceText,
-                        critKoChance: critKoChanceText,
-                        damageRolls: normalDamageRolls,
-                        critDamageRolls: critDamageRolls
-                    };
-                } catch (moveError) {
-                    console.error('Error calculating move:', moveData.name, moveError);
-                    return {
-                        moveName: moveData.name,
-                        damage: [0, 0],
-                        damagePercent: [0, 0],
-                        critDamage: [0, 0],
-                        critDamagePercent: [0, 0],
-                        description: "Error: " + moveError.message,
-                        koChance: "",
-                        critKoChance: "",
-                        damageRolls: [],
-                        critDamageRolls: []
-                    };
-                }
-            });
-        }
-
-        // Get max HP for both Pokemon
-        const defenderMaxHP = defenderPokemon.maxHP();
-        const attackerMaxHP = attackerPokemon.maxHP();
-
-        // Calculate effective speed with boosts and field conditions
-        function getEffectiveSpeed(pokemon, pokemonData, side) {
-            let speed = pokemon.stats.spe;
-
-            // Apply stat boost multipliers
-            const boost = pokemonData.boosts.spe || 0;
-            if (boost > 0) {
-                speed = Math.floor(speed * (2 + boost) / 2);
-            } else if (boost < 0) {
-                speed = Math.floor(speed * 2 / (2 - boost));
-            }
-
-            // Apply Tailwind (doubles speed)
-            if (side && side.isTailwind) {
-                speed = speed * 2;
-            }
-
-            // Apply paralysis (quarters speed in Gen 7+, halves in earlier gens)
-            if (pokemonData.status === 'par') {
-                if (generation >= 7) {
-                    speed = Math.floor(speed / 2);
-                } else {
-                    speed = Math.floor(speed / 4);
-                }
-            }
-
-            return speed;
-        }
-
-        const attackerSpeed = getEffectiveSpeed(attackerPokemon, attacker, field ? field.attackerSide : null);
-        const defenderSpeed = getEffectiveSpeed(defenderPokemon, defender, field ? field.defenderSide : null);
-
-        // Calculate attacker's moves vs defender
-        const attackerResults = calculateMoves(attackerPokemon, defenderPokemon, moves, defenderMaxHP);
-
-        // Calculate defender's moves vs attacker
-        const defenderResults = calculateMoves(defenderPokemon, attackerPokemon, defender.moves, attackerMaxHP);
-
-        // Send results back to Elm
         const response = {
             success: true,
-            attackerResults: attackerResults,
-            defenderResults: defenderResults,
-            attackerSpeed: attackerSpeed,
-            defenderSpeed: defenderSpeed
+            attackerResults: moves.map(move => moveResult(generation, attackerPokemon, defenderPokemon, move, fieldObj)),
+            defenderResults: defender.moves.map(move => moveResult(generation, defenderPokemon, attackerPokemon, move, fieldObj)),
+            attackerSpeed: effectiveSpeed(generation, attackerPokemon, attacker, field ? field.attackerSide : null),
+            defenderSpeed: effectiveSpeed(generation, defenderPokemon, defender, field ? field.defenderSide : null)
         };
         console.log('Sending calculation response:', response);
         app.ports.receiveCalculation.send(response);
-
     } catch (error) {
         console.error('Calculation error:', error);
         app.ports.receiveCalculation.send({
@@ -264,6 +197,7 @@ app.ports.requestPokemonList.subscribe(function(generation) {
             const spriteInfo = Sprites.getPokemon(s.name.toLowerCase().replace(/[^a-z0-9]/g, ''), {
                 gen: `gen${generation}`
             });
+            const iconInfo = Icons.getPokemon(s.name);
 
             return {
                 name: s.name,
@@ -285,7 +219,10 @@ app.ports.requestPokemonList.subscribe(function(generation) {
                 spriteUrl: spriteInfo.url,
                 spriteWidth: spriteInfo.w,
                 spriteHeight: spriteInfo.h,
-                isPixelated: spriteInfo.pixelated || false
+                isPixelated: spriteInfo.pixelated || false,
+                // 40x30 box icon: offset into Showdown's pokemonicons-sheet.png (negative px)
+                iconX: iconInfo.left,
+                iconY: iconInfo.top
             };
         });
 
@@ -405,183 +342,94 @@ app.ports.requestNatureList.subscribe(function(_) {
     }
 });
 
+// ---- Learnsets ----------------------------------------------------------------
+
+// Add every move `learnset` teaches in generation `gen` to `organized`, filed under
+// its highest-priority source: Level > TM > Tutor > Egg, else "other". A move already
+// filed under a category is not filed there again. Sources look like "9L45" (Gen 9,
+// level 45), "8M" (TM), "8T" (tutor), "8E" (egg).
+function addLearnsetMoves(dex, learnset, gen, organized) {
+    const prefix = String(gen);
+    for (const [moveId, sources] of Object.entries(learnset)) {
+        const move = dex.moves.get(moveId);
+        if (!move) continue;
+        const moveName = move.name;
+
+        let levelSource = null;
+        let hasTM = false;
+        let hasTutor = false;
+        let hasEgg = false;
+        for (const source of sources) {
+            if (!source.startsWith(prefix)) continue;
+            const sourceType = source.charAt(1);
+            if (sourceType === 'L' && !levelSource) {
+                levelSource = source; // keep the first (lowest) level
+            } else if (sourceType === 'M') {
+                hasTM = true;
+            } else if (sourceType === 'T') {
+                hasTutor = true;
+            } else if (sourceType === 'E') {
+                hasEgg = true;
+            }
+        }
+
+        if (levelSource && !organized.levelup.some(([name]) => name === moveName)) {
+            organized.levelup.push([moveName, parseInt(levelSource.substring(2)) || 0]);
+        } else if (hasTM && !organized.tm.includes(moveName)) {
+            organized.tm.push(moveName);
+        } else if (hasTutor && !organized.tutor.includes(moveName)) {
+            organized.tutor.push(moveName);
+        } else if (hasEgg && !organized.egg.includes(moveName)) {
+            organized.egg.push(moveName);
+        } else if (sources.some(s => s.startsWith(prefix)) && !organized.other.includes(moveName)) {
+            organized.other.push(moveName);
+        }
+    }
+}
+
 // Port: Get learnset for a Pokemon species
 app.ports.requestLearnset.subscribe(async function(data) {
     try {
         const { species, generation, isAttacker } = data;
         const dex = Dex.forGen(generation);
-
-        // Get species data to check for base form (for Megas, regional forms, etc.)
         const speciesData = dex.species.get(species.toLowerCase());
 
-        // Use base species for learnset lookup (Charizard-Mega-X -> Charizard)
+        // Megas and other forms share their base species' learnset (Charizard-Mega-X -> Charizard)
         const learnsetSpecies = speciesData && speciesData.baseSpecies
             ? speciesData.baseSpecies.toLowerCase()
             : species.toLowerCase();
 
-        // Get learnset for the base species (async operation!)
+        // @pkmn/dex learnsets are loaded lazily: these must be awaited
         const speciesLearnset = await dex.learnsets.get(learnsetSpecies);
+        const prevoLearnset = speciesData && speciesData.prevo
+            ? await dex.learnsets.get(speciesData.prevo.toLowerCase())
+            : null;
 
-        // Also get pre-evolution's learnset to inherit egg moves
-        let prevoLearnset = null;
-        if (speciesData && speciesData.prevo) {
-            prevoLearnset = await dex.learnsets.get(speciesData.prevo.toLowerCase());
-        }
+        const organized = { species, levelup: [], tm: [], tutor: [], egg: [], other: [], isAttacker };
+        const learnset = speciesLearnset && speciesLearnset.learnset;
+        // Egg moves don't count here: they're added per generation below
+        const movesFound = () => organized.levelup.length + organized.tm.length + organized.tutor.length + organized.other.length;
 
-        // Organize moves by source type
-        const organized = {
-            species: species,
-            levelup: [],
-            tm: [],
-            tutor: [],
-            egg: [],
-            other: [],
-            isAttacker: isAttacker
-        };
-
-        if (speciesLearnset && speciesLearnset.learnset) {
-
-            // Each move has sources like ["8L1", "8E", "8T", "7L1"]
-            for (const [moveId, sources] of Object.entries(speciesLearnset.learnset)) {
-                // Convert move ID to proper name
-                const move = dex.moves.get(moveId);
-                if (!move) continue;
-
-                const moveName = move.name;
-                let addedToCategory = false;
-
-                // First, scan all sources for this generation to find what's available
-                let levelSource = null;
-                let hasTM = false;
-                let hasTutor = false;
-                let hasEgg = false;
-
-                for (const source of sources) {
-                    if (!source.startsWith(String(generation))) continue;
-
-                    const sourceType = source.charAt(1);
-                    if (sourceType === 'L' && !levelSource) {
-                        levelSource = source; // Keep the first level source
-                    } else if (sourceType === 'M') {
-                        hasTM = true;
-                    } else if (sourceType === 'T') {
-                        hasTutor = true;
-                    } else if (sourceType === 'E') {
-                        hasEgg = true;
-                    }
-                }
-
-                // Now add to the highest priority category (Level > TM > Tutor > Egg)
-                if (levelSource && !organized.levelup.some(([name, _]) => name === moveName)) {
-                    const levelStr = levelSource.substring(2); // Remove "9L" prefix
-                    const level = parseInt(levelStr) || 0;
-                    organized.levelup.push([moveName, level]);
-                    addedToCategory = true;
-                } else if (hasTM && !organized.tm.includes(moveName)) {
-                    organized.tm.push(moveName);
-                    addedToCategory = true;
-                } else if (hasTutor && !organized.tutor.includes(moveName)) {
-                    organized.tutor.push(moveName);
-                    addedToCategory = true;
-                } else if (hasEgg && !organized.egg.includes(moveName)) {
-                    organized.egg.push(moveName);
-                    addedToCategory = true;
-                }
-
-                // If move available in this gen but not categorized, add to "other"
-                if (!addedToCategory && sources.some(s => s.startsWith(String(generation)))) {
-                    if (!organized.other.includes(moveName)) {
-                        organized.other.push(moveName);
-                    }
+        let activeGeneration = generation;
+        if (learnset) {
+            addLearnsetMoves(dex, learnset, generation, organized);
+            // A species with no data for this generation falls back to the newest earlier one that has some
+            for (let gen = generation - 1; gen >= 1 && movesFound() === 0; gen--) {
+                addLearnsetMoves(dex, learnset, gen, organized);
+                if (movesFound() > 0) {
+                    activeGeneration = gen;
                 }
             }
         }
 
-        // Check if we need to fall back to earlier generation BEFORE adding pre-evo egg moves
-        // (Don't count egg moves in this check since we haven't filtered them by generation yet)
-        const totalFound = organized.levelup.length + organized.tm.length + organized.tutor.length + organized.other.length;
-        let activeGeneration = generation; // Track which generation we're actually using
-        if (totalFound === 0 && speciesLearnset && speciesLearnset.learnset) {
-
-            // Try generations in reverse order (most recent first)
-            for (let fallbackGen = generation - 1; fallbackGen >= 1; fallbackGen--) {
-                for (const [moveId, sources] of Object.entries(speciesLearnset.learnset)) {
-                    const move = dex.moves.get(moveId);
-                    if (!move) continue;
-
-                    const moveName = move.name;
-                    let addedToCategory = false;
-
-                    // Scan all sources for this fallback generation
-                    let levelSource = null;
-                    let hasTM = false;
-                    let hasTutor = false;
-                    let hasEgg = false;
-
-                    for (const source of sources) {
-                        if (!source.startsWith(String(fallbackGen))) continue;
-
-                        const sourceType = source.charAt(1);
-                        if (sourceType === 'L' && !levelSource) {
-                            levelSource = source;
-                        } else if (sourceType === 'M') {
-                            hasTM = true;
-                        } else if (sourceType === 'T') {
-                            hasTutor = true;
-                        } else if (sourceType === 'E') {
-                            hasEgg = true;
-                        }
-                    }
-
-                    // Add to highest priority category
-                    if (levelSource && !organized.levelup.some(([name, _]) => name === moveName)) {
-                        const levelStr = levelSource.substring(2);
-                        const level = parseInt(levelStr) || 0;
-                        organized.levelup.push([moveName, level]);
-                        addedToCategory = true;
-                    } else if (hasTM && !organized.tm.includes(moveName)) {
-                        organized.tm.push(moveName);
-                        addedToCategory = true;
-                    } else if (hasTutor && !organized.tutor.includes(moveName)) {
-                        organized.tutor.push(moveName);
-                        addedToCategory = true;
-                    } else if (hasEgg && !organized.egg.includes(moveName)) {
-                        organized.egg.push(moveName);
-                        addedToCategory = true;
-                    }
-
-                    if (!addedToCategory && sources.some(s => s.startsWith(String(fallbackGen)))) {
-                        if (!organized.other.includes(moveName)) {
-                            organized.other.push(moveName);
-                        }
-                    }
-                }
-
-                // If we found moves, use this generation
-                const foundInFallback = organized.levelup.length + organized.tm.length + organized.tutor.length + organized.other.length;
-                if (foundInFallback > 0) {
-                    activeGeneration = fallbackGen; // Remember which gen we're using
-                    break;
-                }
-            }
-        }
-
-        // Now add egg moves from pre-evolution using the active generation
+        // Egg moves are inherited from the pre-evolution (Ferroseed's show for Ferrothorn),
+        // taken from the generation actually used above
         if (prevoLearnset && prevoLearnset.learnset) {
+            const eggPrefix = String(activeGeneration) + 'E';
             for (const [moveId, sources] of Object.entries(prevoLearnset.learnset)) {
                 const move = dex.moves.get(moveId);
-                if (!move) continue;
-
-                const moveName = move.name;
-
-                // Only add egg moves from the active generation
-                for (const source of sources) {
-                    if (!source.startsWith(String(activeGeneration))) continue;
-                    const sourceType = source.charAt(1);
-                    if (sourceType === 'E' && !organized.egg.includes(moveName)) {
-                        organized.egg.push(moveName);
-                        break; // Only add once per move
-                    }
+                if (move && sources.some(s => s.startsWith(eggPrefix)) && !organized.egg.includes(move.name)) {
+                    organized.egg.push(move.name);
                 }
             }
         }
@@ -589,7 +437,6 @@ app.ports.requestLearnset.subscribe(async function(data) {
         app.ports.receiveLearnset.send(organized);
     } catch (error) {
         console.error('Error loading learnset for', data.species, ':', error);
-        // Send empty learnset on error
         app.ports.receiveLearnset.send({
             species: data.species,
             levelup: [],
@@ -600,6 +447,11 @@ app.ports.requestLearnset.subscribe(async function(data) {
             isAttacker: data.isAttacker
         });
     }
+});
+
+// Port: Decode failures from Elm (a port payload that didn't match its decoder)
+app.ports.logError.subscribe(function(message) {
+    console.error(message);
 });
 
 // Port: Save settings to localStorage
@@ -732,360 +584,82 @@ app.ports.requestTrainerData.subscribe(function(game) {
         });
 });
 
+// ---- Color Code matchups ----------------------------------------------------
+
+// Best case across a side's moves (non-crit): highest max-roll %, and whether the
+// worst roll (guaranteed) or the best roll (possible) reaches a OHKO.
+function bestDamage(generation, attacker, defender, moves, field) {
+    let best = 0;
+    let guaranteedOHKO = false;
+    let possibleOHKO = false;
+    for (const moveData of moves) {
+        if (!moveData.name) continue;
+        try {
+            const { percent } = damageOf(generation, attacker, defender, new Move(generation, moveData.name, { isCrit: false, hits: moveData.hits }), field);
+            best = Math.max(best, percent[1]);
+            if (percent[0] >= 100) guaranteedOHKO = true;
+            if (percent[1] >= 100) possibleOHKO = true;
+        } catch (e) {
+            // Skip moves the calc can't handle
+        }
+    }
+    return { best, guaranteedOHKO, possibleOHKO };
+}
+
+// One team/box Pokemon against the current defender, in the shape
+// Decoders.boxMatchupResultDecoder expects. boxIndex is echoed back so Elm can
+// file the result under the right team/box slot.
+function calculateMatchup(data) {
+    const { generation, boxIndex, attacker, defender, field } = data;
+    const attackerPokemon = buildPokemon(generation, attacker);
+    const defenderPokemon = buildPokemon(generation, defender);
+    const fieldObj = buildField(field);
+
+    const dealt = bestDamage(generation, attackerPokemon, defenderPokemon, attacker.moves, fieldObj);
+    const taken = bestDamage(generation, defenderPokemon, attackerPokemon, defender.moves, fieldObj);
+
+    return {
+        boxIndex: boxIndex,
+        attackerSpeed: effectiveSpeed(generation, attackerPokemon, attacker, field ? field.attackerSide : null),
+        defenderSpeed: effectiveSpeed(generation, defenderPokemon, defender, field ? field.defenderSide : null),
+        canOHKO: dealt.guaranteedOHKO,
+        mightOHKO: dealt.possibleOHKO,
+        getsOHKOd: taken.guaranteedOHKO,
+        mightGetOHKOd: taken.possibleOHKO,
+        // Hard counter: takes at most 25% (4HKO'd at worst) and might OHKO back
+        isHardCounter: taken.best <= 25 && dealt.possibleOHKO,
+        // Wall: takes at most 25% and deals more than it takes
+        isWall: taken.best <= 25 && dealt.best > taken.best,
+        bestDamagePercent: dealt.best,
+        worstDamageTaken: taken.best
+    };
+}
+
 // Port: Calculate box matchup for a single Pokemon vs the current defender
 app.ports.requestBoxMatchup.subscribe(function(data) {
     try {
-        const { generation, boxIndex, attacker, defender, field } = data;
-
-        // Create Pokemon objects
-        const attackerPokemon = new Pokemon(generation, attacker.species, {
-            level: attacker.level,
-            nature: attacker.nature,
-            ability: attacker.ability,
-            item: normalizeItem(attacker.item),
-            evs: attacker.evs,
-            ivs: attacker.ivs,
-            boosts: attacker.boosts,
-            status: attacker.status,
-            curHP: attacker.curHP,
-            teraType: attacker.teraType,
-            isDynamaxed: attacker.isDynamaxed
-        });
-
-        const defenderPokemon = new Pokemon(generation, defender.species, {
-            level: defender.level,
-            nature: defender.nature,
-            ability: defender.ability,
-            item: normalizeItem(defender.item),
-            evs: defender.evs,
-            ivs: defender.ivs,
-            boosts: defender.boosts,
-            status: defender.status,
-            curHP: defender.curHP,
-            teraType: defender.teraType,
-            isDynamaxed: defender.isDynamaxed
-        });
-
-        // Create Field object
-        let fieldObj = undefined;
-        if (field) {
-            fieldObj = new Field({
-                gameType: field.gameType,
-                weather: field.weather,
-                terrain: field.terrain,
-                isGravity: field.isGravity,
-                attackerSide: field.attackerSide,
-                defenderSide: field.defenderSide
-            });
-        }
-
-        // Get max HP for both Pokemon
-        const defenderMaxHP = defenderPokemon.maxHP();
-        const attackerMaxHP = attackerPokemon.maxHP();
-
-        // Calculate effective speed
-        function getEffectiveSpeed(pokemon, pokemonData, side) {
-            let speed = pokemon.stats.spe;
-
-            // Apply stat boost multipliers
-            const boost = pokemonData.boosts.spe || 0;
-            if (boost > 0) {
-                speed = Math.floor(speed * (2 + boost) / 2);
-            } else if (boost < 0) {
-                speed = Math.floor(speed * 2 / (2 - boost));
-            }
-
-            // Apply Tailwind
-            if (side && side.isTailwind) {
-                speed = speed * 2;
-            }
-
-            // Apply paralysis
-            if (pokemonData.status === 'par') {
-                if (generation >= 7) {
-                    speed = Math.floor(speed / 2);
-                } else {
-                    speed = Math.floor(speed / 4);
-                }
-            }
-
-            return speed;
-        }
-
-        const attackerSpeed = getEffectiveSpeed(attackerPokemon, attacker, field ? field.attackerSide : null);
-        const defenderSpeed = getEffectiveSpeed(defenderPokemon, defender, field ? field.defenderSide : null);
-
-        // Calculate attacker's damage to defender (best move)
-        let bestDamagePercent = 0;
-        let canOHKO = false;
-        let mightOHKO = false;
-
-        for (const moveData of attacker.moves) {
-            if (!moveData.name || moveData.name === "") continue;
-
-            try {
-                const moveObj = new Move(generation, moveData.name, {
-                    isCrit: false,
-                    hits: moveData.hits
-                });
-                const result = calculate(generation, attackerPokemon, defenderPokemon, moveObj, fieldObj);
-                const damageRange = result.range();
-                const maxPercent = defenderMaxHP > 0 ? (damageRange[1] / defenderMaxHP) * 100 : 0;
-                const minPercent = defenderMaxHP > 0 ? (damageRange[0] / defenderMaxHP) * 100 : 0;
-
-                // Track best damage
-                if (maxPercent > bestDamagePercent) {
-                    bestDamagePercent = maxPercent;
-                }
-
-                // Check OHKO potential
-                if (minPercent >= 100) {
-                    canOHKO = true;
-                }
-                if (maxPercent >= 100) {
-                    mightOHKO = true;
-                }
-            } catch (e) {
-                // Skip invalid moves
-            }
-        }
-
-        // Calculate defender's damage to attacker (worst damage taken)
-        let worstDamageTaken = 0;
-        let getsOHKOd = false;
-        let mightGetOHKOd = false;
-
-        for (const moveData of defender.moves) {
-            if (!moveData.name || moveData.name === "") continue;
-
-            try {
-                const moveObj = new Move(generation, moveData.name, {
-                    isCrit: false,
-                    hits: moveData.hits
-                });
-                const result = calculate(generation, defenderPokemon, attackerPokemon, moveObj, fieldObj);
-                const damageRange = result.range();
-                const maxPercent = attackerMaxHP > 0 ? (damageRange[1] / attackerMaxHP) * 100 : 0;
-                const minPercent = attackerMaxHP > 0 ? (damageRange[0] / attackerMaxHP) * 100 : 0;
-
-                // Track worst damage taken
-                if (maxPercent > worstDamageTaken) {
-                    worstDamageTaken = maxPercent;
-                }
-
-                // Check if we get OHKO'd
-                if (minPercent >= 100) {
-                    getsOHKOd = true;
-                }
-                if (maxPercent >= 100) {
-                    mightGetOHKOd = true;
-                }
-            } catch (e) {
-                // Skip invalid moves
-            }
-        }
-
-        // Determine matchup classifications
-        // Hard Counter: Gets 4HKO'd at worst (takes <= 25% damage) and might OHKO
-        const isHardCounter = worstDamageTaken <= 25 && mightOHKO;
-
-        // Wall: Gets 4HKO'd at worst and does more damage than it takes
-        const isWall = worstDamageTaken <= 25 && bestDamagePercent > worstDamageTaken;
-
-        const response = {
-            boxIndex: boxIndex,
-            attackerSpeed: attackerSpeed,
-            defenderSpeed: defenderSpeed,
-            canOHKO: canOHKO,
-            mightOHKO: mightOHKO,
-            getsOHKOd: getsOHKOd,
-            mightGetOHKOd: mightGetOHKOd,
-            isHardCounter: isHardCounter,
-            isWall: isWall,
-            bestDamagePercent: bestDamagePercent,
-            worstDamageTaken: worstDamageTaken
-        };
-
-        app.ports.receiveBoxMatchup.send(response);
+        app.ports.receiveBoxMatchup.send(calculateMatchup(data));
     } catch (error) {
         console.error('Box matchup calculation error:', error);
     }
 });
 
-// Port: Calculate team matchup (same logic as box, different receive port)
+// Port: Calculate team matchup (same calculation, different receive port)
 app.ports.requestTeamMatchup.subscribe(function(data) {
     try {
-        const { generation, boxIndex, attacker, defender, field } = data;
-
-        // Create Pokemon objects
-        const attackerPokemon = new Pokemon(generation, attacker.species, {
-            level: attacker.level,
-            nature: attacker.nature,
-            ability: attacker.ability,
-            item: normalizeItem(attacker.item),
-            evs: attacker.evs,
-            ivs: attacker.ivs,
-            boosts: attacker.boosts,
-            status: attacker.status,
-            curHP: attacker.curHP,
-            teraType: attacker.teraType,
-            isDynamaxed: attacker.isDynamaxed
-        });
-
-        const defenderPokemon = new Pokemon(generation, defender.species, {
-            level: defender.level,
-            nature: defender.nature,
-            ability: defender.ability,
-            item: normalizeItem(defender.item),
-            evs: defender.evs,
-            ivs: defender.ivs,
-            boosts: defender.boosts,
-            status: defender.status,
-            curHP: defender.curHP,
-            teraType: defender.teraType,
-            isDynamaxed: defender.isDynamaxed
-        });
-
-        // Create Field object
-        let fieldObj = undefined;
-        if (field) {
-            fieldObj = new Field({
-                gameType: field.gameType,
-                weather: field.weather,
-                terrain: field.terrain,
-                isGravity: field.isGravity,
-                attackerSide: field.attackerSide,
-                defenderSide: field.defenderSide
-            });
-        }
-
-        // Get max HP for both Pokemon
-        const defenderMaxHP = defenderPokemon.maxHP();
-        const attackerMaxHP = attackerPokemon.maxHP();
-
-        // Calculate effective speed
-        function getEffectiveSpeed(pokemon, pokemonData, side) {
-            let speed = pokemon.stats.spe;
-
-            // Apply stat boost multipliers
-            const boost = pokemonData.boosts.spe || 0;
-            if (boost > 0) {
-                speed = Math.floor(speed * (2 + boost) / 2);
-            } else if (boost < 0) {
-                speed = Math.floor(speed * 2 / (2 - boost));
-            }
-
-            // Apply Tailwind
-            if (side && side.isTailwind) {
-                speed = speed * 2;
-            }
-
-            // Apply paralysis
-            if (pokemonData.status === 'par') {
-                if (generation >= 7) {
-                    speed = Math.floor(speed / 2);
-                } else {
-                    speed = Math.floor(speed / 4);
-                }
-            }
-
-            return speed;
-        }
-
-        const attackerSpeed = getEffectiveSpeed(attackerPokemon, attacker, field ? field.attackerSide : null);
-        const defenderSpeed = getEffectiveSpeed(defenderPokemon, defender, field ? field.defenderSide : null);
-
-        // Calculate attacker's damage to defender (best move)
-        let bestDamagePercent = 0;
-        let canOHKO = false;
-        let mightOHKO = false;
-
-        for (const moveData of attacker.moves) {
-            if (!moveData.name || moveData.name === "") continue;
-
-            try {
-                const moveObj = new Move(generation, moveData.name, {
-                    isCrit: false,
-                    hits: moveData.hits
-                });
-                const result = calculate(generation, attackerPokemon, defenderPokemon, moveObj, fieldObj);
-                const damageRange = result.range();
-                const maxPercent = defenderMaxHP > 0 ? (damageRange[1] / defenderMaxHP) * 100 : 0;
-                const minPercent = defenderMaxHP > 0 ? (damageRange[0] / defenderMaxHP) * 100 : 0;
-
-                // Track best damage
-                if (maxPercent > bestDamagePercent) {
-                    bestDamagePercent = maxPercent;
-                }
-
-                // Check OHKO potential
-                if (minPercent >= 100) {
-                    canOHKO = true;
-                }
-                if (maxPercent >= 100) {
-                    mightOHKO = true;
-                }
-            } catch (e) {
-                // Skip invalid moves
-            }
-        }
-
-        // Calculate defender's damage to attacker (worst damage taken)
-        let worstDamageTaken = 0;
-        let getsOHKOd = false;
-        let mightGetOHKOd = false;
-
-        for (const moveData of defender.moves) {
-            if (!moveData.name || moveData.name === "") continue;
-
-            try {
-                const moveObj = new Move(generation, moveData.name, {
-                    isCrit: false,
-                    hits: moveData.hits
-                });
-                const result = calculate(generation, defenderPokemon, attackerPokemon, moveObj, fieldObj);
-                const damageRange = result.range();
-                const maxPercent = attackerMaxHP > 0 ? (damageRange[1] / attackerMaxHP) * 100 : 0;
-                const minPercent = attackerMaxHP > 0 ? (damageRange[0] / attackerMaxHP) * 100 : 0;
-
-                // Track worst damage taken
-                if (maxPercent > worstDamageTaken) {
-                    worstDamageTaken = maxPercent;
-                }
-
-                // Check if we get OHKO'd
-                if (minPercent >= 100) {
-                    getsOHKOd = true;
-                }
-                if (maxPercent >= 100) {
-                    mightGetOHKOd = true;
-                }
-            } catch (e) {
-                // Skip invalid moves
-            }
-        }
-
-        // Determine matchup classifications
-        const isHardCounter = worstDamageTaken <= 25 && mightOHKO;
-        const isWall = worstDamageTaken <= 25 && bestDamagePercent > worstDamageTaken;
-
-        const response = {
-            boxIndex: boxIndex,
-            attackerSpeed: attackerSpeed,
-            defenderSpeed: defenderSpeed,
-            canOHKO: canOHKO,
-            mightOHKO: mightOHKO,
-            getsOHKOd: getsOHKOd,
-            mightGetOHKOd: mightGetOHKOd,
-            isHardCounter: isHardCounter,
-            isWall: isWall,
-            bestDamagePercent: bestDamagePercent,
-            worstDamageTaken: worstDamageTaken
-        };
-
-        app.ports.receiveTeamMatchup.send(response);
+        app.ports.receiveTeamMatchup.send(calculateMatchup(data));
     } catch (error) {
         console.error('Team matchup calculation error:', error);
+    }
+});
+
+// Team/box drag-and-drop: Firefox only starts an HTML5 drag when the dragstart handler
+// puts data on the dataTransfer, which Elm's event handlers can't do. Elm tracks the
+// dragged Pokemon itself; this just makes the drag start and shows a "move" cursor.
+document.addEventListener('dragstart', function(event) {
+    if (event.target instanceof Element && event.target.closest('[data-roster-drag]')) {
+        event.dataTransfer.setData('text/plain', '');
+        event.dataTransfer.effectAllowed = 'move';
     }
 });
 

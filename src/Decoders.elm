@@ -118,6 +118,8 @@ pokemonDataDecoder =
         |> andMap (Decode.field "spriteWidth" Decode.int)
         |> andMap (Decode.field "spriteHeight" Decode.int)
         |> andMap (Decode.field "isPixelated" Decode.bool)
+        |> andMap (Decode.field "iconX" Decode.int)
+        |> andMap (Decode.field "iconY" Decode.int)
 
 
 statsDecoder : Decoder Stats

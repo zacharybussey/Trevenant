@@ -15,7 +15,6 @@ import Json.Encode as Encode
 import Types exposing (..)
 
 
-
 -- MAIN
 
 
@@ -23,11 +22,10 @@ main : Program Flags Model Msg
 main =
     Browser.element
         { init = init
-        , update = update
+        , update = updateWithMatchups
         , subscriptions = subscriptions
         , view = view
         }
-
 
 
 -- PORTS
@@ -72,6 +70,10 @@ port receiveNatureList : (Decode.Value -> msg) -> Sub msg
 port saveToLocalStorage : Encode.Value -> Cmd msg
 
 
+-- Report a decode failure to the browser console (see index.js) instead of dropping it silently
+port logError : String -> Cmd msg
+
+
 port loadFromLocalStorage : (Decode.Value -> msg) -> Sub msg
 
 
@@ -106,7 +108,6 @@ port requestTeamMatchup : Encode.Value -> Cmd msg
 
 
 port receiveTeamMatchup : (Decode.Value -> msg) -> Sub msg
-
 
 
 init : Flags -> ( Model, Cmd Msg )
@@ -160,6 +161,9 @@ init flags =
             , levelCap = Nothing
             , boxMatchupResults = Dict.empty
             , teamMatchupResults = Dict.empty
+            , colorCodeEnabled = False
+            , boxSort = SortBoxOrder
+            , dragOverTarget = Nothing
             }
     in
     ( initialModel
@@ -173,7 +177,6 @@ init flags =
         , requestTrainerData initialGame
         ]
     )
-
 
 
 -- UPDATE
@@ -269,11 +272,10 @@ type Msg
     | SwitchTeamPokemonForm Int String -- team index, target form name
     | SwitchBoxPokemonForm Int String -- box index, target form name
       -- Drag and drop
-    | DragStart DragSource Int
+    | DragStart PokemonSource
     | DragEnd
-    | DragOver
-    | DropOnTeam
-    | DropOnBox
+    | DragOverTarget DropTarget
+    | DropOn DropTarget
       -- UI collapse toggles
     | ToggleFieldCollapsed
     | ToggleBattleStateCollapsed
@@ -293,8 +295,9 @@ type Msg
       -- Level cap for ROM hacks
     | SetLevelCap (Maybe Int)
     | ApplyLevelCapToAll
-      -- Box matchup calculations
-    | CalculateBoxMatchups
+      -- Box matchup calculations (Color Code) and box sorting
+    | ToggleColorCode
+    | SetBoxSort BoxSort
     | ReceivedBoxMatchupResult Decode.Value
     | ReceivedTeamMatchupResult Decode.Value
       -- Color code help modal
@@ -312,59 +315,114 @@ getBoxPokemonBorderColor maybeResult =
             "border-transparent"
 
         Just result ->
-            -- Simplified color coding (5 colors):
-            -- 1. Both sides OHKO each other (teal - distinct from selection green)
-            -- 2. Both sides might OHKO each other (orange)
-            -- 3. Always gets OHKO'd (red)
-            -- 4. Always OHKO (yellow)
-            -- 5. Might OHKO (yellow muted)
-            if result.canOHKO && result.getsOHKOd then
-                -- Teal: Both sides OHKO each other
-                "border-teal-400"
-
-            else if result.mightOHKO && result.mightGetOHKOd then
-                -- Orange: Both sides might OHKO each other
-                "border-orange-500"
-
-            else if result.getsOHKOd || result.mightGetOHKOd then
-                -- Red: Gets OHKO'd or might get OHKO'd
-                "border-red-500"
-
-            else if result.canOHKO then
-                -- Yellow: Always OHKO
-                "border-yellow-400"
-
-            else if result.mightOHKO then
-                -- Yellow (muted): Might OHKO
-                "border-yellow-600"
-
-            else
-                -- No significant matchup info
-                "border-transparent"
+            matchupTierBorder (matchupTier result)
 
 
--- Helper function to check if a move name exists in the move list
-isValidMove : String -> List MoveData -> Bool
-isValidMove moveName moveList =
-    if String.isEmpty moveName then
-        False
+matchupTierBorder : MatchupTier -> String
+matchupTierBorder tier =
+    case tier of
+        TradeOHKOs ->
+            -- Teal, distinct from the green selection border
+            "border-teal-400"
+
+        MaybeTradeOHKOs ->
+            "border-orange-500"
+
+        GetsOHKOd ->
+            "border-red-500"
+
+        AlwaysOHKOs ->
+            "border-yellow-400"
+
+        MightOHKO ->
+            "border-yellow-600"
+
+        NoOHKO ->
+            "border-transparent"
+
+
+{-| Wraps `update` so Color Code stays current. While it's on, any change to the
+
+
+team, box, defender, field, generation or species data re-requests every
+
+
+team/box matchup, instead of each handler having to remember to. Results are
+
+
+keyed by list index, so entries past the end of a shrunk list are dropped.
+-}
+updateWithMatchups : Msg -> Model -> ( Model, Cmd Msg )
+updateWithMatchups msg model =
+    let
+        ( newModel, cmd ) =
+            update msg model
+
+        rosterChanged =
+            newModel.team /= model.team || newModel.box /= model.box
+
+        inputsChanged =
+            rosterChanged
+                || newModel.defender /= model.defender
+                || newModel.field /= model.field
+                || newModel.generation /= model.generation
+                || newModel.pokemonList /= model.pokemonList
+                || (newModel.colorCodeEnabled && not model.colorCodeEnabled)
+
+        -- Without a valid defender there is nothing to compare against, so old colors are cleared
+        keep i list =
+            hasValidDefender newModel && i < List.length list
+
+        pruned =
+            { newModel
+                | boxMatchupResults = Dict.filter (\i _ -> keep i newModel.box) newModel.boxMatchupResults
+                , teamMatchupResults = Dict.filter (\i _ -> keep i newModel.team) newModel.teamMatchupResults
+            }
+    in
+    if newModel.colorCodeEnabled && inputsChanged then
+        ( pruned, Cmd.batch [ cmd, matchupCommands pruned ] )
+
     else
-        List.any (\move -> move.name == moveName) moveList
+        ( newModel, cmd )
+
+
+{-| One matchup request per team and box Pokemon against the current defender. -}
+
+
+matchupCommands : Model -> Cmd Msg
+matchupCommands model =
+    let
+        request port_ index pokemon =
+            port_
+                (Encode.object
+                    [ ( "generation", Encode.int model.generation )
+                    , ( "boxIndex", Encode.int index )
+                    , ( "attacker", encodePokemon pokemon )
+                    , ( "defender", encodePokemon model.defender )
+                    , ( "field", encodeField model.field )
+                    ]
+                )
+    in
+    if hasValidDefender model then
+        Cmd.batch
+            (List.indexedMap (request requestBoxMatchup) model.box
+                ++ List.indexedMap (request requestTeamMatchup) model.team
+            )
+
+    else
+        Cmd.none
+
+
+hasValidDefender : Model -> Bool
+hasValidDefender model =
+    not (String.isEmpty model.defender.species)
+        && List.any (\p -> p.name == model.defender.species) model.pokemonList
 
 
 -- Helper function to check if a form name is a regional variant (not a battle form)
-isRegionalForm : String -> Bool
-isRegionalForm formName =
-    String.contains "-Alola" formName
-        || String.contains "-Galar" formName
-        || String.contains "-Hisui" formName
-        || String.contains "-Paldea" formName
 
 
 -- Helper function to filter out regional forms from a list (keep only battle forms)
-getNonRegionalForms : List String -> List String
-getNonRegionalForms forms =
-    List.filter (\form -> not (isRegionalForm form)) forms
 
 
 -- Helper function to get a shorter display name for forms
@@ -457,6 +515,21 @@ applyItemAutoTriggers model item isAttacker =
 
 
 -- Helper function to update model and trigger calculation if both Pokemon are selected
+{-| Apply a team/box change (see the roster helpers in Helpers.elm) and save it. -}
+
+
+applyRoster : (Roster -> Roster) -> Model -> ( Model, Cmd Msg )
+applyRoster change model =
+    let
+        roster =
+            change { team = model.team, box = model.box, attackerSource = model.attackerSource }
+
+        newModel =
+            { model | team = roster.team, box = roster.box, attackerSource = roster.attackerSource }
+    in
+    ( newModel, saveToLocalStorage (encodeSettings newModel) )
+
+
 updateAndCalculate : (Model -> Model) -> Model -> ( Model, Cmd Msg )
 updateAndCalculate updateFn model =
     let
@@ -525,6 +598,8 @@ updateAndCalculate updateFn model =
 
 
 {-| Get the message to dispatch when Enter is pressed on a dropdown.
+
+
 Returns Nothing if no dropdown is open or if there are no options.
 -}
 getEnterKeyMessage : Model -> Maybe Msg
@@ -1133,8 +1208,8 @@ update msg model =
                     , Cmd.none
                     )
 
-                Err _ ->
-                    ( model, Cmd.none )
+                Err err ->
+                    ( model, logError ("ReceivedCalculation: " ++ Decode.errorToString err) )
 
         ReceivedPokemonList value ->
             case Decode.decodeValue pokemonListDecoder value of
@@ -1159,40 +1234,40 @@ update msg model =
                     else
                         ( newModel, Cmd.none )
 
-                Err _ ->
-                    ( { model | loading = False }, Cmd.none )
+                Err err ->
+                    ( { model | loading = False }, logError ("ReceivedPokemonList: " ++ Decode.errorToString err) )
 
         ReceivedMoveList value ->
             case Decode.decodeValue moveListDecoder value of
                 Ok moveList ->
                     ( { model | moveList = moveList }, Cmd.none )
 
-                Err _ ->
-                    ( model, Cmd.none )
+                Err err ->
+                    ( model, logError ("ReceivedMoveList: " ++ Decode.errorToString err) )
 
         ReceivedItemList value ->
             case Decode.decodeValue itemListDecoder value of
                 Ok itemList ->
                     ( { model | itemList = itemList }, Cmd.none )
 
-                Err _ ->
-                    ( model, Cmd.none )
+                Err err ->
+                    ( model, logError ("ReceivedItemList: " ++ Decode.errorToString err) )
 
         ReceivedAbilityList value ->
             case Decode.decodeValue abilityListDecoder value of
                 Ok abilityList ->
                     ( { model | abilityList = abilityList }, Cmd.none )
 
-                Err _ ->
-                    ( model, Cmd.none )
+                Err err ->
+                    ( model, logError ("ReceivedAbilityList: " ++ Decode.errorToString err) )
 
         ReceivedNatureList value ->
             case Decode.decodeValue natureListDecoder value of
                 Ok natureList ->
                     ( { model | natureList = natureList }, Cmd.none )
 
-                Err _ ->
-                    ( model, Cmd.none )
+                Err err ->
+                    ( model, logError ("ReceivedNatureList: " ++ Decode.errorToString err) )
 
         ReceivedLearnset value ->
             case Decode.decodeValue learnsetDecoder value of
@@ -1203,8 +1278,8 @@ update msg model =
                     else
                         ( { model | defenderLearnset = Just learnset }, Cmd.none )
 
-                Err _ ->
-                    ( model, Cmd.none )
+                Err err ->
+                    ( model, logError ("ReceivedLearnset: " ++ Decode.errorToString err) )
 
         SetAttackerEV statName value ->
             updateAndCalculate
@@ -1792,17 +1867,16 @@ update msg model =
                         ]
                     )
 
-                Err _ ->
-                    -- If settings can't be decoded, just use defaults
-                    ( model, Cmd.none )
+                Err err ->
+                    ( model, logError ("LoadedSettings: " ++ Decode.errorToString err) )
 
         ReceivedAvailableGames value ->
             case Decode.decodeValue availableGamesDecoder value of
                 Ok games ->
                     ( { model | availableGames = games }, Cmd.none )
 
-                Err _ ->
-                    ( model, Cmd.none )
+                Err err ->
+                    ( model, logError ("ReceivedAvailableGames: " ++ Decode.errorToString err) )
 
         ReceivedTrainerData value ->
             case Decode.decodeValue trainerDataDecoder value of
@@ -1881,8 +1955,8 @@ update msg model =
                     else
                         ( newModel, Cmd.none )
 
-                Err _ ->
-                    ( model, Cmd.none )
+                Err err ->
+                    ( model, logError ("ReceivedTrainerData: " ++ Decode.errorToString err) )
 
         SetSelectedGame game ->
             let
@@ -2265,76 +2339,10 @@ update msg model =
             ( newModel, saveToLocalStorage (encodeSettings newModel) )
 
         MoveToTeam boxIndex ->
-            case List.head (List.drop boxIndex model.box) of
-                Just pokemon ->
-                    if List.length model.team >= 6 then
-                        ( model, Cmd.none )
-
-                    else
-                        let
-                            newTeam =
-                                model.team ++ [ pokemon ]
-
-                            newBox =
-                                List.take boxIndex model.box ++ List.drop (boxIndex + 1) model.box
-
-                            -- Update source if needed
-                            newSource =
-                                case model.attackerSource of
-                                    Just (FromBox sourceIndex) ->
-                                        if sourceIndex == boxIndex then
-                                            Just (FromTeam (List.length model.team))
-
-                                        else if sourceIndex > boxIndex then
-                                            Just (FromBox (sourceIndex - 1))
-
-                                        else
-                                            model.attackerSource
-
-                                    _ ->
-                                        model.attackerSource
-
-                            newModel =
-                                { model | team = newTeam, box = newBox, attackerSource = newSource }
-                        in
-                        ( newModel, saveToLocalStorage (encodeSettings newModel) )
-
-                Nothing ->
-                    ( model, Cmd.none )
+            applyRoster (moveToEnd (FromBox boxIndex) True) model
 
         MoveToBox teamIndex ->
-            case List.head (List.drop teamIndex model.team) of
-                Just pokemon ->
-                    let
-                        newBox =
-                            model.box ++ [ pokemon ]
-
-                        newTeam =
-                            List.take teamIndex model.team ++ List.drop (teamIndex + 1) model.team
-
-                        -- Update source if needed
-                        newSource =
-                            case model.attackerSource of
-                                Just (FromTeam sourceIndex) ->
-                                    if sourceIndex == teamIndex then
-                                        Just (FromBox (List.length model.box))
-
-                                    else if sourceIndex > teamIndex then
-                                        Just (FromTeam (sourceIndex - 1))
-
-                                    else
-                                        model.attackerSource
-
-                                _ ->
-                                    model.attackerSource
-
-                        newModel =
-                            { model | team = newTeam, box = newBox, attackerSource = newSource }
-                    in
-                    ( newModel, saveToLocalStorage (encodeSettings newModel) )
-
-                Nothing ->
-                    ( model, Cmd.none )
+            applyRoster (moveToEnd (FromTeam teamIndex) False) model
 
         -- Evolution handlers
         EvolvePokemonInBox boxIndex targetSpecies ->
@@ -2342,10 +2350,7 @@ update msg model =
                 Just pokemon ->
                     let
                         evolvedPokemon =
-                            { pokemon
-                                | species = targetSpecies
-                                , moves = List.map (\_ -> { name = "", isCrit = False, hits = 1 }) (List.range 1 4)
-                            }
+                            evolvePokemon model.pokemonList targetSpecies pokemon
 
                         newBox =
                             List.take boxIndex model.box
@@ -2368,7 +2373,8 @@ update msg model =
                         newModel =
                             { model | box = newBox, attacker = newAttacker }
                     in
-                    ( newModel, saveToLocalStorage (encodeSettings newModel) )
+                    -- Recalculate so an evolved active attacker shows its new damage right away
+                    updateAndCalculate (\_ -> newModel) model
 
                 Nothing ->
                     ( model, Cmd.none )
@@ -2378,10 +2384,7 @@ update msg model =
                 Just pokemon ->
                     let
                         evolvedPokemon =
-                            { pokemon
-                                | species = targetSpecies
-                                , moves = List.map (\_ -> { name = "", isCrit = False, hits = 1 }) (List.range 1 4)
-                            }
+                            evolvePokemon model.pokemonList targetSpecies pokemon
 
                         newTeam =
                             List.take teamIndex model.team
@@ -2404,7 +2407,8 @@ update msg model =
                         newModel =
                             { model | team = newTeam, attacker = newAttacker }
                     in
-                    ( newModel, saveToLocalStorage (encodeSettings newModel) )
+                    -- Recalculate so an evolved active attacker shows its new damage right away
+                    updateAndCalculate (\_ -> newModel) model
 
                 Nothing ->
                     ( model, Cmd.none )
@@ -2498,40 +2502,27 @@ update msg model =
                     ( model, Cmd.none )
 
         -- Drag and drop handlers
-        DragStart source index ->
-            ( { model | dragState = Just { source = source, index = index } }, Cmd.none )
+        DragStart source ->
+            ( { model | dragState = Just source, dragOverTarget = Nothing }, Cmd.none )
 
         DragEnd ->
-            ( { model | dragState = Nothing }, Cmd.none )
+            ( { model | dragState = Nothing, dragOverTarget = Nothing }, Cmd.none )
 
-        DragOver ->
-            ( model, Cmd.none )
+        DragOverTarget target ->
+            if model.dragOverTarget == Just target then
+                ( model, Cmd.none )
 
-        DropOnTeam ->
+            else
+                ( { model | dragOverTarget = Just target }, Cmd.none )
+
+        DropOn target ->
             case model.dragState of
-                Just { source, index } ->
-                    case source of
-                        DragFromBox ->
-                            update (MoveToTeam index) { model | dragState = Nothing }
-
-                        DragFromTeam ->
-                            ( { model | dragState = Nothing }, Cmd.none )
+                Just source ->
+                    applyRoster (dropPokemon source target)
+                        { model | dragState = Nothing, dragOverTarget = Nothing }
 
                 Nothing ->
-                    ( model, Cmd.none )
-
-        DropOnBox ->
-            case model.dragState of
-                Just { source, index } ->
-                    case source of
-                        DragFromTeam ->
-                            update (MoveToBox index) { model | dragState = Nothing }
-
-                        DragFromBox ->
-                            ( { model | dragState = Nothing }, Cmd.none )
-
-                Nothing ->
-                    ( model, Cmd.none )
+                    ( { model | dragOverTarget = Nothing }, Cmd.none )
 
         ToggleFieldCollapsed ->
             ( { model | fieldCollapsed = not model.fieldCollapsed }, Cmd.none )
@@ -2686,69 +2677,50 @@ update msg model =
                         )
                         model
 
-        CalculateBoxMatchups ->
-            -- Clear previous results and trigger calculations for all box AND team Pokemon
-            let
-                -- Only calculate if defender is valid
-                isValidDefender =
-                    not (String.isEmpty model.defender.species)
-                        && List.any (\p -> p.name == model.defender.species) model.pokemonList
+        ToggleColorCode ->
+            -- Turning it on requests matchups (see updateWithMatchups); turning it off clears the colors
+            if model.colorCodeEnabled then
+                ( { model
+                    | colorCodeEnabled = False
+                    , boxMatchupResults = Dict.empty
+                    , teamMatchupResults = Dict.empty
+                    , boxSort =
+                        if model.boxSort == SortMatchup then
+                            SortBoxOrder
 
-                boxCommands =
-                    List.indexedMap
-                        (\index boxPokemon ->
-                            requestBoxMatchup
-                                (Encode.object
-                                    [ ( "generation", Encode.int model.generation )
-                                    , ( "boxIndex", Encode.int index )
-                                    , ( "attacker", encodePokemon boxPokemon )
-                                    , ( "defender", encodePokemon model.defender )
-                                    , ( "field", encodeField model.field )
-                                    ]
-                                )
-                        )
-                        model.box
-
-                teamCommands =
-                    List.indexedMap
-                        (\index teamPokemon ->
-                            requestTeamMatchup
-                                (Encode.object
-                                    [ ( "generation", Encode.int model.generation )
-                                    , ( "boxIndex", Encode.int index )
-                                    , ( "attacker", encodePokemon teamPokemon )
-                                    , ( "defender", encodePokemon model.defender )
-                                    , ( "field", encodeField model.field )
-                                    ]
-                                )
-                        )
-                        model.team
-            in
-            if isValidDefender && (not (List.isEmpty model.box) || not (List.isEmpty model.team)) then
-                ( { model | boxMatchupResults = Dict.empty, teamMatchupResults = Dict.empty }
-                , Cmd.batch (boxCommands ++ teamCommands)
+                        else
+                            model.boxSort
+                  }
+                , Cmd.none
                 )
 
             else
-                ( model, Cmd.none )
+                ( { model | colorCodeEnabled = True }, Cmd.none )
+
+        SetBoxSort sort ->
+            -- Sorting by matchup needs matchup results, so it turns Color Code on
+            ( { model
+                | boxSort = sort
+                , colorCodeEnabled = model.colorCodeEnabled || sort == SortMatchup
+              }
+            , Cmd.none
+            )
 
         ReceivedBoxMatchupResult value ->
             case Decode.decodeValue boxMatchupResultDecoder value of
                 Ok result ->
                     ( { model | boxMatchupResults = Dict.insert result.boxIndex result model.boxMatchupResults }, Cmd.none )
 
-                Err error ->
-                    -- Silently ignore decoding errors in production build
-                    ( model, Cmd.none )
+                Err err ->
+                    ( model, logError ("ReceivedBoxMatchupResult: " ++ Decode.errorToString err) )
 
         ReceivedTeamMatchupResult value ->
             case Decode.decodeValue boxMatchupResultDecoder value of
                 Ok result ->
                     ( { model | teamMatchupResults = Dict.insert result.boxIndex result model.teamMatchupResults }, Cmd.none )
 
-                Err _ ->
-                    -- Silently ignore decoding errors in production build
-                    ( model, Cmd.none )
+                Err err ->
+                    ( model, logError ("ReceivedTeamMatchupResult: " ++ Decode.errorToString err) )
 
         ShowColorCodeHelp ->
             ( { model | showColorCodeHelp = True }, Cmd.none )
@@ -2797,248 +2769,9 @@ update msg model =
                     ( model, Cmd.none )
 
 
-updateStat : String -> Int -> Stats -> Stats
-updateStat statName value stats =
-    case statName of
-        "hp" ->
-            { stats | hp = value }
-
-        "atk" ->
-            { stats | atk = value }
-
-        "def" ->
-            { stats | def = value }
-
-        "spa" ->
-            { stats | spa = value }
-
-        "spd" ->
-            { stats | spd = value }
-
-        "spe" ->
-            { stats | spe = value }
-
-        _ ->
-            stats
-
-
-gameToGeneration : String -> Int
-gameToGeneration game =
-    case game of
-        "Red/Blue" ->
-            1
-
-        "Yellow" ->
-            1
-
-        "Gold/Silver" ->
-            2
-
-        "Crystal" ->
-            2
-
-        "Ruby/Sapphire" ->
-            3
-
-        "Emerald" ->
-            3
-
-        "FireRed/LeafGreen" ->
-            3
-
-        "Diamond/Pearl" ->
-            4
-
-        "Platinum" ->
-            4
-
-        "HeartGold/SoulSilver" ->
-            4
-
-        "Black/White" ->
-            5
-
-        "Black2/White2" ->
-            5
-
-        "X/Y" ->
-            6
-
-        "OmegaRuby/AlphaSapphire" ->
-            6
-
-        "Sun/Moon" ->
-            7
-
-        "UltraSun/UltraMoon" ->
-            7
-
-        "Sword/Shield" ->
-            8
-
-        "BrilliantDiamond/ShiningPearl" ->
-            8
-
-        "Scarlet/Violet" ->
-            9
-
-        "Black Pearl" ->
-            9
-
-        _ ->
-            9
-
-
 -- Determine player's starter based on rival's Pokemon
 -- Gen 1-2: Rival picks type advantage (Charmander beats Bulbasaur)
 -- Gen 3+: Rival picks type weakness (but we still work backwards from their Pokemon)
-getPlayerStarterFromRival : Int -> String -> String
-getPlayerStarterFromRival generation rivalPokemon =
-    case generation of
-        1 ->
-            -- Gen 1: Rival picks type advantage
-            case rivalPokemon of
-                "Charmander" -> "Bulbasaur"
-                "Squirtle" -> "Charmander"
-                "Bulbasaur" -> "Squirtle"
-                "Charmeleon" -> "Bulbasaur"
-                "Wartortle" -> "Charmander"
-                "Ivysaur" -> "Squirtle"
-                "Charizard" -> "Bulbasaur"
-                "Blastoise" -> "Charmander"
-                "Venusaur" -> "Squirtle"
-                _ -> "Bulbasaur"
-
-        2 ->
-            -- Gen 2: Rival picks type advantage
-            case rivalPokemon of
-                "Cyndaquil" -> "Chikorita"
-                "Totodile" -> "Cyndaquil"
-                "Chikorita" -> "Totodile"
-                "Quilava" -> "Chikorita"
-                "Croconaw" -> "Cyndaquil"
-                "Bayleef" -> "Totodile"
-                "Typhlosion" -> "Chikorita"
-                "Feraligatr" -> "Cyndaquil"
-                "Meganium" -> "Totodile"
-                _ -> "Cyndaquil"
-
-        3 ->
-            -- Gen 3: Rival picks type weakness (in RSE/FRLG)
-            case rivalPokemon of
-                "Treecko" -> "Mudkip"
-                "Torchic" -> "Treecko"
-                "Mudkip" -> "Torchic"
-                "Grovyle" -> "Mudkip"
-                "Combusken" -> "Treecko"
-                "Marshtomp" -> "Torchic"
-                "Sceptile" -> "Mudkip"
-                "Blaziken" -> "Treecko"
-                "Swampert" -> "Torchic"
-                -- FRLG uses Gen 1 starters
-                "Charmander" -> "Bulbasaur"
-                "Squirtle" -> "Charmander"
-                "Bulbasaur" -> "Squirtle"
-                "Charizard" -> "Bulbasaur"
-                "Blastoise" -> "Charmander"
-                "Venusaur" -> "Squirtle"
-                _ -> "Treecko"
-
-        4 ->
-            -- Gen 4
-            case rivalPokemon of
-                "Turtwig" -> "Chimchar"
-                "Chimchar" -> "Piplup"
-                "Piplup" -> "Turtwig"
-                "Grotle" -> "Chimchar"
-                "Monferno" -> "Piplup"
-                "Prinplup" -> "Turtwig"
-                "Torterra" -> "Chimchar"
-                "Infernape" -> "Piplup"
-                "Empoleon" -> "Turtwig"
-                -- HGSS uses Gen 2 starters
-                "Cyndaquil" -> "Chikorita"
-                "Totodile" -> "Cyndaquil"
-                "Chikorita" -> "Totodile"
-                _ -> "Turtwig"
-
-        5 ->
-            case rivalPokemon of
-                "Snivy" -> "Tepig"
-                "Tepig" -> "Oshawott"
-                "Oshawott" -> "Snivy"
-                "Servine" -> "Tepig"
-                "Pignite" -> "Oshawott"
-                "Dewott" -> "Snivy"
-                "Serperior" -> "Tepig"
-                "Emboar" -> "Oshawott"
-                "Samurott" -> "Snivy"
-                _ -> "Snivy"
-
-        6 ->
-            case rivalPokemon of
-                "Chespin" -> "Fennekin"
-                "Fennekin" -> "Froakie"
-                "Froakie" -> "Chespin"
-                "Quilladin" -> "Fennekin"
-                "Braixen" -> "Froakie"
-                "Frogadier" -> "Chespin"
-                "Chesnaught" -> "Fennekin"
-                "Delphox" -> "Froakie"
-                "Greninja" -> "Chespin"
-                -- ORAS
-                "Treecko" -> "Mudkip"
-                "Torchic" -> "Treecko"
-                "Mudkip" -> "Torchic"
-                _ -> "Chespin"
-
-        7 ->
-            case rivalPokemon of
-                "Rowlet" -> "Litten"
-                "Litten" -> "Popplio"
-                "Popplio" -> "Rowlet"
-                "Dartrix" -> "Litten"
-                "Torracat" -> "Popplio"
-                "Brionne" -> "Rowlet"
-                "Decidueye" -> "Litten"
-                "Incineroar" -> "Popplio"
-                "Primarina" -> "Rowlet"
-                _ -> "Rowlet"
-
-        8 ->
-            case rivalPokemon of
-                "Grookey" -> "Scorbunny"
-                "Scorbunny" -> "Sobble"
-                "Sobble" -> "Grookey"
-                "Thwackey" -> "Scorbunny"
-                "Raboot" -> "Sobble"
-                "Drizzile" -> "Grookey"
-                "Rillaboom" -> "Scorbunny"
-                "Cinderace" -> "Sobble"
-                "Inteleon" -> "Grookey"
-                -- BDSP
-                "Turtwig" -> "Chimchar"
-                "Chimchar" -> "Piplup"
-                "Piplup" -> "Turtwig"
-                _ -> "Grookey"
-
-        9 ->
-            case rivalPokemon of
-                "Sprigatito" -> "Fuecoco"
-                "Fuecoco" -> "Quaxly"
-                "Quaxly" -> "Sprigatito"
-                "Floragato" -> "Fuecoco"
-                "Crocalor" -> "Quaxly"
-                "Quaxwell" -> "Sprigatito"
-                "Meowscarada" -> "Fuecoco"
-                "Skeledirge" -> "Quaxly"
-                "Quaquaval" -> "Sprigatito"
-                -- Black Pearl ROM hack: Player gets Porygon vs Cynthia's Gible
-                "Gible" -> "Porygon"
-                _ -> "Sprigatito"
-
-        _ ->
-            "Pikachu"
 
 
 -- Create a starter Pokemon state for level 5 with appropriate stats
@@ -3092,81 +2825,6 @@ createStarterPokemonState generation species =
     }
 
 
--- Get starting moves for a starter Pokemon at level 5
-getStarterMoves : String -> List MoveState
-getStarterMoves species =
-    let
-        moveName1 =
-            case species of
-                -- Gen 1
-                "Bulbasaur" -> "Tackle"
-                "Charmander" -> "Scratch"
-                "Squirtle" -> "Tackle"
-                -- Gen 2
-                "Chikorita" -> "Tackle"
-                "Cyndaquil" -> "Tackle"
-                "Totodile" -> "Scratch"
-                -- Gen 3
-                "Treecko" -> "Pound"
-                "Torchic" -> "Scratch"
-                "Mudkip" -> "Tackle"
-                -- Gen 4
-                "Turtwig" -> "Tackle"
-                "Chimchar" -> "Scratch"
-                "Piplup" -> "Pound"
-                -- Gen 5
-                "Snivy" -> "Tackle"
-                "Tepig" -> "Tackle"
-                "Oshawott" -> "Tackle"
-                -- Gen 6
-                "Chespin" -> "Tackle"
-                "Fennekin" -> "Scratch"
-                "Froakie" -> "Pound"
-                -- Gen 7
-                "Rowlet" -> "Tackle"
-                "Litten" -> "Scratch"
-                "Popplio" -> "Pound"
-                -- Gen 8
-                "Grookey" -> "Scratch"
-                "Scorbunny" -> "Tackle"
-                "Sobble" -> "Pound"
-                -- Gen 9
-                "Sprigatito" -> "Scratch"
-                "Fuecoco" -> "Tackle"
-                "Quaxly" -> "Pound"
-                _ -> "Tackle"
-    in
-    [ { name = moveName1, isCrit = False, hits = 1 }
-    , { name = "", isCrit = False, hits = 1 }
-    , { name = "", isCrit = False, hits = 1 }
-    , { name = "", isCrit = False, hits = 1 }
-    ]
-
-
-filterEncounters : String -> List TrainerEncounter -> List TrainerEncounter
-filterEncounters query encounters =
-    if String.isEmpty query then
-        encounters
-
-    else
-        let
-            lowerQuery =
-                String.toLower query
-        in
-        List.filter
-            (\encounter ->
-                String.contains lowerQuery (String.toLower encounter.trainerName)
-                    || String.contains lowerQuery (String.toLower encounter.trainerClass)
-                    || String.contains lowerQuery (String.toLower encounter.location)
-                    || List.any
-                        (\pokemon ->
-                            String.contains lowerQuery (String.toLower pokemon.species)
-                        )
-                        encounter.team
-            )
-            encounters
-
-
 getSelectedEncounter : Model -> Maybe TrainerEncounter
 getSelectedEncounter model =
     model.trainerEncounters
@@ -3175,88 +2833,6 @@ getSelectedEncounter model =
 
 
 -- Find the index of an encounter in the full trainer list
-findEncounterIndex : TrainerEncounter -> List TrainerEncounter -> Maybe Int
-findEncounterIndex target encounters =
-    encounters
-        |> List.indexedMap Tuple.pair
-        |> List.filter
-            (\( _, enc ) ->
-                enc.trainerName == target.trainerName
-                    && enc.location == target.location
-                    && enc.trainerClass == target.trainerClass
-            )
-        |> List.head
-        |> Maybe.map Tuple.first
-
-
-trainerPokemonToState : TrainerPokemon -> PokemonState
-trainerPokemonToState pokemon =
-    let
-        -- Convert trainer's move list to MoveState list
-        moves =
-            List.take 4 pokemon.moves
-                |> List.map
-                    (\moveName ->
-                        { name =
-                            if moveName == "No Move" then
-                                ""
-
-                            else
-                                moveName
-                        , isCrit = False
-                        , hits = 1
-                        }
-                    )
-
-        -- Pad with empty moves if less than 4
-        paddedMoves =
-            moves ++ List.repeat (4 - List.length moves) defaultMove
-    in
-    { species = pokemon.species
-    , level = pokemon.level
-    , nature =
-        if String.isEmpty pokemon.nature then
-            "Hardy"
-
-        else
-            pokemon.nature
-    , ability = pokemon.ability
-    , item = pokemon.item
-    , evs = pokemon.evs
-    , ivs = pokemon.ivs
-    , boosts = defaultStats
-    , status = ""
-    , curHP = 100
-    , teraType = ""
-    , isDynamaxed = False
-    , moves = paddedMoves
-    }
-
-
-
--- SETTINGS TYPE
-
-
-type alias Settings =
-    { currentGame : String
-    , gameData : Dict String GameSaveData
-    }
-
-
-type alias GameSaveData =
-    { team : List PokemonState
-    , box : List PokemonState
-    , attackerSource : Maybe PokemonSource
-    , attacker : Maybe PokemonState
-    , defender : Maybe PokemonState
-    , selectedTrainerIndex : Int
-    , levelCap : Maybe Int
-    }
-
-
-
-
-
 
 
 -- SUBSCRIPTIONS
@@ -3292,14 +2868,7 @@ keyDecoder =
     Decode.field "key" Decode.string
 
 
-
 -- VIEW
-
-
--- Custom event handler for drop events
-onDrop : msg -> Attribute msg
-onDrop msg =
-    preventDefaultOn "drop" (Decode.succeed ( msg, True ))
 
 
 view : Model -> Html Msg
@@ -3757,14 +3326,6 @@ viewDamageDetailsCenter result selectedSource selectedIndex attacker defender =
         ]
 
 
-formatDamagePercent : ( Float, Float ) -> String
-formatDamagePercent ( minP, maxP ) =
-    String.fromFloat (toFloat (round (minP * 10)) / 10)
-        ++ " - "
-        ++ String.fromFloat (toFloat (round (maxP * 10)) / 10)
-        ++ "%"
-
-
 -- Field conditions content (for collapsible) - Tags/Pills UI
 -- Format, Weather, and Terrain have been moved to the damage results panel
 viewFieldConditionsContent : Model -> Html Msg
@@ -3906,11 +3467,6 @@ getDefenderConditionOptions model =
 
 -- Show pills for all active field conditions
 -- Weather and terrain are now shown in the top damage results panel, not here
-viewActiveConditionPills : Model -> List (Html Msg)
-viewActiveConditionPills model =
-    -- This function is kept for backwards compatibility but now just returns an empty list
-    -- Use viewAttackerConditionPills, viewBothConditionPills, viewDefenderConditionPills instead
-    []
 
 
 -- Pills for attacker side conditions (no (A) suffix needed since column makes it clear)
@@ -4021,79 +3577,6 @@ viewConditionPill label removeMsg =
         ]
 
 
-viewSideConditionsCompact : String -> SideConditions -> Bool -> Html Msg
-viewSideConditionsCompact title conditions isAttacker =
-    div []
-        [ h4 [ class "text-xs font-semibold text-base-content/60 mb-2" ] [ text title ]
-        , div [ class "grid grid-cols-2 gap-x-4 gap-y-1 text-xs" ]
-            [ label [ class "flex items-center gap-1 cursor-pointer" ]
-                [ input
-                    [ type_ "checkbox"
-                    , checked conditions.isReflect
-                    , onCheck
-                        (if isAttacker then
-                            SetAttackerSideReflect
-
-                         else
-                            SetDefenderSideReflect
-                        )
-                    , class "checkbox checkbox-xs checkbox-primary"
-                    ]
-                    []
-                , text "Reflect"
-                ]
-            , label [ class "flex items-center gap-1 cursor-pointer" ]
-                [ input
-                    [ type_ "checkbox"
-                    , checked conditions.isLightScreen
-                    , onCheck
-                        (if isAttacker then
-                            SetAttackerSideLightScreen
-
-                         else
-                            SetDefenderSideLightScreen
-                        )
-                    , class "checkbox checkbox-xs checkbox-primary"
-                    ]
-                    []
-                , text "L. Screen"
-                ]
-            , label [ class "flex items-center gap-1 cursor-pointer" ]
-                [ input
-                    [ type_ "checkbox"
-                    , checked conditions.isTailwind
-                    , onCheck
-                        (if isAttacker then
-                            SetAttackerSideTailwind
-
-                         else
-                            SetDefenderSideTailwind
-                        )
-                    , class "checkbox checkbox-xs checkbox-primary"
-                    ]
-                    []
-                , text "Tailwind"
-                ]
-            , label [ class "flex items-center gap-1 cursor-pointer" ]
-                [ input
-                    [ type_ "checkbox"
-                    , checked conditions.isSteathRock
-                    , onCheck
-                        (if isAttacker then
-                            SetAttackerSideStealthRock
-
-                         else
-                            SetDefenderSideStealthRock
-                        )
-                    , class "checkbox checkbox-xs checkbox-primary"
-                    ]
-                    []
-                , text "Stealth Rock"
-                ]
-            ]
-        ]
-
-
 -- Left column: Attacker side
 viewAttackerColumn : Model -> Html Msg
 viewAttackerColumn model =
@@ -4127,374 +3610,410 @@ viewDefenderColumn model =
 -- Team & Box combined section
 viewTeamBoxSection : Model -> Html Msg
 viewTeamBoxSection model =
+    div [ class "card bg-base-200 p-4 flex flex-col gap-4" ]
+        [ viewTeamPanel model
+        , viewBoxPanel model
+        ]
+
+
+{-| Team as 6 fixed slots, like the in-game party. Drag a team Pokemon onto another
+
+
+slot to swap them (to line the team up with the opponent's), or drag a box Pokemon
+
+
+onto a slot to swap it in.
+-}
+viewTeamPanel : Model -> Html Msg
+viewTeamPanel model =
     let
-        isDraggingOverTeam =
-            case model.dragState of
-                Just { source } ->
-                    source == DragFromBox
+        slot i =
+            case List.head (List.drop i model.team) of
+                Just pokemon ->
+                    viewRosterTile model (FromTeam i) pokemon
 
                 Nothing ->
-                    False
+                    div
+                        (class
+                            ("min-h-14 rounded-md border border-dashed "
+                                ++ (if model.dragOverTarget == Just (TeamSlot i) then
+                                        "border-info bg-info/10"
 
-        isDraggingOverBox =
-            case model.dragState of
-                Just { source } ->
-                    source == DragFromTeam
-
-                Nothing ->
-                    False
+                                    else
+                                        "border-base-content/20"
+                                   )
+                            )
+                            :: dropTargetAttributes (TeamSlot i)
+                        )
+                        []
     in
-    div [ class "card bg-base-200 p-4" ]
-        [ -- Team section
-          div
-            [ class
-                (if isDraggingOverTeam then
-                    "pb-4 mb-4 border-b border-primary"
+    div (class "flex flex-col gap-2" :: dropTargetAttributes TeamArea)
+        [ div [ class "flex items-center gap-2" ]
+            [ h3 [ class "text-sm font-semibold text-primary" ] [ text "Team" ]
+            , span [ class "text-xs text-base-content/60 tabular-nums" ] [ text (String.fromInt (List.length model.team) ++ "/6") ]
+            , div [ class "flex-1" ] []
+            , if List.length model.team < 6 then
+                button [ onClick AddToTeam, class "btn btn-xs btn-outline btn-primary" ] [ text "+ Add" ]
 
-                 else
-                    "pb-4 mb-4 border-b border-base-300"
-                )
-            , preventDefaultOn "dragover" (Decode.succeed ( DragOver, True ))
-            , onDrop DropOnTeam
+              else
+                text ""
             ]
-            [ div [ class "flex justify-between items-center mb-3" ]
-                [ h3 [ class "text-sm font-semibold text-primary" ] [ text ("Team (" ++ String.fromInt (List.length model.team) ++ "/6)") ]
-                , if List.length model.team < 6 then
-                    button [ onClick AddToTeam, class "btn btn-xs btn-outline btn-primary" ] [ text "+ Add" ]
+        , div [ class "grid grid-cols-6 gap-1.5" ] (List.map slot (List.range 0 5))
+        ]
+
+
+{-| The box as a PC-style icon grid. Clicking loads the Pokemon as the attacker;
+
+
+its evolve/send/release actions live in the Loadout bar. Sorting only changes the
+
+
+display order.
+-}
+viewBoxPanel : Model -> Html Msg
+viewBoxPanel model =
+    let
+        sorted =
+            sortBox model.boxSort
+                (speedStat model.generation model.pokemonList model.natureList)
+                (\i -> Dict.get i model.boxMatchupResults)
+                model.box
+
+        sortButton sort label =
+            button
+                [ onClick (SetBoxSort sort)
+                , class
+                    ("join-item btn btn-xs "
+                        ++ (if model.boxSort == sort then
+                                "btn-active"
+
+                            else
+                                "btn-ghost"
+                           )
+                    )
+                , attribute "aria-pressed"
+                    (if model.boxSort == sort then
+                        "true"
+
+                     else
+                        "false"
+                    )
+                ]
+                [ text label ]
+    in
+    div (class "flex flex-col gap-2" :: dropTargetAttributes BoxArea)
+        [ div [ class "flex items-center gap-2" ]
+            [ button [ onClick ToggleBoxCollapsed, class "flex items-center gap-2 text-left" ]
+                [ h3 [ class "text-sm font-semibold text-base-content/60" ] [ text "Box" ]
+                , span [ class "text-xs text-base-content/60 tabular-nums" ] [ text (String.fromInt (List.length model.box)) ]
+                , span [ class "text-xs text-base-content/60" ]
+                    [ text
+                        (if model.boxCollapsed then
+                            "▼"
+
+                         else
+                            "▲"
+                        )
+                    ]
+                ]
+            , div [ class "flex-1" ] []
+            , button
+                [ onClick ToggleColorCode
+                , class
+                    (if model.colorCodeEnabled then
+                        "btn btn-xs btn-info"
+
+                     else
+                        "btn btn-xs btn-outline btn-info"
+                    )
+                , attribute "aria-pressed"
+                    (if model.colorCodeEnabled then
+                        "true"
+
+                     else
+                        "false"
+                    )
+                , title
+                    (if model.colorCodeEnabled then
+                        "Turn off matchup colors"
+
+                     else
+                        "Color team and box by matchup against the current defender"
+                    )
+                ]
+                [ text
+                    (if model.colorCodeEnabled then
+                        "Color Code: On"
+
+                     else
+                        "Color Code"
+                    )
+                ]
+            , button [ class "btn btn-xs btn-ghost btn-circle", onClick ShowColorCodeHelp, attribute "aria-label" "What the colors mean" ] [ text "?" ]
+            ]
+        , if model.boxCollapsed then
+            text ""
+
+          else
+            div [ class "flex flex-col gap-2" ]
+                [ div [ class "flex items-center gap-2 flex-wrap" ]
+                    [ span [ class "text-xs text-base-content/60" ] [ text "Sort" ]
+                    , div [ class "join" ]
+                        [ sortButton SortBoxOrder "Box order"
+                        , sortButton SortMatchup "Matchup"
+                        , sortButton SortLevel "Level"
+                        , sortButton SortSpeed "Speed"
+                        ]
+                    ]
+                , if List.isEmpty model.box then
+                    div [ class "text-xs text-base-content/60 text-center py-2" ] [ text "Box is empty. Use + Add to Box under Base Stats to save the current attacker." ]
+
+                  else
+                    div [ class "grid grid-cols-[repeat(auto-fill,minmax(3.25rem,1fr))] gap-1 max-h-60 overflow-y-auto p-0.5" ]
+                        (List.map (\( i, pokemon ) -> viewRosterTile model (FromBox i) pokemon) sorted)
+                , if model.colorCodeEnabled then
+                    viewColorCodeLegend
 
                   else
                     text ""
                 ]
-            , if List.isEmpty model.team then
-                div [ class "text-xs text-base-content/60 text-center py-2" ] [ text "No Pokemon in team" ]
-
-              else
-                div [ class "flex flex-col gap-1" ]
-                    (List.indexedMap (viewTeamPokemonCompact model) model.team)
-            ]
-
-        -- Box section (collapsible)
-        , div
-            [ preventDefaultOn "dragover" (Decode.succeed ( DragOver, True ))
-            , onDrop DropOnBox
-            ]
-            [ div [ class "flex items-center justify-between mb-2" ]
-                [ button
-                    [ onClick ToggleBoxCollapsed
-                    , class "flex items-center gap-2 text-left"
-                    ]
-                    [ h3 [ class "text-sm font-semibold text-base-content/60" ]
-                        [ text ("Box [" ++ String.fromInt (List.length model.box) ++ "]") ]
-                    , span [ class "text-xs text-base-content/60" ]
-                        [ text
-                            (if model.boxCollapsed then
-                                "▼"
-
-                             else
-                                "▲"
-                            )
-                        ]
-                    ]
-                , div [ class "flex items-center gap-2" ]
-                    [ button
-                        [ onClick CalculateBoxMatchups
-                        , class "btn btn-xs btn-outline btn-info"
-                        , disabled (List.isEmpty model.box || String.isEmpty model.defender.species)
-                        ]
-                        [ text "Color Code" ]
-                    , button
-                        [ class "btn btn-xs btn-ghost btn-circle"
-                        , onClick ShowColorCodeHelp
-                        ]
-                        [ text "?" ]
-                    ]
-                ]
-            , if model.boxCollapsed then
-                text ""
-
-              else
-                div
-                    [ class
-                        (if isDraggingOverBox then
-                            "max-h-40 overflow-y-auto border-2 border-primary rounded-lg p-2"
-
-                         else
-                            "max-h-40 overflow-y-auto"
-                        )
-                    ]
-                    [ if List.isEmpty model.box then
-                        div [ class "text-xs text-base-content/60 text-center py-2" ] [ text "Box is empty" ]
-
-                      else
-                        div [ class "flex flex-col gap-1" ]
-                            (List.indexedMap (viewBoxPokemonCompact model) model.box)
-                    ]
-            ]
         ]
 
 
-viewTeamPokemonCompact : Model -> Int -> PokemonState -> Html Msg
-viewTeamPokemonCompact model index pokemon =
+viewColorCodeLegend : Html msg
+viewColorCodeLegend =
     let
-        isSelected =
-            case model.attackerSource of
-                Just (FromTeam i) ->
-                    i == index
+        item tier swatch =
+            span [ class "inline-flex items-center gap-1" ]
+                [ span [ class ("inline-block w-2.5 h-2.5 rounded-sm border-2 " ++ swatch) ] []
+                , text (matchupTierLabel tier)
+                ]
+    in
+    div [ class "flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-base-content/60" ]
+        [ item AlwaysOHKOs "border-yellow-400"
+        , item MightOHKO "border-yellow-600"
+        , item TradeOHKOs "border-teal-400"
+        , item MaybeTradeOHKOs "border-orange-500"
+        , item GetsOHKOd "border-red-500"
+        ]
 
-                _ ->
-                    False
 
-        pokemonData =
-            List.filter (\p -> p.name == pokemon.species) model.pokemonList
-                |> List.head
+{-| One team or box Pokemon: its box icon and level. The border shows (in order)
 
-        -- Get matchup result for this team Pokemon
-        matchupResult =
-            Dict.get index model.teamMatchupResults
 
-        -- Determine border color based on matchup
-        borderColor =
-            if isSelected then
-                "border-primary"
+the loaded attacker, the slot being dragged over, or the Color Code matchup.
+-}
+viewRosterTile : Model -> PokemonSource -> PokemonState -> Html Msg
+viewRosterTile model source pokemon =
+    let
+        ( target, matchup, loadMsg ) =
+            case source of
+                FromTeam i ->
+                    ( TeamSlot i, Dict.get i model.teamMatchupResults, LoadFromTeam i )
+
+                FromBox i ->
+                    ( BoxSlot i, Dict.get i model.boxMatchupResults, LoadFromBox i )
+
+        isLoaded =
+            model.attackerSource == Just source
+
+        isDragOver =
+            model.dragOverTarget == Just target && model.dragState /= Just source
+
+        stateClasses =
+            if isDragOver then
+                "border-info bg-info/10"
+
+            else if isLoaded then
+                "border-primary bg-primary/10"
 
             else
-                getBoxPokemonBorderColor matchupResult
+                getBoxPokemonBorderColor matchup ++ " hover:border-primary/60"
+
+        speed =
+            speedStat model.generation model.pokemonList model.natureList pokemon
+
+        description =
+            String.join " · "
+                ([ pokemon.species
+                 , "L" ++ String.fromInt pokemon.level
+                 , "Spe " ++ String.fromInt speed
+                 ]
+                    ++ (matchup |> Maybe.map (\m -> [ matchupTierLabel (matchupTier m) ]) |> Maybe.withDefault [])
+                )
+
+        heightClass =
+            case source of
+                FromTeam _ ->
+                    "min-h-14"
+
+                FromBox _ ->
+                    "min-h-12"
     in
-    div
-        [ class
-            (if isSelected then
-                "flex items-center justify-between p-2 bg-base-300 rounded cursor-pointer border-2 " ++ borderColor
-
-             else
-                "flex items-center justify-between p-2 bg-base-300 rounded cursor-pointer border-2 " ++ borderColor ++ " hover:border-primary"
-            )
-        , onClick (LoadFromTeam index)
-        , draggable "true"
-        , on "dragstart" (Decode.succeed (DragStart DragFromTeam index))
-        , on "dragend" (Decode.succeed DragEnd)
+    button
+        ([ class ("relative flex flex-col items-center justify-center gap-0.5 rounded-md border-2 bg-base-300 pt-1 pb-0.5 cursor-grab active:cursor-grabbing " ++ heightClass ++ " " ++ stateClasses)
+         , onClick loadMsg
+         , title description
+         , attribute "aria-label" description
+         , draggable "true"
+         , attribute "data-roster-drag" ""
+         , on "dragstart" (Decode.succeed (DragStart source))
+         , on "dragend" (Decode.succeed DragEnd)
+         ]
+            ++ dropTargetAttributes target
+        )
+        [ viewPokemonIcon model.pokemonList pokemon.species
+        , span [ class "text-[10px] leading-none text-base-content/60 tabular-nums" ] [ text (String.fromInt pokemon.level) ]
         ]
-        [ div [ class "flex items-center gap-2" ]
-            [ case pokemonData of
-                Just data ->
-                    img
-                        [ src data.spriteUrl
-                        , class "h-8"
-                        , style "image-rendering"
-                            (if data.isPixelated then
-                                "pixelated"
 
-                             else
-                                "auto"
-                            )
-                        , style "width" "auto"
-                        ]
-                        []
 
-                Nothing ->
-                    text ""
-            , span [ class "text-xs font-medium" ] [ text pokemon.species ]
-            , span [ class "text-xs text-base-content/60" ] [ text ("L" ++ String.fromInt pokemon.level) ]
-            ]
-        , div [ class "flex items-center gap-1" ]
-            [ -- Evolution button/dropdown
-              case pokemonData of
-                Just data ->
-                    if not (List.isEmpty data.evos) then
-                        if List.length data.evos == 1 then
-                            -- Single evolution - simple button
-                            case List.head data.evos of
-                                Just evo ->
-                                    button
-                                        [ class "btn btn-xs btn-ghost text-success"
-                                        , stopPropagationOn "click" (Decode.succeed ( EvolvePokemonInTeam index evo, True ))
-                                        ]
-                                        [ text ("→" ++ evo) ]
+{-| dragover/drop handlers for a drop target. They stop propagation so dropping on
 
-                                Nothing ->
-                                    text ""
 
-                        else
-                            -- Multiple evolutions - dropdown
+a slot doesn't also count as dropping on the surrounding team/box area.
+-}
+
+
+dropTargetAttributes : DropTarget -> List (Attribute Msg)
+dropTargetAttributes target =
+    [ Html.Events.custom "dragover" (Decode.succeed { message = DragOverTarget target, stopPropagation = True, preventDefault = True })
+    , Html.Events.custom "drop" (Decode.succeed { message = DropOn target, stopPropagation = True, preventDefault = True })
+    ]
+
+
+{-| Showdown's 40x30 box icon for a species (from pokemonicons-sheet.png). -}
+
+
+viewPokemonIcon : List PokemonData -> String -> Html msg
+viewPokemonIcon pokemonList species =
+    let
+        ( x, y ) =
+            pokemonList
+                |> List.filter (\p -> p.name == species)
+                |> List.head
+                |> Maybe.map (\p -> ( p.iconX, p.iconY ))
+                |> Maybe.withDefault ( 0, 0 )
+    in
+    span
+        [ class "block shrink-0"
+        , style "width" "40px"
+        , style "height" "30px"
+        , style "image-rendering" "pixelated"
+        , style "background" "url(https://play.pokemonshowdown.com/sprites/pokemonicons-sheet.png) no-repeat"
+        , style "background-position" (String.fromInt x ++ "px " ++ String.fromInt y ++ "px")
+        , attribute "aria-hidden" "true"
+        ]
+        []
+
+
+{-| The loaded attacker's team/box actions (evolve, send, release), shown once at
+
+
+the top of Loadout instead of on every team/box row.
+-}
+viewLoadedPokemonBar : Model -> Html Msg
+viewLoadedPokemonBar model =
+    let
+        roster =
+            { team = model.team, box = model.box, attackerSource = model.attackerSource }
+
+        loaded =
+            model.attackerSource
+                |> Maybe.andThen (\source -> rosterGet source roster |> Maybe.map (Tuple.pair source))
+    in
+    case loaded of
+        Nothing ->
+            div [ class "flex items-center gap-2 rounded-md bg-base-300 px-2 py-2 mb-3 text-xs text-base-content/60" ]
+                [ text "This Pokemon isn't in your team or box. Use + Add in Team or + Add to Box to save it." ]
+
+        Just ( source, pokemon ) ->
+            let
+                ( location, evolveMsg, dropdownId ) =
+                    case source of
+                        FromTeam i ->
+                            ( "Team slot " ++ String.fromInt (i + 1), EvolvePokemonInTeam i, TeamEvolutionDropdown i )
+
+                        FromBox i ->
+                            ( "Box", EvolvePokemonInBox i, BoxEvolutionDropdown i )
+
+                evos =
+                    model.pokemonList
+                        |> List.filter (\p -> p.name == pokemon.species)
+                        |> List.head
+                        |> Maybe.map .evos
+                        |> Maybe.withDefault []
+
+                evolveControl =
+                    case evos of
+                        [] ->
+                            text ""
+
+                        [ evo ] ->
+                            button [ class "btn btn-xs btn-outline btn-success", onClick (evolveMsg evo) ] [ text ("Evolve → " ++ evo) ]
+
+                        _ ->
                             div [ class "relative" ]
                                 [ button
-                                    [ class "btn btn-xs btn-ghost text-success"
-                                    , stopPropagationOn "click" (Decode.succeed ( ToggleDropdown (TeamEvolutionDropdown index), True ))
+                                    [ class "btn btn-xs btn-outline btn-success"
+                                    , stopPropagationOn "click" (Decode.succeed ( ToggleDropdown dropdownId, True ))
                                     ]
-                                    [ text "Evolve ▼" ]
-                                , if model.openDropdown == Just (TeamEvolutionDropdown index) then
-                                    div
-                                        [ class "absolute z-50 right-0 mt-1 bg-base-100 border border-base-300 rounded shadow-lg"
-                                        ]
-                                        (data.evos
-                                            |> List.map
-                                                (\evo ->
-                                                    div
-                                                        [ class "px-3 py-2 hover:bg-base-200 cursor-pointer text-xs whitespace-nowrap"
-                                                        , stopPropagationOn "click" (Decode.succeed ( EvolvePokemonInTeam index evo, True ))
-                                                        ]
-                                                        [ text ("→ " ++ evo) ]
-                                                )
+                                    [ text "Evolve ▾" ]
+                                , if model.openDropdown == Just dropdownId then
+                                    div [ class "absolute z-50 right-0 mt-1 bg-base-100 border border-base-300 rounded shadow-lg" ]
+                                        (List.map
+                                            (\evo ->
+                                                div
+                                                    [ class "px-3 py-2 hover:bg-base-200 cursor-pointer text-xs whitespace-nowrap"
+                                                    , stopPropagationOn "click" (Decode.succeed ( evolveMsg evo, True ))
+                                                    ]
+                                                    [ text ("→ " ++ evo) ]
+                                            )
+                                            evos
                                         )
 
                                   else
                                     text ""
                                 ]
 
-                    else
-                        text ""
+                sendControl =
+                    case source of
+                        FromTeam i ->
+                            button [ class "btn btn-xs btn-outline", onClick (MoveToBox i) ] [ text "Send to Box" ]
 
-                Nothing ->
-                    text ""
-            , button
-                [ onClick (MoveToBox index)
-                , class "btn btn-xs btn-ghost"
-                , stopPropagationOn "click" (Decode.succeed ( MoveToBox index, True ))
-                ]
-                [ text "→Box" ]
-            , button
-                [ onClick (RemoveFromTeam index)
-                , class "btn btn-xs btn-ghost text-error"
-                , stopPropagationOn "click" (Decode.succeed ( RemoveFromTeam index, True ))
-                ]
-                [ text "×" ]
-            ]
-        ]
+                        FromBox i ->
+                            button
+                                [ class "btn btn-xs btn-outline"
+                                , onClick (MoveToTeam i)
+                                , disabled (List.length model.team >= 6)
+                                , title
+                                    (if List.length model.team >= 6 then
+                                        "Team is full. Drag this Pokemon onto a team slot to swap."
 
-
-viewBoxPokemonCompact : Model -> Int -> PokemonState -> Html Msg
-viewBoxPokemonCompact model index pokemon =
-    let
-        isSelected =
-            case model.attackerSource of
-                Just (FromBox i) ->
-                    i == index
-
-                _ ->
-                    False
-
-        pokemonData =
-            List.filter (\p -> p.name == pokemon.species) model.pokemonList
-                |> List.head
-
-        -- Get matchup result for this box Pokemon
-        matchupResult =
-            Dict.get index model.boxMatchupResults
-
-        -- Determine border color based on matchup
-        borderColor =
-            if isSelected then
-                "border-primary"
-
-            else
-                getBoxPokemonBorderColor matchupResult
-    in
-    div
-        [ class
-            (if isSelected then
-                "flex items-center justify-between p-2 bg-base-300 rounded cursor-pointer border-2 " ++ borderColor
-
-             else
-                "flex items-center justify-between p-2 bg-base-300 rounded cursor-pointer border-2 " ++ borderColor ++ " hover:border-primary"
-            )
-        , onClick (LoadFromBox index)
-        , draggable "true"
-        , on "dragstart" (Decode.succeed (DragStart DragFromBox index))
-        , on "dragend" (Decode.succeed DragEnd)
-        ]
-        [ div [ class "flex items-center gap-2" ]
-            [ case pokemonData of
-                Just data ->
-                    img
-                        [ src data.spriteUrl
-                        , class "h-8"
-                        , style "image-rendering"
-                            (if data.isPixelated then
-                                "pixelated"
-
-                             else
-                                "auto"
-                            )
-                        , style "width" "auto"
-                        ]
-                        []
-
-                Nothing ->
-                    text ""
-            , span [ class "text-xs font-medium" ] [ text pokemon.species ]
-            , span [ class "text-xs text-base-content/60" ] [ text ("L" ++ String.fromInt pokemon.level) ]
-            , case matchupResult of
-                Just m ->
-                    span [ class "text-xs text-info" ] [ text ("Spe:" ++ String.fromInt m.attackerSpeed) ]
-
-                Nothing ->
-                    text ""
-            ]
-        , div [ class "flex items-center gap-1" ]
-            [ -- Evolution button/dropdown
-              case pokemonData of
-                Just data ->
-                    if not (List.isEmpty data.evos) then
-                        if List.length data.evos == 1 then
-                            -- Single evolution - simple button
-                            case List.head data.evos of
-                                Just evo ->
-                                    button
-                                        [ class "btn btn-xs btn-ghost text-success"
-                                        , stopPropagationOn "click" (Decode.succeed ( EvolvePokemonInBox index evo, True ))
-                                        ]
-                                        [ text ("→" ++ evo) ]
-
-                                Nothing ->
-                                    text ""
-
-                        else
-                            -- Multiple evolutions - dropdown
-                            div [ class "relative" ]
-                                [ button
-                                    [ class "btn btn-xs btn-ghost text-success"
-                                    , stopPropagationOn "click" (Decode.succeed ( ToggleDropdown (BoxEvolutionDropdown index), True ))
-                                    ]
-                                    [ text "Evolve ▼" ]
-                                , if model.openDropdown == Just (BoxEvolutionDropdown index) then
-                                    div
-                                        [ class "absolute z-50 right-0 mt-1 bg-base-100 border border-base-300 rounded shadow-lg"
-                                        ]
-                                        (data.evos
-                                            |> List.map
-                                                (\evo ->
-                                                    div
-                                                        [ class "px-3 py-2 hover:bg-base-200 cursor-pointer text-xs whitespace-nowrap"
-                                                        , stopPropagationOn "click" (Decode.succeed ( EvolvePokemonInBox index evo, True ))
-                                                        ]
-                                                        [ text ("→ " ++ evo) ]
-                                                )
-                                        )
-
-                                  else
-                                    text ""
+                                     else
+                                        "Add to the end of the team"
+                                    )
                                 ]
+                                [ text "Send to Team" ]
 
-                    else
-                        text ""
+                releaseMsg =
+                    case source of
+                        FromTeam i ->
+                            RemoveFromTeam i
 
-                Nothing ->
-                    text ""
-            , if List.length model.team < 6 then
-                button
-                    [ class "btn btn-xs btn-ghost"
-                    , stopPropagationOn "click" (Decode.succeed ( MoveToTeam index, True ))
+                        FromBox i ->
+                            RemoveFromBox i
+            in
+            div [ class "flex flex-wrap items-center gap-2 rounded-md bg-base-300 px-2 py-1.5 mb-3" ]
+                [ viewPokemonIcon model.pokemonList pokemon.species
+                , span [ class "text-sm font-medium" ] [ text pokemon.species ]
+                , span [ class "text-xs text-base-content/60 tabular-nums" ] [ text ("L" ++ String.fromInt pokemon.level) ]
+                , span [ class "text-xs text-base-content/60" ] [ text location ]
+                , div [ class "ml-auto flex flex-wrap items-center gap-1" ]
+                    [ evolveControl
+                    , sendControl
+                    , button [ class "btn btn-xs btn-ghost text-error", onClick releaseMsg ] [ text "Release" ]
                     ]
-                    [ text "→Team" ]
-
-              else
-                text ""
-            , button
-                [ class "btn btn-xs btn-ghost text-error"
-                , stopPropagationOn "click" (Decode.succeed ( RemoveFromBox index, True ))
                 ]
-                [ text "×" ]
-            ]
-        ]
 
 
 -- Loadout section (Level + Item + Moves)
@@ -4502,6 +4021,9 @@ viewLoadoutSection : Model -> Html Msg
 viewLoadoutSection model =
     div [ class "card bg-base-200 p-4" ]
         [ h3 [ class "text-sm font-semibold text-primary mb-3" ] [ text "Loadout" ]
+
+        -- Loaded Pokemon: team/box actions (evolve, send, release)
+        , viewLoadedPokemonBar model
 
         -- Level
         , div [ class "mb-3 flex items-center gap-2" ]
@@ -5152,12 +4674,13 @@ getMoveSource maybeLearnset moveName =
             ""
 
 
-
 -- ITEM SORTING FOR NUZLOCKE
 -- Priority items grouped by usefulness for in-game/Nuzlocke play
 
 
 {-| Choice items - powerful but lock you into one move -}
+
+
 choiceItems : List String
 choiceItems =
     [ "Choice Band"
@@ -5167,6 +4690,8 @@ choiceItems =
 
 
 {-| Utility items - general survivability and status -}
+
+
 utilityItems : List String
 utilityItems =
     [ "Leftovers"
@@ -5192,6 +4717,8 @@ utilityItems =
 
 
 {-| Damage boosting items - general offense -}
+
+
 damageBoostItems : List String
 damageBoostItems =
     [ "Life Orb"
@@ -5206,6 +4733,8 @@ damageBoostItems =
 
 
 {-| Type-specific damage boosters -}
+
+
 typeBoostItems : List String
 typeBoostItems =
     [ "Charcoal"
@@ -5230,6 +4759,8 @@ typeBoostItems =
 
 
 {-| Status-inducing items (for Guts, Facade, etc.) -}
+
+
 statusItems : List String
 statusItems =
     [ "Flame Orb"
@@ -5238,6 +4769,8 @@ statusItems =
 
 
 {-| Useful berries for competitive/Nuzlocke -}
+
+
 usefulBerries : List String
 usefulBerries =
     [ "Sitrus Berry"
@@ -5265,6 +4798,8 @@ usefulBerries =
 
 
 {-| Species-specific items that boost particular Pokemon -}
+
+
 speciesSpecificItems : List String
 speciesSpecificItems =
     [ "Light Ball"          -- Pikachu
@@ -5290,6 +4825,8 @@ speciesSpecificItems =
 
 
 {-| All priority items in order -}
+
+
 allPriorityItems : List String
 allPriorityItems =
     choiceItems

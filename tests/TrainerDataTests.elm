@@ -1,176 +1,191 @@
 module TrainerDataTests exposing (..)
 
-import Expect exposing (Expectation)
+import Expect
+import Helpers exposing (..)
 import Test exposing (..)
+import Types exposing (..)
 
 
-{-| Tests for trainer data loading and filtering functionality.
-These tests verify the search, filter, and navigation logic for
-trainer encounters in the damage calculator.
+{-| Tests for trainer data: game → generation mapping, trainer search, encounter
+lookup and converting a trainer's Pokemon into a calc-ready defender.
+
+These exercise the real functions in Helpers.elm. The game names must match
+src/data/trainers/index.json exactly, or the app would load Gen 9 data for a
+Gen 5 game; and the trainer → defender conversion is what every trainer battle
+in the app is calculated from.
+
 -}
 suite : Test
 suite =
-    describe "Trainer Data Tests"
-        [ describe "Game to generation mapping"
-            [ test "Gen 1 games map to generation 1" <|
+    describe "Trainer data"
+        [ describe "gameToGeneration"
+            [ test "maps every game in index.json to its generation" <|
                 \_ ->
-                    let
-                        gen1Games =
-                            [ "Red/Blue", "Yellow" ]
-
-                        gameToGen game =
-                            if List.member game gen1Games then
-                                1
-
-                            else
-                                0
-                    in
-                    Expect.all
-                        [ \_ -> Expect.equal (gameToGen "Red/Blue") 1
-                        , \_ -> Expect.equal (gameToGen "Yellow") 1
-                        ]
-                        ()
-            , test "Gen 9 games map to generation 9" <|
-                \_ ->
-                    let
-                        gen9Games =
-                            [ "Scarlet/Violet" ]
-
-                        gameToGen game =
-                            if List.member game gen9Games then
-                                9
-
-                            else
-                                0
-                    in
-                    Expect.equal (gameToGen "Scarlet/Violet") 9
+                    [ ( "Red/Blue", 1 )
+                    , ( "Yellow", 1 )
+                    , ( "Gold/Silver", 2 )
+                    , ( "Crystal", 2 )
+                    , ( "Ruby/Sapphire", 3 )
+                    , ( "Emerald", 3 )
+                    , ( "FireRed/LeafGreen", 3 )
+                    , ( "Diamond/Pearl", 4 )
+                    , ( "Platinum", 4 )
+                    , ( "HeartGold/SoulSilver", 4 )
+                    , ( "Black/White", 5 )
+                    , ( "Black2/White2", 5 )
+                    , ( "X/Y", 6 )
+                    , ( "OmegaRuby/AlphaSapphire", 6 )
+                    , ( "Sun/Moon", 7 )
+                    , ( "UltraSun/UltraMoon", 7 )
+                    , ( "Sword/Shield", 8 )
+                    , ( "BrilliantDiamond/ShiningPearl", 8 )
+                    , ( "Scarlet/Violet", 9 )
+                    , ( "Black Pearl", 9 )
+                    ]
+                        |> List.map (\( game, gen ) -> ( game, gameToGeneration game ))
+                        |> Expect.equalLists
+                            [ ( "Red/Blue", 1 )
+                            , ( "Yellow", 1 )
+                            , ( "Gold/Silver", 2 )
+                            , ( "Crystal", 2 )
+                            , ( "Ruby/Sapphire", 3 )
+                            , ( "Emerald", 3 )
+                            , ( "FireRed/LeafGreen", 3 )
+                            , ( "Diamond/Pearl", 4 )
+                            , ( "Platinum", 4 )
+                            , ( "HeartGold/SoulSilver", 4 )
+                            , ( "Black/White", 5 )
+                            , ( "Black2/White2", 5 )
+                            , ( "X/Y", 6 )
+                            , ( "OmegaRuby/AlphaSapphire", 6 )
+                            , ( "Sun/Moon", 7 )
+                            , ( "UltraSun/UltraMoon", 7 )
+                            , ( "Sword/Shield", 8 )
+                            , ( "BrilliantDiamond/ShiningPearl", 8 )
+                            , ( "Scarlet/Violet", 9 )
+                            , ( "Black Pearl", 9 )
+                            ]
             ]
-        , describe "Trainer search filtering"
-            [ test "Empty search query returns all trainers" <|
+        , describe "filterEncounters"
+            [ test "empty query keeps every encounter" <|
                 \_ ->
-                    let
-                        trainers =
-                            [ "Rival", "Gym Leader", "Elite Four" ]
-
-                        filterByQuery query list =
-                            if String.isEmpty query then
-                                list
-
-                            else
-                                List.filter (String.contains query) list
-                    in
-                    Expect.equal (filterByQuery "" trainers) trainers
-            , test "Search is case insensitive" <|
+                    filterEncounters "" encounters
+                        |> Expect.equal encounters
+            , test "matches trainer name, ignoring case" <|
                 \_ ->
-                    let
-                        trainers =
-                            [ "Rival Blue", "Gym Leader Brock", "Elite Four Brodie" ]
-
-                        filterByQuery query list =
-                            let
-                                lowerQuery =
-                                    String.toLower query
-                            in
-                            List.filter (\name -> String.contains lowerQuery (String.toLower name)) list
-                    in
-                    Expect.equal (List.length (filterByQuery "bro" trainers)) 2
-            , test "Search matches trainer name, class, and location" <|
+                    filterEncounters "BROCK" encounters
+                        |> List.map .id
+                        |> Expect.equal [ "brock" ]
+            , test "matches trainer class" <|
                 \_ ->
-                    let
-                        -- Simulating trainer with name, class, location
-                        trainerMatches query name class location =
-                            let
-                                lowerQuery =
-                                    String.toLower query
-
-                                searchIn str =
-                                    String.contains lowerQuery (String.toLower str)
-                            in
-                            searchIn name || searchIn class || searchIn location
-
-                        match1 =
-                            trainerMatches "pallet" "Blue" "Rival" "Pallet Town"
-
-                        match2 =
-                            trainerMatches "rival" "Blue" "Rival" "Pallet Town"
-
-                        match3 =
-                            trainerMatches "blue" "Blue" "Rival" "Pallet Town"
-
-                        noMatch =
-                            trainerMatches "misty" "Blue" "Rival" "Pallet Town"
-                    in
-                    Expect.all
-                        [ \_ -> Expect.equal True match1
-                        , \_ -> Expect.equal True match2
-                        , \_ -> Expect.equal True match3
-                        , \_ -> Expect.equal False noMatch
-                        ]
-                        ()
+                    filterEncounters "leader" encounters
+                        |> List.map .id
+                        |> Expect.equal [ "brock", "misty" ]
+            , test "matches location" <|
+                \_ ->
+                    filterEncounters "cerulean" encounters
+                        |> List.map .id
+                        |> Expect.equal [ "misty" ]
+            , test "matches a species on the trainer's team" <|
+                \_ ->
+                    filterEncounters "onix" encounters
+                        |> List.map .id
+                        |> Expect.equal [ "brock" ]
+            , test "no match gives an empty list" <|
+                \_ ->
+                    filterEncounters "giovanni" encounters
+                        |> Expect.equal []
             ]
-        , describe "Navigation"
-            [ test "Trainer index wraps at boundaries" <|
+        , describe "findEncounterIndex"
+            [ test "finds an encounter by id in the full list" <|
                 \_ ->
-                    let
-                        totalTrainers =
-                            10
-
-                        wrapIndex index total =
-                            if index < 0 then
-                                total - 1
-
-                            else if index >= total then
-                                0
-
-                            else
-                                index
-                    in
-                    Expect.all
-                        [ \_ -> Expect.equal (wrapIndex -1 totalTrainers) 9
-                        , \_ -> Expect.equal (wrapIndex 10 totalTrainers) 0
-                        , \_ -> Expect.equal (wrapIndex 5 totalTrainers) 5
-                        ]
-                        ()
-            , test "Clamp index stays within bounds" <|
+                    findEncounterIndex (encounter "misty" "Leader" "Misty" "Cerulean City" []) encounters
+                        |> Expect.equal (Just 2)
+            , test "Nothing when the encounter isn't in the list" <|
                 \_ ->
-                    let
-                        clamp low high value =
-                            max low (min high value)
-                    in
-                    Expect.all
-                        [ \_ -> Expect.equal (clamp 0 9 -1) 0
-                        , \_ -> Expect.equal (clamp 0 9 10) 9
-                        , \_ -> Expect.equal (clamp 0 9 5) 5
-                        ]
-                        ()
+                    findEncounterIndex (encounter "sabrina" "Leader" "Sabrina" "Saffron City" []) encounters
+                        |> Expect.equal Nothing
             ]
-        , describe "Team/Box persistence"
-            [ test "Team can store multiple Pokemon" <|
+        , describe "trainerPokemonToState"
+            [ test "carries species, level, ability, item, nature, IVs and EVs" <|
                 \_ ->
                     let
-                        team =
-                            [ "Pikachu", "Charizard", "Blastoise" ]
+                        state =
+                            trainerPokemonToState geodude
                     in
-                    Expect.equal (List.length team) 3
-            , test "Removing from team updates list correctly" <|
+                    Expect.all
+                        [ \s -> Expect.equal "Geodude" s.species
+                        , \s -> Expect.equal 12 s.level
+                        , \s -> Expect.equal "Sturdy" s.ability
+                        , \s -> Expect.equal "Oran Berry" s.item
+                        , \s -> Expect.equal "Adamant" s.nature
+                        , \s -> Expect.equal geodude.ivs s.ivs
+                        , \s -> Expect.equal geodude.evs s.evs
+                        ]
+                        state
+            , test "starts at full HP with no boosts or status" <|
                 \_ ->
                     let
-                        team =
-                            [ "Pikachu", "Charizard", "Blastoise" ]
-
-                        removeAt index list =
-                            List.take index list ++ List.drop (index + 1) list
+                        state =
+                            trainerPokemonToState geodude
                     in
-                    Expect.equal (removeAt 1 team) [ "Pikachu", "Blastoise" ]
-            , test "Adding to team appends to list" <|
+                    ( state.curHP, state.boosts, state.status )
+                        |> Expect.equal ( 100, defaultStats, "" )
+            , test "pads the moveset to four slots" <|
                 \_ ->
-                    let
-                        team =
-                            [ "Pikachu", "Charizard" ]
-
-                        newTeam =
-                            team ++ [ "Venusaur" ]
-                    in
-                    Expect.equal newTeam [ "Pikachu", "Charizard", "Venusaur" ]
+                    trainerPokemonToState { geodude | moves = [ "Tackle" ] }
+                        |> .moves
+                        |> List.map .name
+                        |> Expect.equal [ "Tackle", "", "", "" ]
+            , test "keeps only the first four moves" <|
+                \_ ->
+                    trainerPokemonToState { geodude | moves = [ "A", "B", "C", "D", "E" ] }
+                        |> .moves
+                        |> List.map .name
+                        |> Expect.equal [ "A", "B", "C", "D" ]
+            , test "treats \"No Move\" from the trainer data as an empty slot" <|
+                \_ ->
+                    trainerPokemonToState { geodude | moves = [ "Tackle", "No Move", "Rock Throw", "No Move" ] }
+                        |> .moves
+                        |> List.map .name
+                        |> Expect.equal [ "Tackle", "", "Rock Throw", "" ]
+            , test "defaults a missing nature to Hardy" <|
+                \_ ->
+                    trainerPokemonToState { geodude | nature = "" }
+                        |> .nature
+                        |> Expect.equal "Hardy"
             ]
         ]
+
+
+geodude : TrainerPokemon
+geodude =
+    { species = "Geodude"
+    , level = 12
+    , ability = "Sturdy"
+    , item = "Oran Berry"
+    , nature = "Adamant"
+    , ivs = { defaultStats | hp = 20, atk = 25, def = 31 }
+    , evs = { defaultStats | atk = 8 }
+    , moves = [ "Tackle", "Defense Curl", "Rock Throw", "Rock Polish" ]
+    }
+
+
+encounter : String -> String -> String -> String -> List String -> TrainerEncounter
+encounter id trainerClass trainerName location team =
+    { id = id
+    , trainerClass = trainerClass
+    , trainerName = trainerName
+    , location = location
+    , game = "Red/Blue"
+    , isDouble = False
+    , team = List.map (\species -> { geodude | species = species }) team
+    }
+
+
+encounters : List TrainerEncounter
+encounters =
+    [ encounter "rival1" "Rival" "Blue" "Pallet Town" [ "Squirtle" ]
+    , encounter "brock" "Leader" "Brock" "Pewter City" [ "Geodude", "Onix" ]
+    , encounter "misty" "Leader" "Misty" "Cerulean City" [ "Staryu", "Starmie" ]
+    ]

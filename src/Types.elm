@@ -1,7 +1,6 @@
 module Types exposing (..)
 
 import Dict exposing (Dict)
-import Json.Decode
 
 
 -- CORE MODEL TYPES
@@ -37,7 +36,7 @@ type alias Model =
     , team : List PokemonState
     , box : List PokemonState
     , attackerSource : Maybe PokemonSource
-    , dragState : Maybe DragState
+    , dragState : Maybe PokemonSource
     , settingsLoaded : Bool
     , allGameData : Dict String GameSaveData
     -- UI collapse states for redesign
@@ -60,6 +59,51 @@ type alias Model =
     , boxMatchupResults : Dict Int BoxMatchupResult
     -- Team matchup results (same structure as box)
     , teamMatchupResults : Dict Int BoxMatchupResult
+    -- Color Code toggle: while on, matchups recalculate whenever the team, box, defender or field changes
+    , colorCodeEnabled : Bool
+    -- Display order of the box grid (does not change the stored box order)
+    , boxSort : BoxSort
+    -- Slot currently under a dragged Pokemon, for drop highlighting
+    , dragOverTarget : Maybe DropTarget
+    }
+
+
+{-| Color Code category of a team/box Pokemon against the current defender.
+Single source for both the border colors and the "Matchup" box sort.
+-}
+type MatchupTier
+    = TradeOHKOs -- both sides OHKO each other (teal)
+    | MaybeTradeOHKOs -- both sides might OHKO each other (orange)
+    | GetsOHKOd -- gets or might get OHKO'd (red)
+    | AlwaysOHKOs -- always OHKOs and is safe (yellow)
+    | MightOHKO -- might OHKO and is safe (muted yellow)
+    | NoOHKO -- nobody is OHKO'd
+
+
+type BoxSort
+    = SortBoxOrder
+    | SortMatchup
+    | SortLevel
+    | SortSpeed
+
+
+{-| Where a dragged team/box Pokemon was dropped. Slots swap with whatever is
+there; the areas (empty space around the slots) append to the end.
+-}
+type DropTarget
+    = TeamSlot Int
+    | BoxSlot Int
+    | TeamArea
+    | BoxArea
+
+
+{-| The team, box and which of their Pokemon is loaded as the attacker.
+Roster operations keep attackerSource pointing at the same Pokemon as it moves.
+-}
+type alias Roster =
+    { team : List PokemonState
+    , box : List PokemonState
+    , attackerSource : Maybe PokemonSource
     }
 
 
@@ -82,17 +126,6 @@ type DropdownId
 type PokemonSource
     = FromTeam Int
     | FromBox Int
-
-
-type alias DragState =
-    { source : DragSource
-    , index : Int
-    }
-
-
-type DragSource
-    = DragFromTeam
-    | DragFromBox
 
 
 type MoveSource
@@ -225,6 +258,9 @@ type alias PokemonData =
     , spriteWidth : Int
     , spriteHeight : Int
     , isPixelated : Bool
+    -- Offset of this species' 40x30 icon in Showdown's pokemonicons-sheet.png (team/box grid)
+    , iconX : Int
+    , iconY : Int
     }
 
 
@@ -300,131 +336,6 @@ type alias GameSaveData =
     , selectedTrainerIndex : Int
     , levelCap : Maybe Int
     }
-
-
--- MESSAGE TYPE
-
-
-type Msg
-    = SetGeneration Int
-    | SetAttackerSpecies String
-    | SetDefenderSpecies String
-    | SetAttackerLevel Int
-    | SetDefenderLevel Int
-    | SetAttackerNature String
-    | SetDefenderNature String
-    | SetAttackerAbility String
-    | SetDefenderAbility String
-    | SetAttackerItem String
-    | SetDefenderItem String
-    | SetAttackerStatus String
-    | SetDefenderStatus String
-    | SetAttackerMove Int String
-    | SetDefenderMove Int String
-    | SetFieldWeather String
-    | SetFieldTerrain String
-    | SetFieldGameType String
-    | SetFieldGravity Bool
-    | Calculate
-    | ReceivedCalculation Json.Decode.Value
-    | ReceivedPokemonList Json.Decode.Value
-    | ReceivedMoveList Json.Decode.Value
-    | ReceivedItemList Json.Decode.Value
-    | ReceivedAbilityList Json.Decode.Value
-    | ReceivedNatureList Json.Decode.Value
-    | ReceivedLearnset Json.Decode.Value
-    | SetAttackerEV String Int
-    | SetDefenderEV String Int
-    | SetAttackerIV String Int
-    | SetDefenderIV String Int
-    | SetAttackerTeraType String
-    | SetDefenderTeraType String
-    | SetAttackerBoost String Int
-    | SetDefenderBoost String Int
-    | SetAttackerCurHP Int
-    | SetDefenderCurHP Int
-    | SetAttackerMoveCrit Int Bool
-    | SetAttackerMoveHits Int Int
-    | SetDefenderMoveCrit Int Bool
-    | SetDefenderMoveHits Int Int
-      -- Attacker side conditions
-    | SetAttackerSideReflect Bool
-    | SetAttackerSideLightScreen Bool
-    | SetAttackerSideAuroraVeil Bool
-    | SetAttackerSideTailwind Bool
-    | SetAttackerSideHelpingHand Bool
-    | SetAttackerSideSpikes Int
-    | SetAttackerSideStealthRock Bool
-      -- Defender side conditions
-    | SetDefenderSideReflect Bool
-    | SetDefenderSideLightScreen Bool
-    | SetDefenderSideAuroraVeil Bool
-    | SetDefenderSideTailwind Bool
-    | SetDefenderSideHelpingHand Bool
-    | SetDefenderSideSpikes Int
-    | SetDefenderSideStealthRock Bool
-    | SetAttackerDynamax Bool
-    | SetDefenderDynamax Bool
-    | SelectMove MoveSource Int
-    | LoadedSettings Json.Decode.Value
-      -- Trainer data messages
-    | ReceivedAvailableGames Json.Decode.Value
-    | ReceivedTrainerData Json.Decode.Value
-    | SetSelectedGame String
-    | SetTrainerSearchQuery String
-    | SelectTrainer Int
-    | SelectFromSearchResults TrainerEncounter
-    | CloseSearchDropdown
-    | NextTrainer
-    | PrevTrainer
-    | LoadTrainerToDefender Int
-      -- Team/Box management (attacker only)
-    | AddToBox
-    | LoadFromBox Int
-    | RemoveFromBox Int
-    | AddToTeam
-    | LoadFromTeam Int
-    | RemoveFromTeam Int
-    | MoveToTeam Int -- Move from box to team
-    | MoveToBox Int -- Move from team to box
-      -- Evolution and form switching
-    | EvolvePokemonInBox Int String -- box index, target species name
-    | EvolvePokemonInTeam Int String -- team index, target species name
-    | SwitchAttackerForm String -- Switch current attacker to a different form
-    | SwitchDefenderForm String -- Switch current defender to a different form
-    | SwitchTeamPokemonForm Int String -- team index, target form name
-    | SwitchBoxPokemonForm Int String -- box index, target form name
-      -- Drag and drop
-    | DragStart DragSource Int
-    | DragEnd
-    | DragOver
-    | DropOnTeam
-    | DropOnBox
-      -- UI collapse toggles
-    | ToggleFieldCollapsed
-    | ToggleBattleStateCollapsed
-    | ToggleAttackerBaseStatsCollapsed
-    | ToggleDefenderBaseStatsCollapsed
-    | ToggleBoxCollapsed
-    | ToggleDefenderEditMode
-      -- Dropdown toggles
-    | ToggleDropdown DropdownId
-    | OpenDropdown DropdownId
-    | CloseDropdown
-      -- Reset game data
-    | RequestResetGameData
-    | ConfirmResetGameData
-    | CancelResetGameData
-      -- Level cap for ROM hacks
-    | SetLevelCap (Maybe Int)
-    | ApplyLevelCapToAll
-      -- Box matchup calculations
-    | CalculateBoxMatchups
-    | ReceivedBoxMatchupResult Json.Decode.Value
-    | ReceivedTeamMatchupResult Json.Decode.Value
-      -- Color code help modal
-    | ShowColorCodeHelp
-    | HideColorCodeHelp
 
 
 -- DEFAULT VALUES
