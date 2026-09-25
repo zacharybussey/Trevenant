@@ -5510,8 +5510,8 @@ viewOpponentSection model =
         , case encounter of
             Just enc ->
                 div [ class "flex flex-col gap-2" ]
-                    [ div [ class "text-xs" ]
-                        [ span [ class "font-medium" ] [ text (enc.trainerClass ++ " " ++ enc.trainerName) ]
+                    [ div [ class "text-sm" ]
+                        [ span [ class "font-semibold text-base-content" ] [ text (String.trim (enc.trainerClass ++ " " ++ enc.trainerName)) ]
                         , if String.isEmpty enc.location then
                             text ""
 
