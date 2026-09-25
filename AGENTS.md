@@ -46,6 +46,7 @@
 - Tests must import and exercise the real modules (Helpers, Types). Tests that re-implement the logic inside the test pass no matter what the app does.
   - EvolutionTests.elm - Evolving keeps moves/IVs/etc. and maps ability by slot
   - RosterTests.elm - Team/box drag-drop swaps, box sorting, Speed stat
+- elm-test must stay on the 0.19.1-revisionN line: elm-test 0.19.2 targets the Elm 0.19.2 compiler and fails with "ELM VERSION MISMATCH" against this project's Elm 0.19.1.
 - Windows: plain `npm test` fails with ENOENT (elm-test can't spawn `elm` without the .cmd extension). Run `npx elm-test --compiler "$(cygpath -w $PWD/node_modules/.bin/elm.cmd)"` from Git Bash instead; this works without WSL.
 
 ## Code layout
