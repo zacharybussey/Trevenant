@@ -4014,8 +4014,8 @@ viewBattlePane model =
             ]
         , viewFieldConditionsContent model
         , div [ class "grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-base-300 pt-3" ]
-            [ viewBattleStateSection "Attacker" model.attacker model.generation model.pokemonList True
-            , viewBattleStateSection "Defender" model.defender model.generation model.pokemonList False
+            [ viewBattleStateSection "Attacker" model.attacker (gameHasTera model.selectedGame model.generation) model.pokemonList True
+            , viewBattleStateSection "Defender" model.defender (gameHasTera model.selectedGame model.generation) model.pokemonList False
             ]
         ]
 
@@ -5771,8 +5771,8 @@ viewFieldConditionsContent model =
 {-| One side's battle state, compact enough for the Battle & Field pane:
 HP slider, then status and Tera, then the five stat stages in a row.
 -}
-viewBattleStateSection : String -> PokemonState -> Int -> List PokemonData -> Bool -> Html Msg
-viewBattleStateSection title pokemon generation pokemonList isAttacker =
+viewBattleStateSection : String -> PokemonState -> Bool -> List PokemonData -> Bool -> Html Msg
+viewBattleStateSection title pokemon hasTera pokemonList isAttacker =
     let
         statusMsg =
             if isAttacker then
@@ -5845,7 +5845,7 @@ viewBattleStateSection title pokemon generation pokemonList isAttacker =
                 , option [ value "Sleep", selected (pokemon.status == "Sleep") ] [ text "Sleep" ]
                 , option [ value "Freeze", selected (pokemon.status == "Freeze") ] [ text "Freeze" ]
                 ]
-            , if generation >= 9 then
+            , if hasTera then
                 span [ class "flex items-center gap-2" ]
                     [ span [ class "text-base-content/60" ] [ text "Tera" ]
                     , input

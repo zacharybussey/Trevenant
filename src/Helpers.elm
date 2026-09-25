@@ -77,6 +77,14 @@ evolvePokemon pokemonList targetSpecies pokemon =
     { pokemon | species = targetSpecies, ability = newAbility }
 
 
+{-| Whether Terastallization exists in this game. It's a Gen 9 mechanic, but
+ROM hacks on the Gen 9 engine don't necessarily have it: Black Pearl doesn't.
+-}
+gameHasTera : String -> Int -> Bool
+gameHasTera game generation =
+    generation >= 9 && game /= "Black Pearl"
+
+
 
 -- BATTLE STATE HELPERS
 

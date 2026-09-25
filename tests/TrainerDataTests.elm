@@ -66,6 +66,14 @@ suite =
                             , ( "Black Pearl", 9 )
                             ]
             ]
+        , describe "gameHasTera"
+            [ test "Scarlet/Violet has Tera" <|
+                \_ -> Expect.equal True (gameHasTera "Scarlet/Violet" 9)
+            , test "Black Pearl runs on the Gen 9 engine but has no Tera" <|
+                \_ -> Expect.equal False (gameHasTera "Black Pearl" 9)
+            , test "earlier generations have no Tera" <|
+                \_ -> Expect.equal False (gameHasTera "Sword/Shield" 8)
+            ]
         , describe "filterEncounters"
             [ test "empty query keeps every encounter" <|
                 \_ ->
