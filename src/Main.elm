@@ -5678,18 +5678,7 @@ viewMatchupBoard model =
 
     else
         div [ class "flex flex-col gap-2 md:flex-1 md:min-h-0" ]
-            [ div [ class "flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-base-content/60" ]
-                (span [] [ text "Each cell: ", span [ class "text-base-content" ] [ text "best % dealt" ], text " / ", span [ class "text-orange-400" ] [ text "worst % taken" ] ]
-                    :: List.map
-                        (\tier ->
-                            span [ class "inline-flex items-center gap-1" ]
-                                [ span [ class ("inline-block w-2.5 h-2.5 rounded-sm " ++ matchupTierCellBackground tier) ] []
-                                , text (matchupTierLabel tier)
-                                ]
-                        )
-                        [ AlwaysOHKOs, MightOHKO, TradeOHKOs, MaybeTradeOHKOs, GetsOHKOd ]
-                )
-            , div [ class "overflow-auto max-h-96 md:max-h-none md:flex-1 md:min-h-0" ]
+            [ div [ class "overflow-auto max-h-96 md:max-h-none md:flex-1 md:min-h-0" ]
                 [ table [ class "border-separate border-spacing-0.5" ]
                     [ thead []
                         [ tr [] (th [ class "sticky left-0 top-0 bg-base-200 z-20" ] [] :: List.indexedMap headerCell opponents) ]
@@ -5705,6 +5694,17 @@ viewMatchupBoard model =
                         )
                     ]
                 ]
+            , div [ class "flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-base-content/60" ]
+                (span [] [ text "Each cell: ", span [ class "text-base-content" ] [ text "best % dealt" ], text " / ", span [ class "text-orange-400" ] [ text "worst % taken" ] ]
+                    :: List.map
+                        (\tier ->
+                            span [ class "inline-flex items-center gap-1" ]
+                                [ span [ class ("inline-block w-2.5 h-2.5 rounded-sm " ++ matchupTierCellBackground tier) ] []
+                                , text (matchupTierLabel tier)
+                                ]
+                        )
+                        [ AlwaysOHKOs, MightOHKO, TradeOHKOs, MaybeTradeOHKOs, GetsOHKOd ]
+                )
             ]
 
 
