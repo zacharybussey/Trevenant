@@ -42,6 +42,7 @@
 - Test framework: elm-test (elm-explorations/test 2.2.0)
 - Test files:
   - TrainerDataTests.elm - gameToGeneration, trainer search, encounter lookup, trainer → defender conversion
+  - DecoderTests.elm - port result decoders (matchup result defenderIndex routing)
   - DropdownTests.elm - re-implements dropdown logic inline (does not import the app); convert when the helpers are extracted
 - Tests must import and exercise the real modules (Helpers, Types). Tests that re-implement the logic inside the test pass no matter what the app does.
   - EvolutionTests.elm - Evolving keeps moves/IVs/etc. and maps ability by slot
@@ -54,6 +55,12 @@
 - One definition per helper: shared pure functions live in `src/Helpers.elm`, types in `src/Types.elm`. `Main.elm` imports both with `exposing (..)`; a duplicate definition in Main.elm silently shadows the Helpers one, so never copy a helper into Main.elm.
 - Decode failures on any port are reported through the `logError` port to the browser console. Check the console first when data seems to be missing.
 - `src/index.js`: `buildPokemon`/`buildField`/`damageOf` are the single place @smogon/calc objects are built; all three calc ports use them.
+
+## Layout
+
+- The page is a one-screen workspace at `lg` and up (`lg:h-screen`, no page scroll): toolbar, damage strip, then Team+Box (left) and Opponent / Defender / Loadout / collapsibles (right, scrolls on its own). Keep new right-column content inside that column; anything that must stay visible while browsing the box belongs in the damage strip.
+- Box panel has two views: Grid (icons, sort, Color Code vs the current defender) and Board (every team/box Pokemon vs every Pokemon of the selected trainer). Board results reuse the matchup ports with a `defenderIndex` echo; see `updateWithMatchups` / `boardCommands` in Main.elm.
+- Headless layout check: `node layout-check.mjs` in the scratch `h` folder builds a roster against Black Pearl Dan and reports page scroll, strip height, board cells and right-column overflow at 1280x1280 (see the puppeteer scripts there for the pattern: esbuild bundle of src/index.js + `npx elm make` output + PostCSS-built styles).
 
 ## Key Features
 

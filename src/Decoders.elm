@@ -91,6 +91,7 @@ boxMatchupResultDecoder =
         |> andMap (Decode.field "isWall" Decode.bool)
         |> andMap (Decode.field "bestDamagePercent" Decode.float)
         |> andMap (Decode.field "worstDamageTaken" Decode.float)
+        |> andMap (Decode.oneOf [ Decode.field "defenderIndex" (Decode.nullable Decode.int), Decode.succeed Nothing ])
 
 
 

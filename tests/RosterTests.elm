@@ -210,6 +210,7 @@ matchupResult flags damage =
     , isWall = False
     , bestDamagePercent = damage
     , worstDamageTaken = 0
+    , defenderIndex = Nothing
     }
 
 

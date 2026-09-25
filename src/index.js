@@ -102,7 +102,7 @@ function damageOf(generation, attacker, defender, move, field) {
 
 function koChanceText(result) {
     try {
-        const ko = result.kochance();
+        const ko = result.kochance(false); // err=false: no throw on 0-damage (immune) moves
         return ko && ko.text ? ko.text : '';
     } catch (e) {
         return ''; // KO chance isn't available for every calculation
@@ -137,7 +137,7 @@ function moveResult(generation, attacker, defender, moveData, field) {
             damagePercent: normal.percent,
             critDamage: crit.range,
             critDamagePercent: crit.percent,
-            description: normal.result.fullDesc(),
+            description: normal.result.fullDesc("%", false), // err=false, see koChanceText
             koChance: koChanceText(normal.result),
             critKoChance: koChanceText(crit.result),
             damageRolls: normal.rolls,
@@ -620,6 +620,8 @@ function calculateMatchup(data) {
 
     return {
         boxIndex: boxIndex,
+        // Matchup board requests say which opponent-team member this is against; Color Code requests don't
+        defenderIndex: data.defenderIndex === undefined ? null : data.defenderIndex,
         attackerSpeed: effectiveSpeed(generation, attackerPokemon, attacker, field ? field.attackerSide : null),
         defenderSpeed: effectiveSpeed(generation, defenderPokemon, defender, field ? field.defenderSide : null),
         canOHKO: dealt.guaranteedOHKO,

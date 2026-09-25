@@ -179,6 +179,9 @@ init flags =
             , colorCodeEnabled = False
             , boxSort = SortBoxOrder
             , dragOverTarget = Nothing
+            , boxView = BoxGrid
+            , boardResults = Dict.empty
+            , teamBoardResults = Dict.empty
             }
     in
     ( initialModel
@@ -314,6 +317,8 @@ type Msg
       -- Box matchup calculations (Color Code) and box sorting
     | ToggleColorCode
     | SetBoxSort BoxSort
+    | SetBoxView BoxView
+    | SelectPairing PokemonSource Int -- roster Pokemon vs the opponent team member at this index
     | ReceivedBoxMatchupResult Decode.Value
     | ReceivedTeamMatchupResult Decode.Value
       -- Color code help modal
@@ -360,14 +365,13 @@ matchupTierBorder tier =
             "border-transparent"
 
 
-{-| Wraps `update` so Color Code stays current. While it's on, any change to the
-
-team, box, defender, field, generation or species data re-requests every
-
-team/box matchup, instead of each handler having to remember to. Results are
-
-keyed by list index, so entries past the end of a shrunk list are dropped.
-
+{-| Wraps `update` so the matchup colors and the matchup board stay current.
+Color Code compares every team/box Pokemon with the current defender; the board
+compares them with every Pokemon on the opponent's team. Whenever an input to
+either changes (roster, defender or opponent team, field, generation, species
+data) the affected results are re-requested, instead of each handler having to
+remember to. Results are keyed by list index, so entries past the end of a
+shrunk list are dropped.
 -}
 updateWithMatchups : Msg -> Model -> ( Model, Cmd Msg )
 updateWithMatchups msg model =
@@ -378,59 +382,113 @@ updateWithMatchups msg model =
         rosterChanged =
             newModel.team /= model.team || newModel.box /= model.box
 
-        inputsChanged =
+        sharedChanged =
             rosterChanged
-                || newModel.defender
-                /= model.defender
                 || newModel.field
                 /= model.field
                 || newModel.generation
                 /= model.generation
                 || newModel.pokemonList
                 /= model.pokemonList
-                || (newModel.colorCodeEnabled && not model.colorCodeEnabled)
+
+        wantColors =
+            newModel.colorCodeEnabled
+
+        colorInputsChanged =
+            sharedChanged
+                || newModel.defender
+                /= model.defender
+                || (wantColors && not model.colorCodeEnabled)
+
+        wantBoard =
+            newModel.boxView == BoxBoard && not newModel.boxCollapsed
+
+        boardInputsChanged =
+            sharedChanged
+                || opponentTeam newModel
+                /= opponentTeam model
+                || (wantBoard && not (model.boxView == BoxBoard && not model.boxCollapsed))
+
+        opponentCount =
+            List.length (opponentTeam newModel)
 
         -- Without a valid defender there is nothing to compare against, so old colors are cleared
-        keep i list =
+        keepColor i list =
             hasValidDefender newModel && i < List.length list
+
+        keepBoard ( i, j ) list =
+            i < List.length list && j < opponentCount
 
         pruned =
             { newModel
-                | boxMatchupResults = Dict.filter (\i _ -> keep i newModel.box) newModel.boxMatchupResults
-                , teamMatchupResults = Dict.filter (\i _ -> keep i newModel.team) newModel.teamMatchupResults
+                | boxMatchupResults = Dict.filter (\i _ -> keepColor i newModel.box) newModel.boxMatchupResults
+                , teamMatchupResults = Dict.filter (\i _ -> keepColor i newModel.team) newModel.teamMatchupResults
+                , boardResults = Dict.filter (\key _ -> keepBoard key newModel.box) newModel.boardResults
+                , teamBoardResults = Dict.filter (\key _ -> keepBoard key newModel.team) newModel.teamBoardResults
             }
     in
-    if newModel.colorCodeEnabled && inputsChanged then
-        ( pruned, Cmd.batch [ cmd, matchupCommands pruned ] )
+    ( pruned
+    , Cmd.batch
+        [ cmd
+        , if wantColors && colorInputsChanged then
+            matchupCommands pruned
 
-    else
-        ( newModel, cmd )
+          else
+            Cmd.none
+        , if wantBoard && boardInputsChanged then
+            boardCommands pruned
+
+          else
+            Cmd.none
+        ]
+    )
 
 
 {-| One matchup request per team and box Pokemon against the current defender.
 -}
 matchupCommands : Model -> Cmd Msg
 matchupCommands model =
-    let
-        request port_ index pokemon =
-            port_
-                (Encode.object
-                    [ ( "generation", Encode.int model.generation )
-                    , ( "boxIndex", Encode.int index )
-                    , ( "attacker", encodePokemon pokemon )
-                    , ( "defender", encodePokemon model.defender )
-                    , ( "field", encodeField model.field )
-                    ]
-                )
-    in
     if hasValidDefender model then
         Cmd.batch
-            (List.indexedMap (request requestBoxMatchup) model.box
-                ++ List.indexedMap (request requestTeamMatchup) model.team
+            (List.indexedMap (matchupRequest model requestBoxMatchup Nothing model.defender) model.box
+                ++ List.indexedMap (matchupRequest model requestTeamMatchup Nothing model.defender) model.team
             )
 
     else
         Cmd.none
+
+
+{-| One request per team/box Pokemon per opponent team member, for the matchup board.
+-}
+boardCommands : Model -> Cmd Msg
+boardCommands model =
+    let
+        isKnown opponent =
+            List.any (\p -> p.name == opponent.species) model.pokemonList
+
+        against j opponent =
+            if isKnown opponent then
+                List.indexedMap (matchupRequest model requestBoxMatchup (Just j) opponent) model.box
+                    ++ List.indexedMap (matchupRequest model requestTeamMatchup (Just j) opponent) model.team
+
+            else
+                []
+    in
+    Cmd.batch (List.concat (List.indexedMap against (opponentTeam model)))
+
+
+matchupRequest : Model -> (Encode.Value -> Cmd Msg) -> Maybe Int -> PokemonState -> Int -> PokemonState -> Cmd Msg
+matchupRequest model port_ defenderIndex defender index pokemon =
+    port_
+        (Encode.object
+            [ ( "generation", Encode.int model.generation )
+            , ( "boxIndex", Encode.int index )
+            , ( "defenderIndex", Maybe.map Encode.int defenderIndex |> Maybe.withDefault Encode.null )
+            , ( "attacker", encodePokemon pokemon )
+            , ( "defender", encodePokemon defender )
+            , ( "field", encodeField model.field )
+            ]
+        )
 
 
 hasValidDefender : Model -> Bool
@@ -2125,14 +2183,22 @@ update msg model =
             case findEncounterIndex encounter model.trainerEncounters of
                 Just index ->
                     let
+                        -- Same as Prev/Next: the trainer's lead becomes the defender
+                        newDefender =
+                            List.head encounter.team
+                                |> Maybe.map trainerPokemonToState
+                                |> Maybe.withDefault model.defender
+
                         newModel =
                             { model
                                 | selectedTrainerIndex = index
+                                , defender = newDefender
                                 , trainerSearchQuery = ""
                                 , filteredEncounters = model.trainerEncounters
                             }
                     in
-                    ( newModel, saveToLocalStorage (encodeSettings newModel) )
+                    updateAndCalculate (\m -> m) newModel
+                        |> (\( m, cmd ) -> ( m, Cmd.batch [ cmd, saveToLocalStorage (encodeSettings m) ] ))
 
                 Nothing ->
                     ( model, Cmd.none )
@@ -2743,10 +2809,36 @@ update msg model =
             , Cmd.none
             )
 
+        SetBoxView boxView ->
+            ( { model | boxView = boxView }, Cmd.none )
+
+        SelectPairing source opponentIndex ->
+            let
+                ( withDefender, defenderCmd ) =
+                    update (LoadTrainerToDefender opponentIndex) model
+
+                loadMsg =
+                    case source of
+                        FromTeam i ->
+                            LoadFromTeam i
+
+                        FromBox i ->
+                            LoadFromBox i
+
+                ( withAttacker, attackerCmd ) =
+                    update loadMsg withDefender
+            in
+            ( withAttacker, Cmd.batch [ defenderCmd, attackerCmd ] )
+
         ReceivedBoxMatchupResult value ->
             case Decode.decodeValue boxMatchupResultDecoder value of
                 Ok result ->
-                    ( { model | boxMatchupResults = Dict.insert result.boxIndex result model.boxMatchupResults }, Cmd.none )
+                    case result.defenderIndex of
+                        Just j ->
+                            ( { model | boardResults = Dict.insert ( result.boxIndex, j ) result model.boardResults }, Cmd.none )
+
+                        Nothing ->
+                            ( { model | boxMatchupResults = Dict.insert result.boxIndex result model.boxMatchupResults }, Cmd.none )
 
                 Err err ->
                     ( model, logError ("ReceivedBoxMatchupResult: " ++ Decode.errorToString err) )
@@ -2754,7 +2846,12 @@ update msg model =
         ReceivedTeamMatchupResult value ->
             case Decode.decodeValue boxMatchupResultDecoder value of
                 Ok result ->
-                    ( { model | teamMatchupResults = Dict.insert result.boxIndex result model.teamMatchupResults }, Cmd.none )
+                    case result.defenderIndex of
+                        Just j ->
+                            ( { model | teamBoardResults = Dict.insert ( result.boxIndex, j ) result model.teamBoardResults }, Cmd.none )
+
+                        Nothing ->
+                            ( { model | teamMatchupResults = Dict.insert result.boxIndex result model.teamMatchupResults }, Cmd.none )
 
                 Err err ->
                     ( model, logError ("ReceivedTeamMatchupResult: " ++ Decode.errorToString err) )
@@ -2912,7 +3009,7 @@ keyDecoder =
 
 view : Model -> Html Msg
 view model =
-    div [ class "container mx-auto p-4 max-w-7xl" ]
+    div [ class "mx-auto w-full max-w-[1600px] p-3 flex flex-col gap-3 lg:h-screen lg:overflow-hidden" ]
         [ -- Backdrop for click-outside to close dropdowns
           if model.openDropdown /= Nothing then
             div
@@ -3016,41 +3113,18 @@ view model =
         ]
 
 
-viewHeader : Model -> Html Msg
-viewHeader model =
-    header [ class "card bg-base-200 p-4 mb-4" ]
-        [ div [ class "flex items-center justify-between" ]
-            [ div [ class "flex items-center gap-2" ]
-                [ img
-                    [ src "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/709.png"
-                    , class "w-10 h-10"
-                    ]
-                    []
-                , h1 [ class "text-2xl font-bold text-primary" ] [ text "Trevenant" ]
-                ]
-            , select [ onInput SetSelectedGame, class "select select-bordered select-sm" ]
-                (List.map
-                    (\game ->
-                        option [ value game, selected (game == model.selectedGame) ] [ text game ]
-                    )
-                    model.availableGames
-                )
-            ]
-        ]
-
-
 
 -- Helper for collapsible sections
 
 
 viewCollapsibleSection : String -> Bool -> Msg -> Html Msg -> Html Msg
 viewCollapsibleSection title isCollapsed toggleMsg content =
-    div [ class "card bg-base-200 p-4" ]
+    div [ class "card bg-base-200 p-3" ]
         [ button
             [ onClick toggleMsg
             , class "flex items-center justify-between w-full text-left"
             ]
-            [ h3 [ class "text-lg font-semibold text-primary" ] [ text title ]
+            [ h3 [ class "text-sm font-semibold text-primary" ] [ text title ]
             , span [ class "text-base-content/60" ]
                 [ text
                     (if isCollapsed then
@@ -3065,30 +3139,7 @@ viewCollapsibleSection title isCollapsed toggleMsg content =
             text ""
 
           else
-            div [ class "mt-4 pt-4 border-t border-base-300" ] [ content ]
-        ]
-
-
-viewMain : Model -> Html Msg
-viewMain model =
-    main_ [ class "flex flex-col gap-4" ]
-        [ -- Top: Damage Results (split left/right)
-          viewDamageResultsPanel model
-
-        -- Field Conditions (collapsible)
-        , viewCollapsibleSection "Field Conditions" model.fieldCollapsed ToggleFieldCollapsed (viewFieldConditionsContent model)
-
-        -- Battle State (collapsible, shows both attacker and defender side-by-side)
-        , viewCollapsibleSection "Battle State" model.battleStateCollapsed ToggleBattleStateCollapsed (viewBattleStatesContent model)
-
-        -- Main Two-Column Layout
-        , div [ class "grid grid-cols-1 lg:grid-cols-2 gap-4" ]
-            [ -- Left Column: Attacker Side
-              viewAttackerColumn model
-
-            -- Right Column: Defender Side
-            , viewDefenderColumn model
-            ]
+            div [ class "mt-3 pt-3 border-t border-base-300" ] [ content ]
         ]
 
 
@@ -3152,250 +3203,6 @@ getWeatherTerrainGradient weather terrain =
 
     else
         ""
-
-
-
--- New top-level damage results panel
-
-
-viewDamageResultsPanel : Model -> Html Msg
-viewDamageResultsPanel model =
-    let
-        gradient =
-            getWeatherTerrainGradient model.field.weather model.field.terrain
-
-        backgroundStyle =
-            if String.isEmpty gradient then
-                []
-
-            else
-                [ style "background" gradient ]
-    in
-    div ([ class "card bg-base-200 p-4" ] ++ backgroundStyle)
-        [ -- Format, Weather, Terrain controls at the top
-          div [ class "mb-4 flex flex-wrap gap-3 items-center border-b border-base-300 pb-3" ]
-            [ -- Format selector
-              div [ class "form-control" ]
-                [ label [ class "label py-0" ] [ span [ class "label-text text-xs font-semibold" ] [ text "Format" ] ]
-                , select [ onInput SetFieldGameType, class "select select-bordered select-xs w-28" ]
-                    [ option [ value "Singles", selected (model.field.gameType == "Singles") ] [ text "Singles" ]
-                    , option [ value "Doubles", selected (model.field.gameType == "Doubles") ] [ text "Doubles" ]
-                    ]
-                ]
-
-            -- Weather selector
-            , div [ class "form-control" ]
-                [ label [ class "label py-0" ] [ span [ class "label-text text-xs font-semibold" ] [ text "Weather" ] ]
-                , select [ onInput SetFieldWeather, class "select select-bordered select-xs w-28" ]
-                    [ option [ value "", selected (String.isEmpty model.field.weather) ] [ text "None" ]
-                    , option [ value "Sun", selected (model.field.weather == "Sun") ] [ text "Sun" ]
-                    , option [ value "Rain", selected (model.field.weather == "Rain") ] [ text "Rain" ]
-                    , option [ value "Sand", selected (model.field.weather == "Sand") ] [ text "Sand" ]
-                    , option [ value "Snow", selected (model.field.weather == "Snow") ] [ text "Snow" ]
-                    ]
-                ]
-
-            -- Terrain selector
-            , div [ class "form-control" ]
-                [ label [ class "label py-0" ] [ span [ class "label-text text-xs font-semibold" ] [ text "Terrain" ] ]
-                , select [ onInput SetFieldTerrain, class "select select-bordered select-xs w-32" ]
-                    [ option [ value "", selected (String.isEmpty model.field.terrain) ] [ text "None" ]
-                    , option [ value "Electric", selected (model.field.terrain == "Electric") ] [ text "Electric" ]
-                    , option [ value "Grassy", selected (model.field.terrain == "Grassy") ] [ text "Grassy" ]
-                    , option [ value "Psychic", selected (model.field.terrain == "Psychic") ] [ text "Psychic" ]
-                    , option [ value "Misty", selected (model.field.terrain == "Misty") ] [ text "Misty" ]
-                    ]
-                ]
-            ]
-
-        -- Damage calculation results
-        , case model.result of
-            Nothing ->
-                div [ class "text-center text-base-content/60 py-8" ]
-                    [ text "Select Pokemon and moves to see damage calculations" ]
-
-            Just result ->
-                div [ class "grid grid-cols-3 gap-2" ]
-                    [ -- Attacker moves (left column of 4)
-                      viewMoveButtonColumn model.moveList model.pokemonList model.attacker.species result.attackerResults result.attackerSpeed result.defenderSpeed AttackerMove model.selectedMoveSource model.selectedMoveIndex
-
-                    -- Center: damage details and rolls
-                    , viewDamageDetailsCenter result model.selectedMoveSource model.selectedMoveIndex model.attacker model.defender
-
-                    -- Defender moves (right column of 4)
-                    , viewMoveButtonColumn model.moveList model.pokemonList model.defender.species result.defenderResults result.defenderSpeed result.attackerSpeed DefenderMove model.selectedMoveSource model.selectedMoveIndex
-                    ]
-        ]
-
-
-
--- Column of 4 move buttons
-
-
-viewMoveButtonColumn : List MoveData -> List PokemonData -> String -> List MoveResult -> Int -> Int -> MoveSource -> MoveSource -> Int -> Html Msg
-viewMoveButtonColumn moveList pokemonList pokemonName results mySpeed theirSpeed source selectedSource selectedIndex =
-    let
-        isSlower =
-            mySpeed < theirSpeed
-
-        isAttacker =
-            source == AttackerMove
-
-        -- Filter results to only include valid moves (moves that exist in moveList)
-        validResults =
-            List.filter (\result -> isValidMove result.moveName moveList) results
-
-        -- Look up sprite data for this Pokemon
-        pokemonData =
-            List.filter (\p -> p.name == pokemonName) pokemonList
-                |> List.head
-    in
-    div [ class "flex flex-col gap-1" ]
-        [ -- Header with Pokemon sprite, name and speed indicator
-          div [ class "flex items-center gap-1 mb-1" ]
-            [ case pokemonData of
-                Just data ->
-                    img
-                        [ src data.spriteUrl
-                        , class "h-8"
-                        , style "image-rendering"
-                            (if data.isPixelated then
-                                "pixelated"
-
-                             else
-                                "auto"
-                            )
-                        , style "width" "auto"
-                        ]
-                        []
-
-                Nothing ->
-                    text ""
-            , span [ class "text-xs font-medium truncate" ] [ text pokemonName ]
-            , span
-                [ class
-                    (if mySpeed > theirSpeed then
-                        "badge badge-success badge-xs"
-
-                     else if mySpeed < theirSpeed then
-                        "badge badge-error badge-xs"
-
-                     else
-                        "badge badge-warning badge-xs"
-                    )
-                ]
-                [ text (String.fromInt mySpeed) ]
-            ]
-
-        -- 4 move buttons in a column
-        , div [ class "flex flex-col gap-1" ]
-            (List.indexedMap
-                (\index result ->
-                    let
-                        isSelected =
-                            selectedSource == source && selectedIndex == index
-
-                        normalDamageText =
-                            formatDamagePercent result.damagePercent
-
-                        critDamageText =
-                            formatDamagePercent result.critDamagePercent
-                    in
-                    button
-                        [ onClick (SelectMove source index)
-                        , class
-                            (if isSelected then
-                                "p-1.5 rounded bg-base-300 border-2 border-primary text-left text-xs"
-
-                             else
-                                "p-1.5 rounded bg-base-300 border border-base-300 hover:border-primary text-left text-xs"
-                            )
-                        ]
-                        [ div [] [ text result.moveName ]
-                        , div [ class "text-xs text-base-content/60 mt-0.5" ]
-                            [ text normalDamageText ]
-                        , div [ class "text-xs text-warning mt-0.5" ]
-                            [ text ("Crit: " ++ critDamageText) ]
-                        ]
-                )
-                validResults
-            )
-        ]
-
-
-
--- Center panel with damage numbers and details
-
-
-viewDamageDetailsCenter : CalculationResult -> MoveSource -> Int -> PokemonState -> PokemonState -> Html Msg
-viewDamageDetailsCenter result selectedSource selectedIndex attacker defender =
-    let
-        -- Get selected move result
-        selectedResult =
-            case selectedSource of
-                AttackerMove ->
-                    List.head (List.drop selectedIndex result.attackerResults)
-
-                DefenderMove ->
-                    List.head (List.drop selectedIndex result.defenderResults)
-    in
-    div [ class "flex flex-col justify-center items-center" ]
-        [ case selectedResult of
-            Just moveResult ->
-                div [ class "text-center" ]
-                    [ -- Normal damage percentage (big and prominent)
-                      div [ class "mb-2" ]
-                        [ div [ class "text-xs text-base-content/60 mb-1" ] [ text "Normal Damage" ]
-                        , div [ class "text-xl font-bold text-success mb-1" ]
-                            [ text (formatDamagePercent moveResult.damagePercent) ]
-                        , if not (String.isEmpty moveResult.koChance) then
-                            div [ class "text-xs text-success" ] [ text moveResult.koChance ]
-
-                          else
-                            text ""
-                        ]
-
-                    -- Normal damage rolls
-                    , div [ class "mb-3" ]
-                        [ div [ class "text-xs text-base-content/60 mb-1" ] [ text "Normal Rolls" ]
-                        , div [ class "text-xs text-base-content/60" ]
-                            [ text
-                                (moveResult.damageRolls
-                                    |> List.map String.fromInt
-                                    |> String.join ", "
-                                )
-                            ]
-                        ]
-
-                    -- Crit damage percentage (in warning color)
-                    , div [ class "mb-2" ]
-                        [ div [ class "text-xs text-base-content/60 mb-1" ] [ text "Critical Hit Damage" ]
-                        , div [ class "text-xl font-bold text-warning mb-1" ]
-                            [ text (formatDamagePercent moveResult.critDamagePercent) ]
-                        , if not (String.isEmpty moveResult.critKoChance) then
-                            div [ class "text-xs text-warning" ] [ text moveResult.critKoChance ]
-
-                          else
-                            text ""
-                        ]
-
-                    -- Crit damage rolls
-                    , div []
-                        [ div [ class "text-xs text-base-content/60 mb-1" ] [ text "Crit Rolls" ]
-                        , div [ class "text-xs text-warning" ]
-                            [ text
-                                (moveResult.critDamageRolls
-                                    |> List.map String.fromInt
-                                    |> String.join ", "
-                                )
-                            ]
-                        ]
-                    ]
-
-            Nothing ->
-                div [ class "text-center text-xs text-base-content/60" ]
-                    [ text "Click a move" ]
-        ]
 
 
 
@@ -3728,54 +3535,6 @@ viewConditionPill label removeMsg =
         ]
 
 
-
--- Left column: Attacker side
-
-
-viewAttackerColumn : Model -> Html Msg
-viewAttackerColumn model =
-    div [ class "flex flex-col gap-4" ]
-        [ -- Loadout Controls (Item + Moves)
-          viewLoadoutSection model
-
-        -- Team & Box Selection
-        , viewTeamBoxSection model
-
-        -- Base Stats (collapsed by default)
-        , viewCollapsibleSection "Base Stats" model.attackerBaseStatsCollapsed ToggleAttackerBaseStatsCollapsed (viewBaseStatsContent model.attacker model.pokemonList model.abilityList model.natureList model.generation True model.openDropdown model.dropdownHighlightIndex)
-        ]
-
-
-
--- Right column: Defender side
-
-
-viewDefenderColumn : Model -> Html Msg
-viewDefenderColumn model =
-    div [ class "flex flex-col gap-4" ]
-        [ -- Defender Info (compact read-only, or edit mode)
-          viewDefenderInfoSection model
-
-        -- Trainer Selection
-        , viewTrainerSelectionSection model
-
-        -- Base Stats (collapsed by default)
-        , viewCollapsibleSection "Base Stats" model.defenderBaseStatsCollapsed ToggleDefenderBaseStatsCollapsed (viewBaseStatsContent model.defender model.pokemonList model.abilityList model.natureList model.generation False model.openDropdown model.dropdownHighlightIndex)
-        ]
-
-
-
--- Team & Box combined section
-
-
-viewTeamBoxSection : Model -> Html Msg
-viewTeamBoxSection model =
-    div [ class "card bg-base-200 p-4 flex flex-col gap-4" ]
-        [ viewTeamPanel model
-        , viewBoxPanel model
-        ]
-
-
 {-| Team as 6 fixed slots, like the in-game party. Drag a team Pokemon onto another
 
 slot to swap them (to line the team up with the opponent's), or drag a box Pokemon
@@ -3818,123 +3577,6 @@ viewTeamPanel model =
                 text ""
             ]
         , div [ class "grid grid-cols-6 gap-1.5" ] (List.map slot (List.range 0 5))
-        ]
-
-
-{-| The box as a PC-style icon grid. Clicking loads the Pokemon as the attacker;
-
-its evolve/send/release actions live in the Loadout bar. Sorting only changes the
-
-display order.
-
--}
-viewBoxPanel : Model -> Html Msg
-viewBoxPanel model =
-    let
-        sorted =
-            sortBox model.boxSort
-                (speedStat model.generation model.pokemonList model.natureList)
-                (\i -> Dict.get i model.boxMatchupResults)
-                model.box
-
-        sortButton sort label =
-            button
-                [ onClick (SetBoxSort sort)
-                , class
-                    ("join-item btn btn-xs "
-                        ++ (if model.boxSort == sort then
-                                "btn-active"
-
-                            else
-                                "btn-ghost"
-                           )
-                    )
-                , attribute "aria-pressed"
-                    (if model.boxSort == sort then
-                        "true"
-
-                     else
-                        "false"
-                    )
-                ]
-                [ text label ]
-    in
-    div (class "flex flex-col gap-2" :: dropTargetAttributes BoxArea)
-        [ div [ class "flex items-center gap-2" ]
-            [ button [ onClick ToggleBoxCollapsed, class "flex items-center gap-2 text-left" ]
-                [ h3 [ class "text-sm font-semibold text-base-content/60" ] [ text "Box" ]
-                , span [ class "text-xs text-base-content/60 tabular-nums" ] [ text (String.fromInt (List.length model.box)) ]
-                , span [ class "text-xs text-base-content/60" ]
-                    [ text
-                        (if model.boxCollapsed then
-                            "▼"
-
-                         else
-                            "▲"
-                        )
-                    ]
-                ]
-            , div [ class "flex-1" ] []
-            , button
-                [ onClick ToggleColorCode
-                , class
-                    (if model.colorCodeEnabled then
-                        "btn btn-xs btn-info"
-
-                     else
-                        "btn btn-xs btn-outline btn-info"
-                    )
-                , attribute "aria-pressed"
-                    (if model.colorCodeEnabled then
-                        "true"
-
-                     else
-                        "false"
-                    )
-                , title
-                    (if model.colorCodeEnabled then
-                        "Turn off matchup colors"
-
-                     else
-                        "Color team and box by matchup against the current defender"
-                    )
-                ]
-                [ text
-                    (if model.colorCodeEnabled then
-                        "Color Code: On"
-
-                     else
-                        "Color Code"
-                    )
-                ]
-            , button [ class "btn btn-xs btn-ghost btn-circle", onClick ShowColorCodeHelp, attribute "aria-label" "What the colors mean" ] [ text "?" ]
-            ]
-        , if model.boxCollapsed then
-            text ""
-
-          else
-            div [ class "flex flex-col gap-2" ]
-                [ div [ class "flex items-center gap-2 flex-wrap" ]
-                    [ span [ class "text-xs text-base-content/60" ] [ text "Sort" ]
-                    , div [ class "join" ]
-                        [ sortButton SortBoxOrder "Box order"
-                        , sortButton SortMatchup "Matchup"
-                        , sortButton SortLevel "Level"
-                        , sortButton SortSpeed "Speed"
-                        ]
-                    ]
-                , if List.isEmpty model.box then
-                    div [ class "text-xs text-base-content/60 text-center py-2" ] [ text "Box is empty. Use + Add to Box under Base Stats to save the current attacker." ]
-
-                  else
-                    div [ class "grid grid-cols-[repeat(auto-fill,minmax(3.25rem,1fr))] gap-1 max-h-60 overflow-y-auto p-0.5" ]
-                        (List.map (\( i, pokemon ) -> viewRosterTile model (FromBox i) pokemon) sorted)
-                , if model.colorCodeEnabled then
-                    viewColorCodeLegend
-
-                  else
-                    text ""
-                ]
         ]
 
 
@@ -5345,122 +4987,6 @@ viewIVsCompact pokemon generation isAttacker =
 
 
 
--- Trainer Selection section
-
-
-viewTrainerSelectionSection : Model -> Html Msg
-viewTrainerSelectionSection model =
-    div [ class "card bg-base-200 p-4" ]
-        [ h3 [ class "text-sm font-semibold text-primary mb-3" ] [ text "Trainer Selection" ]
-
-        -- Search
-        , div [ class "form-control mb-3 relative" ]
-            [ input
-                [ type_ "text"
-                , value model.trainerSearchQuery
-                , onInput SetTrainerSearchQuery
-                , placeholder "Search trainers..."
-                , class "input input-bordered input-xs w-full"
-                ]
-                []
-
-            -- Search dropdown
-            , if not (String.isEmpty model.trainerSearchQuery) && not (List.isEmpty model.filteredEncounters) then
-                div [ class "absolute top-full left-0 right-0 bg-base-100 border border-base-300 rounded mt-1 max-h-48 overflow-y-auto z-10 shadow-lg" ]
-                    (List.take 10 model.filteredEncounters
-                        |> List.map
-                            (\enc ->
-                                button
-                                    [ onClick (SelectFromSearchResults enc)
-                                    , class "block w-full text-left p-2 hover:bg-base-300 text-xs"
-                                    ]
-                                    [ div [ class "font-medium" ] [ text (enc.trainerClass ++ " " ++ enc.trainerName) ]
-                                    , div [ class "text-base-content/60" ] [ text enc.location ]
-                                    ]
-                            )
-                    )
-
-              else
-                text ""
-            ]
-
-        -- Navigation
-        , div [ class "flex items-center justify-between mb-3" ]
-            [ button [ onClick PrevTrainer, class "btn btn-xs btn-ghost" ] [ text "← Prev" ]
-            , span [ class "text-xs text-base-content/60" ]
-                [ text
-                    (String.fromInt (model.selectedTrainerIndex + 1)
-                        ++ "/"
-                        ++ String.fromInt (List.length model.trainerEncounters)
-                    )
-                ]
-            , button [ onClick NextTrainer, class "btn btn-xs btn-ghost" ] [ text "Next →" ]
-            ]
-
-        -- Current trainer's Pokemon
-        , case List.head (List.drop model.selectedTrainerIndex model.trainerEncounters) of
-            Just encounter ->
-                div []
-                    [ div [ class "text-xs text-base-content/60 mb-2" ]
-                        [ text (encounter.trainerClass ++ " " ++ encounter.trainerName ++ " - " ++ encounter.location) ]
-                    , div [ class "grid grid-cols-3 gap-1" ]
-                        (List.indexedMap
-                            (\index tp ->
-                                let
-                                    pokemonData =
-                                        List.filter (\p -> p.name == tp.species) model.pokemonList
-                                            |> List.head
-                                in
-                                button
-                                    [ onClick (LoadTrainerToDefender index)
-                                    , class "p-1 bg-base-300 rounded text-xs hover:border-primary border border-transparent"
-                                    ]
-                                    [ div [ class "flex items-center gap-1" ]
-                                        [ case pokemonData of
-                                            Just data ->
-                                                img
-                                                    [ src data.spriteUrl
-                                                    , class "h-8"
-                                                    , style "image-rendering"
-                                                        (if data.isPixelated then
-                                                            "pixelated"
-
-                                                         else
-                                                            "auto"
-                                                        )
-                                                    , style "object-fit" "contain"
-                                                    ]
-                                                    []
-
-                                            Nothing ->
-                                                text ""
-                                        , div []
-                                            [ div [ class "font-medium truncate" ] [ text tp.species ]
-                                            , div [ class "text-base-content/60" ] [ text ("L" ++ String.fromInt tp.level) ]
-                                            ]
-                                        ]
-                                    ]
-                            )
-                            encounter.team
-                        )
-                    ]
-
-            Nothing ->
-                div [ class "text-xs text-base-content/60 text-center" ] [ text "No trainer selected" ]
-
-        -- Truck button (reset game data)
-        , div [ class "mt-3 pt-3 border-t border-base-300" ]
-            [ button
-                [ onClick RequestResetGameData
-                , class "btn btn-xs btn-outline btn-error btn-square"
-                , title "Reset all data for this game (team, box, progress)"
-                ]
-                [ text "🚚" ]
-            ]
-        ]
-
-
-
 -- Defender Info section (compact read-only or edit mode)
 
 
@@ -5685,3 +5211,688 @@ viewDefenderInfoSection model =
                     text ""
                 ]
         ]
+
+
+{-| Toolbar: brand, game, and the field settings that change most often
+(format, weather, terrain). Field Conditions proper (screens, hazards) live
+in the collapsible card in the right column.
+-}
+viewHeader : Model -> Html Msg
+viewHeader model =
+    header [ class "card bg-base-200 px-4 py-2 flex flex-row flex-wrap items-center gap-3" ]
+        [ div [ class "flex items-center gap-2 mr-2" ]
+            [ img
+                [ src "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/709.png"
+                , class "w-8 h-8"
+                ]
+                []
+            , h1 [ class "text-lg font-bold text-primary" ] [ text "Trevenant" ]
+            ]
+        , select [ onInput SetSelectedGame, class "select select-bordered select-xs w-44" ]
+            (List.map
+                (\game ->
+                    option [ value game, selected (game == model.selectedGame) ] [ text game ]
+                )
+                model.availableGames
+            )
+        , viewToolbarSelect "Format" SetFieldGameType model.field.gameType [ ( "Singles", "Singles" ), ( "Doubles", "Doubles" ) ]
+        , viewToolbarSelect "Weather" SetFieldWeather model.field.weather [ ( "", "None" ), ( "Sun", "Sun" ), ( "Rain", "Rain" ), ( "Sand", "Sand" ), ( "Snow", "Snow" ) ]
+        , viewToolbarSelect "Terrain" SetFieldTerrain model.field.terrain [ ( "", "None" ), ( "Electric", "Electric" ), ( "Grassy", "Grassy" ), ( "Psychic", "Psychic" ), ( "Misty", "Misty" ) ]
+        , div [ class "flex-1" ] []
+        , button
+            [ onClick RequestResetGameData
+            , class "btn btn-xs btn-outline btn-error btn-square"
+            , title "Reset all data for this game (team, box, progress)"
+            ]
+            [ text "🚚" ]
+        ]
+
+
+viewToolbarSelect : String -> (String -> Msg) -> String -> List ( String, String ) -> Html Msg
+viewToolbarSelect labelText msg current options =
+    div [ class "flex items-center gap-1" ]
+        [ span [ class "text-xs text-base-content/60" ] [ text labelText ]
+        , select [ onInput msg, class "select select-bordered select-xs w-24" ]
+            (List.map (\( v, t ) -> option [ value v, selected (current == v) ] [ text t ]) options)
+        ]
+
+
+{-| One-screen workspace at desktop widths: damage strip on top, then the
+roster (team + box) on the left and everything about the current matchup on
+the right. The right column scrolls on its own, so opening Field Conditions
+or Battle State never pushes the box off screen. Below `lg` it falls back to
+a normal scrolling page.
+-}
+viewMain : Model -> Html Msg
+viewMain model =
+    main_ [ class "flex flex-col gap-3 lg:flex-1 lg:min-h-0" ]
+        [ viewDamageStrip model
+        , div [ class "grid grid-cols-1 lg:grid-cols-2 gap-3 lg:flex-1 lg:min-h-0" ]
+            [ viewTeamBoxSection model
+            , div [ class "flex flex-col gap-3 lg:min-h-0 lg:overflow-y-auto" ]
+                [ viewOpponentSection model
+                , viewDefenderInfoSection model
+                , viewLoadoutSection model
+                , viewCollapsibleSection "Field Conditions" model.fieldCollapsed ToggleFieldCollapsed (viewFieldConditionsContent model)
+                , viewCollapsibleSection "Battle State" model.battleStateCollapsed ToggleBattleStateCollapsed (viewBattleStatesContent model)
+                , viewCollapsibleSection "Attacker Stats" model.attackerBaseStatsCollapsed ToggleAttackerBaseStatsCollapsed (viewBaseStatsContent model.attacker model.pokemonList model.abilityList model.natureList model.generation True model.openDropdown model.dropdownHighlightIndex)
+                , viewCollapsibleSection "Defender Stats" model.defenderBaseStatsCollapsed ToggleDefenderBaseStatsCollapsed (viewBaseStatsContent model.defender model.pokemonList model.abilityList model.natureList model.generation False model.openDropdown model.dropdownHighlightIndex)
+                ]
+            ]
+        ]
+
+
+{-| Compact damage results: each side's four moves as chips (name, %, KO) and
+the selected move's full numbers in the middle. Fits in about 170px so the
+numbers and the box are on screen together.
+-}
+viewDamageStrip : Model -> Html Msg
+viewDamageStrip model =
+    let
+        gradient =
+            getWeatherTerrainGradient model.field.weather model.field.terrain
+
+        backgroundStyle =
+            if String.isEmpty gradient then
+                []
+
+            else
+                [ style "background" gradient ]
+    in
+    div ([ class "card bg-base-200 px-4 py-3" ] ++ backgroundStyle)
+        [ case model.result of
+            Nothing ->
+                div [ class "text-center text-base-content/60 py-6 text-sm" ]
+                    [ text "Select Pokemon and moves to see damage calculations" ]
+
+            Just result ->
+                div [ class "grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-4 items-start" ]
+                    [ viewMoveChips model.pokemonList model.attacker result.attackerResults result.attackerSpeed result.defenderSpeed AttackerMove model.selectedMoveSource model.selectedMoveIndex
+                    , viewDamageDetailsCenter result model.selectedMoveSource model.selectedMoveIndex model.attacker model.defender
+                    , viewMoveChips model.pokemonList model.defender result.defenderResults result.defenderSpeed result.attackerSpeed DefenderMove model.selectedMoveSource model.selectedMoveIndex
+                    ]
+        ]
+
+
+{-| One side of the damage strip: who, their effective Speed, and a 2x2 of
+move chips. Results are rendered by index (not filtered) so the chip index
+always matches `selectedMoveIndex`.
+-}
+viewMoveChips : List PokemonData -> PokemonState -> List MoveResult -> Int -> Int -> MoveSource -> MoveSource -> Int -> Html Msg
+viewMoveChips pokemonList pokemon results mySpeed theirSpeed source selectedSource selectedIndex =
+    let
+        speedBadge =
+            if mySpeed > theirSpeed then
+                "badge-success"
+
+            else if mySpeed < theirSpeed then
+                "badge-error"
+
+            else
+                "badge-warning"
+
+        percentClass =
+            if source == AttackerMove then
+                "text-success"
+
+            else
+                "text-warning"
+    in
+    div [ class "flex flex-col gap-1.5 min-w-0" ]
+        [ div [ class "flex items-center gap-2 h-8 min-w-0" ]
+            [ viewPokemonIcon pokemonList pokemon.species
+            , span [ class "text-sm font-medium truncate" ] [ text pokemon.species ]
+            , span [ class "text-xs text-base-content/60 tabular-nums" ] [ text ("L" ++ String.fromInt pokemon.level) ]
+            , span [ class ("badge badge-xs font-mono whitespace-nowrap " ++ speedBadge), title "Effective Speed" ] [ text ("Spe " ++ String.fromInt mySpeed) ]
+            ]
+        , div [ class "grid grid-cols-2 gap-1" ]
+            (List.indexedMap
+                (\index result ->
+                    let
+                        isSelected =
+                            selectedSource == source && selectedIndex == index
+
+                        isEmpty =
+                            result.moveName == "(No Move)" || String.isEmpty result.moveName
+                    in
+                    button
+                        [ onClick (SelectMove source index)
+                        , disabled isEmpty
+                        , class
+                            ("flex flex-col items-start rounded border-2 bg-base-300 px-2 py-1 text-left min-w-0 "
+                                ++ (if isSelected then
+                                        "border-primary"
+
+                                    else
+                                        "border-transparent hover:border-primary/60"
+                                   )
+                            )
+                        ]
+                        [ span
+                            [ class
+                                ("text-xs font-medium truncate w-full "
+                                    ++ (if isEmpty then
+                                            "text-base-content/40"
+
+                                        else
+                                            ""
+                                       )
+                                )
+                            ]
+                            [ text
+                                (if isEmpty then
+                                    "(No Move)"
+
+                                 else
+                                    result.moveName
+                                )
+                            ]
+                        , span
+                            [ class
+                                ("text-xs font-mono tabular-nums "
+                                    ++ (if isEmpty then
+                                            "text-base-content/40"
+
+                                        else
+                                            percentClass
+                                       )
+                                )
+                            ]
+                            [ text
+                                (if isEmpty then
+                                    "—"
+
+                                 else
+                                    formatDamagePercent result.damagePercent
+                                )
+                            ]
+                        , span [ class "text-[10px] text-base-content/60 truncate w-full" ]
+                            [ text
+                                (if String.isEmpty result.koChance then
+                                    "\u{00A0}"
+
+                                 else
+                                    result.koChance
+                                )
+                            ]
+                        ]
+                )
+                results
+            )
+        ]
+
+
+viewDamageDetailsCenter : CalculationResult -> MoveSource -> Int -> PokemonState -> PokemonState -> Html Msg
+viewDamageDetailsCenter result selectedSource selectedIndex attacker defender =
+    let
+        ( selectedResult, user, target ) =
+            case selectedSource of
+                AttackerMove ->
+                    ( List.head (List.drop selectedIndex result.attackerResults), attacker, defender )
+
+                DefenderMove ->
+                    ( List.head (List.drop selectedIndex result.defenderResults), defender, attacker )
+
+        rolls list =
+            list |> List.map String.fromInt |> String.join ", "
+    in
+    div [ class "flex flex-col items-center justify-center text-center lg:min-w-[15rem] lg:pt-8" ]
+        (case selectedResult of
+            Just moveResult ->
+                [ div [ class "text-[11px] text-base-content/60" ]
+                    [ text (user.species ++ " · " ++ moveResult.moveName ++ " → " ++ target.species) ]
+                , div [ class "text-2xl font-bold font-mono tabular-nums text-success leading-tight" ]
+                    [ text (formatDamagePercent moveResult.damagePercent) ]
+                , div [ class "text-xs text-success" ] [ text moveResult.koChance ]
+                , div [ class "text-[10px] font-mono text-base-content/40 max-w-[15rem]" ] [ text (rolls moveResult.damageRolls) ]
+                , div [ class "text-[10px] uppercase tracking-wider text-base-content/60 mt-1.5" ] [ text "Crit" ]
+                , div [ class "text-lg font-bold font-mono tabular-nums text-warning leading-tight" ]
+                    [ text (formatDamagePercent moveResult.critDamagePercent) ]
+                , div [ class "text-xs text-warning" ] [ text moveResult.critKoChance ]
+                , div [ class "text-[10px] font-mono text-warning/50 max-w-[15rem]" ] [ text (rolls moveResult.critDamageRolls) ]
+                ]
+
+            Nothing ->
+                [ div [ class "text-xs text-base-content/60" ] [ text "Click a move" ] ]
+        )
+
+
+{-| Trainer navigation and the opponent's team as tiles. Clicking a tile loads
+that Pokemon as the defender; the current defender is outlined in purple.
+-}
+viewOpponentSection : Model -> Html Msg
+viewOpponentSection model =
+    let
+        encounter =
+            getSelectedEncounter model
+    in
+    div [ class "card bg-base-200 p-4 flex flex-col gap-2" ]
+        [ div [ class "flex items-center gap-2" ]
+            [ h3 [ class "text-sm font-semibold text-primary" ] [ text "Opponent" ]
+            , div [ class "flex-1" ] []
+            , button [ onClick PrevTrainer, class "btn btn-xs btn-ghost" ] [ text "← Prev" ]
+            , span [ class "text-xs text-base-content/60 tabular-nums" ]
+                [ text
+                    (String.fromInt (model.selectedTrainerIndex + 1)
+                        ++ "/"
+                        ++ String.fromInt (List.length model.trainerEncounters)
+                    )
+                ]
+            , button [ onClick NextTrainer, class "btn btn-xs btn-ghost" ] [ text "Next →" ]
+            ]
+        , div [ class "form-control relative" ]
+            [ input
+                [ type_ "text"
+                , value model.trainerSearchQuery
+                , onInput SetTrainerSearchQuery
+                , placeholder "Search trainers..."
+                , class "input input-bordered input-xs w-full"
+                ]
+                []
+            , if not (String.isEmpty model.trainerSearchQuery) && not (List.isEmpty model.filteredEncounters) then
+                div [ class "absolute top-full left-0 right-0 bg-base-100 border border-base-300 rounded mt-1 max-h-48 overflow-y-auto z-10 shadow-lg" ]
+                    (List.take 10 model.filteredEncounters
+                        |> List.map
+                            (\enc ->
+                                button
+                                    [ onClick (SelectFromSearchResults enc)
+                                    , class "block w-full text-left p-2 hover:bg-base-300 text-xs"
+                                    ]
+                                    [ div [ class "font-medium" ] [ text (enc.trainerClass ++ " " ++ enc.trainerName) ]
+                                    , div [ class "text-base-content/60" ] [ text enc.location ]
+                                    ]
+                            )
+                    )
+
+              else
+                text ""
+            ]
+        , case encounter of
+            Just enc ->
+                div [ class "flex flex-col gap-2" ]
+                    [ div [ class "text-xs" ]
+                        [ span [ class "font-medium" ] [ text (enc.trainerClass ++ " " ++ enc.trainerName) ]
+                        , if String.isEmpty enc.location then
+                            text ""
+
+                          else
+                            span [ class "text-base-content/60" ] [ text (" · " ++ enc.location) ]
+                        ]
+                    , div [ class "grid grid-cols-6 gap-1.5" ]
+                        (List.indexedMap (viewOpponentTile model) enc.team)
+                    ]
+
+            Nothing ->
+                div [ class "text-xs text-base-content/60 text-center py-2" ] [ text "No trainer selected" ]
+        ]
+
+
+viewOpponentTile : Model -> Int -> TrainerPokemon -> Html Msg
+viewOpponentTile model index trainerPokemon =
+    let
+        isCurrent =
+            isCurrentDefender model trainerPokemon
+    in
+    button
+        [ onClick (LoadTrainerToDefender index)
+        , title (trainerPokemon.species ++ " L" ++ String.fromInt trainerPokemon.level)
+        , class
+            ("flex flex-col items-center justify-center gap-0.5 rounded-md border-2 bg-base-300 pt-1 pb-0.5 min-h-12 "
+                ++ (if isCurrent then
+                        "border-secondary bg-secondary/10"
+
+                    else
+                        "border-transparent hover:border-secondary/60"
+                   )
+            )
+        ]
+        [ viewPokemonIcon model.pokemonList trainerPokemon.species
+        , span [ class "text-[10px] leading-none text-base-content/60 tabular-nums" ] [ text (String.fromInt trainerPokemon.level) ]
+        ]
+
+
+{-| The defender is a copy of a trainer's Pokemon, so "current" means same
+species and level as the trainer entry.
+-}
+isCurrentDefender : Model -> TrainerPokemon -> Bool
+isCurrentDefender model trainerPokemon =
+    model.defender.species == trainerPokemon.species && model.defender.level == trainerPokemon.level
+
+
+{-| The selected trainer's team as calc-ready states, in team order. Empty
+when no trainer is selected (custom defender).
+-}
+opponentTeam : Model -> List PokemonState
+opponentTeam model =
+    getSelectedEncounter model
+        |> Maybe.map (.team >> List.map trainerPokemonToState)
+        |> Maybe.withDefault []
+
+
+viewTeamBoxSection : Model -> Html Msg
+viewTeamBoxSection model =
+    div [ class "card bg-base-200 p-4 flex flex-col gap-4 lg:min-h-0 lg:h-full" ]
+        [ viewTeamPanel model
+        , viewBoxPanel model
+        ]
+
+
+{-| The box, as either a PC-style icon grid (sortable, Color Coded against
+the current defender) or the matchup board (every team/box Pokemon against
+every Pokemon on the opponent's team). Both fill the remaining height of the
+roster card and scroll inside it.
+-}
+viewBoxPanel : Model -> Html Msg
+viewBoxPanel model =
+    let
+        viewButton boxView labelText =
+            button
+                [ onClick (SetBoxView boxView)
+                , class
+                    ("join-item btn btn-xs "
+                        ++ (if model.boxView == boxView then
+                                "btn-active"
+
+                            else
+                                "btn-ghost"
+                           )
+                    )
+                , attribute "aria-pressed"
+                    (if model.boxView == boxView then
+                        "true"
+
+                     else
+                        "false"
+                    )
+                ]
+                [ text labelText ]
+    in
+    div (class "flex flex-col gap-2 lg:flex-1 lg:min-h-0" :: dropTargetAttributes BoxArea)
+        [ div [ class "flex items-center gap-2 flex-wrap" ]
+            [ button [ onClick ToggleBoxCollapsed, class "flex items-center gap-2 text-left" ]
+                [ h3 [ class "text-sm font-semibold text-base-content/60" ] [ text "Box" ]
+                , span [ class "text-xs text-base-content/60 tabular-nums" ] [ text (String.fromInt (List.length model.box)) ]
+                , span [ class "text-xs text-base-content/60" ]
+                    [ text
+                        (if model.boxCollapsed then
+                            "▼"
+
+                         else
+                            "▲"
+                        )
+                    ]
+                ]
+            , div [ class "join" ]
+                [ viewButton BoxGrid "Grid"
+                , viewButton BoxBoard "Board"
+                ]
+            , div [ class "flex-1" ] []
+            , button
+                [ onClick ToggleColorCode
+                , class
+                    (if model.colorCodeEnabled then
+                        "btn btn-xs btn-info"
+
+                     else
+                        "btn btn-xs btn-outline btn-info"
+                    )
+                , attribute "aria-pressed"
+                    (if model.colorCodeEnabled then
+                        "true"
+
+                     else
+                        "false"
+                    )
+                , title
+                    (if model.colorCodeEnabled then
+                        "Turn off matchup colors"
+
+                     else
+                        "Color team and box by matchup against the current defender"
+                    )
+                ]
+                [ text
+                    (if model.colorCodeEnabled then
+                        "Color Code: On"
+
+                     else
+                        "Color Code"
+                    )
+                ]
+            , button [ class "btn btn-xs btn-ghost btn-circle", onClick ShowColorCodeHelp, attribute "aria-label" "What the colors mean" ] [ text "?" ]
+            ]
+        , if model.boxCollapsed then
+            text ""
+
+          else
+            case model.boxView of
+                BoxGrid ->
+                    viewBoxGrid model
+
+                BoxBoard ->
+                    viewMatchupBoard model
+        ]
+
+
+viewBoxGrid : Model -> Html Msg
+viewBoxGrid model =
+    let
+        sorted =
+            sortBox model.boxSort
+                (speedStat model.generation model.pokemonList model.natureList)
+                (\i -> Dict.get i model.boxMatchupResults)
+                model.box
+
+        sortButton sort labelText =
+            button
+                [ onClick (SetBoxSort sort)
+                , class
+                    ("join-item btn btn-xs "
+                        ++ (if model.boxSort == sort then
+                                "btn-active"
+
+                            else
+                                "btn-ghost"
+                           )
+                    )
+                , attribute "aria-pressed"
+                    (if model.boxSort == sort then
+                        "true"
+
+                     else
+                        "false"
+                    )
+                ]
+                [ text labelText ]
+    in
+    div [ class "flex flex-col gap-2 lg:flex-1 lg:min-h-0" ]
+        [ div [ class "flex items-center gap-2 flex-wrap" ]
+            [ span [ class "text-xs text-base-content/60" ] [ text "Sort" ]
+            , div [ class "join" ]
+                [ sortButton SortBoxOrder "Box order"
+                , sortButton SortMatchup "Matchup"
+                , sortButton SortLevel "Level"
+                , sortButton SortSpeed "Speed"
+                ]
+            ]
+        , if List.isEmpty model.box then
+            div [ class "text-xs text-base-content/60 text-center py-2" ] [ text "Box is empty. Use + Add to Box under Attacker Stats to save the current attacker." ]
+
+          else
+            div [ class "grid grid-cols-[repeat(auto-fill,minmax(3.25rem,1fr))] gap-1 p-0.5 overflow-y-auto max-h-60 lg:max-h-none lg:flex-1 lg:min-h-0 content-start" ]
+                (List.map (\( i, pokemon ) -> viewRosterTile model (FromBox i) pokemon) sorted)
+        , if model.colorCodeEnabled then
+            viewColorCodeLegend
+
+          else
+            text ""
+        ]
+
+
+{-| Matchup board: rows are the team then the box, columns are the opponent's
+team. Each cell is the best damage % that row deals over the worst % it takes,
+tinted by Color Code tier. Clicking a cell loads that exact pairing.
+-}
+viewMatchupBoard : Model -> Html Msg
+viewMatchupBoard model =
+    let
+        opponents =
+            opponentTeam model
+
+        rows =
+            List.indexedMap (\i p -> ( FromTeam i, p )) model.team
+                ++ List.indexedMap (\i p -> ( FromBox i, p )) model.box
+
+        cellResult source j =
+            case source of
+                FromTeam i ->
+                    Dict.get ( i, j ) model.teamBoardResults
+
+                FromBox i ->
+                    Dict.get ( i, j ) model.boardResults
+
+        loadMsg source =
+            case source of
+                FromTeam i ->
+                    LoadFromTeam i
+
+                FromBox i ->
+                    LoadFromBox i
+
+        headerCell j opponent =
+            th [ class "px-0.5 pb-1 font-normal align-bottom sticky top-0 bg-base-200 z-10" ]
+                [ button
+                    [ onClick (LoadTrainerToDefender j)
+                    , class
+                        ("flex flex-col items-center rounded px-1 py-0.5 w-full hover:bg-base-300 "
+                            ++ (if List.any (\tp -> isCurrentDefender model tp) (getSelectedEncounter model |> Maybe.map .team |> Maybe.withDefault [] |> List.drop j |> List.take 1) then
+                                    "text-secondary"
+
+                                else
+                                    ""
+                               )
+                        )
+                    , title (opponent.species ++ " L" ++ String.fromInt opponent.level)
+                    ]
+                    [ viewPokemonIcon model.pokemonList opponent.species
+                    , span [ class "text-[11px] leading-tight truncate max-w-[5.5rem]" ] [ text opponent.species ]
+                    , span [ class "text-[10px] text-base-content/60 tabular-nums" ] [ text ("L" ++ String.fromInt opponent.level) ]
+                    ]
+                ]
+
+        rowHeader source pokemon =
+            th [ class "text-left font-normal pr-2 sticky left-0 bg-base-200 z-10" ]
+                [ button
+                    [ onClick (loadMsg source)
+                    , class
+                        ("flex items-center gap-1 rounded px-1 hover:bg-base-300 whitespace-nowrap "
+                            ++ (if model.attackerSource == Just source then
+                                    "text-primary"
+
+                                else
+                                    ""
+                               )
+                        )
+                    , title ("Load " ++ pokemon.species ++ " as the attacker")
+                    ]
+                    [ span [ class "scale-75 -m-1" ] [ viewPokemonIcon model.pokemonList pokemon.species ]
+                    , span [ class "text-xs" ] [ text pokemon.species ]
+                    , span [ class "text-[10px] text-base-content/60 tabular-nums" ] [ text ("L" ++ String.fromInt pokemon.level) ]
+                    ]
+                ]
+
+        cell source j opponent =
+            td [ class "p-0" ]
+                [ case cellResult source j of
+                    Just r ->
+                        let
+                            isSelected =
+                                model.attackerSource == Just source && model.defender.species == opponent.species && model.defender.level == opponent.level
+                        in
+                        button
+                            [ onClick (SelectPairing source j)
+                            , title (matchupTierLabel (matchupTier r) ++ " · deals " ++ String.fromInt (round r.bestDamagePercent) ++ "%, takes " ++ String.fromInt (round r.worstDamageTaken) ++ "%")
+                            , class
+                                ("w-full h-8 rounded border-2 font-mono text-[11px] tabular-nums flex items-center justify-center gap-0.5 "
+                                    ++ matchupTierCellBackground (matchupTier r)
+                                    ++ (if isSelected then
+                                            " border-primary"
+
+                                        else
+                                            " border-transparent hover:border-primary/60"
+                                       )
+                                )
+                            ]
+                            [ span [] [ text (String.fromInt (round r.bestDamagePercent)) ]
+                            , span [ class "text-base-content/40" ] [ text "/" ]
+                            , span [ class "text-orange-400" ] [ text (String.fromInt (round r.worstDamageTaken)) ]
+                            ]
+
+                    Nothing ->
+                        div [ class "w-full h-8 rounded bg-base-300/40 flex items-center justify-center text-[10px] text-base-content/40" ] [ text "…" ]
+                ]
+
+        row ( source, pokemon ) =
+            tr [] (rowHeader source pokemon :: List.indexedMap (cell source) opponents)
+
+        spacer =
+            tr [] [ td [ colspan (List.length opponents + 1), class "h-2" ] [] ]
+    in
+    if List.isEmpty opponents then
+        div [ class "text-xs text-base-content/60 text-center py-4" ] [ text "Pick a trainer to see the matchup board." ]
+
+    else if List.isEmpty rows then
+        div [ class "text-xs text-base-content/60 text-center py-4" ] [ text "Add Pokemon to your team or box to see matchups." ]
+
+    else
+        div [ class "flex flex-col gap-2 lg:flex-1 lg:min-h-0" ]
+            [ div [ class "flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-base-content/60" ]
+                (span [] [ text "Each cell: ", span [ class "text-base-content" ] [ text "best % dealt" ], text " / ", span [ class "text-orange-400" ] [ text "worst % taken" ] ]
+                    :: List.map
+                        (\tier ->
+                            span [ class "inline-flex items-center gap-1" ]
+                                [ span [ class ("inline-block w-2.5 h-2.5 rounded-sm " ++ matchupTierCellBackground tier) ] []
+                                , text (matchupTierLabel tier)
+                                ]
+                        )
+                        [ AlwaysOHKOs, MightOHKO, TradeOHKOs, MaybeTradeOHKOs, GetsOHKOd ]
+                )
+            , div [ class "overflow-auto max-h-96 lg:max-h-none lg:flex-1 lg:min-h-0" ]
+                [ table [ class "border-separate border-spacing-0.5" ]
+                    [ thead []
+                        [ tr [] (th [ class "sticky left-0 top-0 bg-base-200 z-20" ] [] :: List.indexedMap headerCell opponents) ]
+                    , tbody []
+                        (List.map row (List.take (List.length model.team) rows)
+                            ++ (if List.isEmpty model.team || List.isEmpty model.box then
+                                    []
+
+                                else
+                                    [ spacer ]
+                               )
+                            ++ List.map row (List.drop (List.length model.team) rows)
+                        )
+                    ]
+                ]
+            ]
+
+
+matchupTierCellBackground : MatchupTier -> String
+matchupTierCellBackground tier =
+    case tier of
+        TradeOHKOs ->
+            "bg-teal-400/25"
+
+        MaybeTradeOHKOs ->
+            "bg-orange-500/25"
+
+        GetsOHKOd ->
+            "bg-red-500/30"
+
+        AlwaysOHKOs ->
+            "bg-yellow-400/25"
+
+        MightOHKO ->
+            "bg-yellow-600/25"
+
+        NoOHKO ->
+            "bg-base-300"

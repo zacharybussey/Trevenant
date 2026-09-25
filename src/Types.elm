@@ -76,7 +76,19 @@ type alias Model =
 
     -- Slot currently under a dragged Pokemon, for drop highlighting
     , dragOverTarget : Maybe DropTarget
+
+    -- Box panel: icon grid or the matchup board
+    , boxView : BoxView
+
+    -- Matchup board results keyed by ( box index, opponent team index ) / ( team index, opponent team index )
+    , boardResults : Dict ( Int, Int ) BoxMatchupResult
+    , teamBoardResults : Dict ( Int, Int ) BoxMatchupResult
     }
+
+
+type BoxView
+    = BoxGrid
+    | BoxBoard
 
 
 {-| Color Code category of a team/box Pokemon against the current defender.
@@ -250,6 +262,9 @@ type alias BoxMatchupResult =
     , isWall : Bool
     , bestDamagePercent : Float
     , worstDamageTaken : Float
+
+    -- Set for matchup-board requests: which of the opponent's team this was calculated against
+    , defenderIndex : Maybe Int
     }
 
 
