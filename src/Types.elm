@@ -42,8 +42,8 @@ type alias Model =
     , allGameData : Dict String GameSaveData
 
     -- UI collapse states for redesign
-    , fieldCollapsed : Bool
-    , battleStateCollapsed : Bool
+    -- The Battle & Field pane under the damage strip (screens, hazards, stat stages, status, HP)
+    , battlePaneOpen : Bool
     , attackerBaseStatsCollapsed : Bool
     , defenderBaseStatsCollapsed : Bool
     , boxCollapsed : Bool

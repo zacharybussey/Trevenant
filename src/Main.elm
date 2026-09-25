@@ -163,8 +163,7 @@ init flags =
             , allGameData = Dict.empty
 
             -- UI collapse states - collapsed by default for cleaner look
-            , fieldCollapsed = True
-            , battleStateCollapsed = True
+            , battlePaneOpen = False
             , attackerBaseStatsCollapsed = False
             , defenderBaseStatsCollapsed = False
             , boxCollapsed = True
@@ -297,8 +296,7 @@ type Msg
     | DragOverTarget DropTarget
     | DropOn DropTarget
       -- UI collapse toggles
-    | ToggleFieldCollapsed
-    | ToggleBattleStateCollapsed
+    | ToggleBattlePane
     | ToggleAttackerBaseStatsCollapsed
     | ToggleDefenderBaseStatsCollapsed
     | ToggleBoxCollapsed
@@ -2658,11 +2656,8 @@ update msg model =
                 Nothing ->
                     ( { model | dragOverTarget = Nothing }, Cmd.none )
 
-        ToggleFieldCollapsed ->
-            ( { model | fieldCollapsed = not model.fieldCollapsed }, Cmd.none )
-
-        ToggleBattleStateCollapsed ->
-            ( { model | battleStateCollapsed = not model.battleStateCollapsed }, Cmd.none )
+        ToggleBattlePane ->
+            ( { model | battlePaneOpen = not model.battlePaneOpen }, Cmd.none )
 
         ToggleAttackerBaseStatsCollapsed ->
             ( { model | attackerBaseStatsCollapsed = not model.attackerBaseStatsCollapsed }, Cmd.none )
@@ -3236,64 +3231,6 @@ getWeatherTerrainGradient weather terrain =
 
     else
         ""
-
-
-
--- Field conditions content (for collapsible) - Tags/Pills UI
--- Format, Weather, and Terrain have been moved to the damage results panel
-
-
-viewFieldConditionsContent : Model -> Html Msg
-viewFieldConditionsContent model =
-    div [ class "flex flex-col gap-3" ]
-        [ -- Three columns layout: Attacker | Both | Defender
-          div [ class "flex gap-2" ]
-            [ -- Attacker column
-              div [ class "flex-1 flex flex-col gap-2" ]
-                [ -- Attacker pills
-                  div [ class "flex flex-wrap gap-1 min-h-[2rem]" ]
-                    (viewAttackerConditionPills model)
-
-                -- Attacker dropdown
-                , viewFieldConditionDropdown
-                    "Attacker"
-                    FieldConditionsAttackerDropdown
-                    model.openDropdown
-                    model.dropdownHighlightIndex
-                    (getAttackerConditionOptions model)
-                ]
-
-            -- Both/Field column
-            , div [ class "flex-1 flex flex-col gap-2" ]
-                [ -- Both pills
-                  div [ class "flex flex-wrap gap-1 min-h-[2rem]" ]
-                    (viewBothConditionPills model)
-
-                -- Both dropdown
-                , viewFieldConditionDropdown
-                    "Both"
-                    FieldConditionsBothDropdown
-                    model.openDropdown
-                    model.dropdownHighlightIndex
-                    (getBothConditionOptions model)
-                ]
-
-            -- Defender column
-            , div [ class "flex-1 flex flex-col gap-2" ]
-                [ -- Defender pills
-                  div [ class "flex flex-wrap gap-1 min-h-[2rem]" ]
-                    (viewDefenderConditionPills model)
-
-                -- Defender dropdown
-                , viewFieldConditionDropdown
-                    "Defender"
-                    FieldConditionsDefenderDropdown
-                    model.openDropdown
-                    model.dropdownHighlightIndex
-                    (getDefenderConditionOptions model)
-                ]
-            ]
-        ]
 
 
 
@@ -4151,149 +4088,26 @@ viewLoadoutSection model =
 -- Battle State content for collapsible section (shows both attacker and defender side-by-side)
 
 
-viewBattleStatesContent : Model -> Html Msg
-viewBattleStatesContent model =
-    div [ class "flex flex-col gap-3" ]
-        [ div [ class "flex items-center justify-between gap-2 text-xs text-base-content/60" ]
-            [ text "Stat stages, status, HP, Tera and Dynamax. They reset for every Pokemon when you change trainers."
-            , button [ onClick ResetBattleState, class "btn btn-xs btn-outline" ] [ text "Reset now" ]
+{-| Field conditions and both sides' battle state in one pane directly under
+the damage strip, toggled from the toolbar. It pushes the roster and opponent
+columns down instead of covering them, so the box stays usable while stages
+or screens change and the numbers update right above.
+-}
+viewBattlePane : Model -> Html Msg
+viewBattlePane model =
+    div [ class "card bg-base-200 px-4 py-3 flex flex-col gap-3 lg:max-h-[48vh] lg:overflow-y-auto" ]
+        [ div [ class "flex items-center gap-3 flex-wrap" ]
+            [ h3 [ class "text-sm font-semibold text-primary" ] [ text "Battle & Field" ]
+            , span [ class "text-xs text-base-content/60" ]
+                [ text "Screens, hazards, stat stages, status, HP and Tera. Stages, status and HP reset for everyone when you change trainers." ]
+            , div [ class "flex-1" ] []
+            , button [ onClick ResetBattleState, class "btn btn-xs btn-outline", title "Clear stages, status, HP, Tera and Dynamax on every Pokemon" ] [ text "Reset battle state" ]
+            , button [ onClick ToggleBattlePane, class "btn btn-xs btn-ghost btn-circle", attribute "aria-label" "Close" ] [ text "✕" ]
             ]
-        , div [ class "grid grid-cols-1 lg:grid-cols-2 gap-4" ]
+        , viewFieldConditionsContent model
+        , div [ class "grid grid-cols-1 lg:grid-cols-2 gap-4 border-t border-base-300 pt-3" ]
             [ viewBattleStateSection "Attacker" model.attacker model.generation model.pokemonList True
             , viewBattleStateSection "Defender" model.defender model.generation model.pokemonList False
-            ]
-        ]
-
-
-
--- Battle State section (HP, Status, Boosts, Tera)
-
-
-viewBattleStateSection : String -> PokemonState -> Int -> List PokemonData -> Bool -> Html Msg
-viewBattleStateSection title pokemon generation pokemonList isAttacker =
-    div [ class "card bg-base-200 p-4" ]
-        [ h3 [ class "text-sm font-semibold text-primary mb-3" ] [ text "Battle State" ]
-
-        -- HP
-        , div [ class "mb-3" ]
-            [ label [ class "label py-1" ] [ span [ class "label-text text-xs" ] [ text "HP" ] ]
-            , div [ class "flex items-center gap-2" ]
-                [ input
-                    [ type_ "range"
-                    , Html.Attributes.min "0"
-                    , Html.Attributes.max "100"
-                    , value (String.fromInt pokemon.curHP)
-                    , onInput
-                        (\v ->
-                            if isAttacker then
-                                SetAttackerCurHP (Maybe.withDefault 100 (String.toInt v))
-
-                            else
-                                SetDefenderCurHP (Maybe.withDefault 100 (String.toInt v))
-                        )
-                    , class "range range-xs range-primary flex-1"
-                    ]
-                    []
-                , span [ class "text-xs w-16 text-right" ] [ text (String.fromInt pokemon.curHP ++ "%") ]
-                ]
-            , div [ class "text-xs text-base-content/60 mt-1" ]
-                [ text ("≈ " ++ String.fromInt (calculateCurrentHP pokemon pokemonList) ++ " / " ++ String.fromInt (calculateMaxHP pokemon pokemonList) ++ " HP")
-                ]
-            ]
-
-        -- Status
-        , div [ class "mb-3 flex items-center gap-2" ]
-            [ span [ class "label-text text-xs" ] [ text "Status" ]
-            , select
-                [ onInput
-                    (if isAttacker then
-                        SetAttackerStatus
-
-                     else
-                        SetDefenderStatus
-                    )
-                , class "select select-bordered select-xs w-32"
-                ]
-                [ option [ value "", selected (pokemon.status == "") ] [ text "Healthy" ]
-                , option [ value "Paralysis", selected (pokemon.status == "Paralysis") ] [ text "Paralysis" ]
-                , option [ value "Poison", selected (pokemon.status == "Poison") ] [ text "Poison" ]
-                , option [ value "Burn", selected (pokemon.status == "Burn") ] [ text "Burn" ]
-                , option [ value "Sleep", selected (pokemon.status == "Sleep") ] [ text "Sleep" ]
-                , option [ value "Freeze", selected (pokemon.status == "Freeze") ] [ text "Freeze" ]
-                ]
-            ]
-
-        -- Tera Type (Gen 9 only)
-        , if generation >= 9 then
-            div [ class "mb-3 flex items-center gap-2" ]
-                [ span [ class "label-text text-xs" ] [ text "Tera Type" ]
-                , input
-                    [ type_ "text"
-                    , value pokemon.teraType
-                    , onInput
-                        (if isAttacker then
-                            SetAttackerTeraType
-
-                         else
-                            SetDefenderTeraType
-                        )
-                    , list (title ++ "TeraTypeList")
-                    , placeholder "None"
-                    , class "input input-bordered input-xs w-32"
-                    ]
-                    []
-                , datalist [ id (title ++ "TeraTypeList") ]
-                    (List.map (\t -> option [ value t ] []) [ "Normal", "Fire", "Water", "Electric", "Grass", "Ice", "Fighting", "Poison", "Ground", "Flying", "Psychic", "Bug", "Rock", "Ghost", "Dragon", "Dark", "Steel", "Fairy" ])
-                ]
-
-          else
-            text ""
-
-        -- Stat Boosts (compact grid)
-        , div []
-            [ label [ class "label py-1" ] [ span [ class "label-text text-xs" ] [ text "Stat Boosts" ] ]
-            , div [ class "grid grid-cols-3 gap-1" ]
-                (List.map
-                    (\( statName, statLabel, getValue ) ->
-                        div [ class "form-control" ]
-                            [ label [ class "label py-0" ] [ span [ class "label-text text-xs" ] [ text statLabel ] ]
-                            , select
-                                [ onInput
-                                    (\v ->
-                                        if isAttacker then
-                                            SetAttackerBoost statName (Maybe.withDefault 0 (String.toInt v))
-
-                                        else
-                                            SetDefenderBoost statName (Maybe.withDefault 0 (String.toInt v))
-                                    )
-                                , class "select select-bordered select-xs w-full"
-                                ]
-                                (List.map
-                                    (\i ->
-                                        option
-                                            [ value (String.fromInt i)
-                                            , selected (getValue pokemon.boosts == i)
-                                            ]
-                                            [ text
-                                                (if i > 0 then
-                                                    "+" ++ String.fromInt i
-
-                                                 else
-                                                    String.fromInt i
-                                                )
-                                            ]
-                                    )
-                                    (List.reverse (List.range -6 6))
-                                )
-                            ]
-                    )
-                    [ ( "atk", "Atk", .atk )
-                    , ( "def", "Def", .def )
-                    , ( "spa", "SpA", .spa )
-                    , ( "spd", "SpD", .spd )
-                    , ( "spe", "Spe", .spe )
-                    ]
-                )
             ]
         ]
 
@@ -5277,6 +5091,32 @@ viewHeader model =
         , viewToolbarSelect "Format" SetFieldGameType model.field.gameType [ ( "Singles", "Singles" ), ( "Doubles", "Doubles" ) ]
         , viewToolbarSelect "Weather" SetFieldWeather model.field.weather [ ( "", "None" ), ( "Sun", "Sun" ), ( "Rain", "Rain" ), ( "Sand", "Sand" ), ( "Snow", "Snow" ) ]
         , viewToolbarSelect "Terrain" SetFieldTerrain model.field.terrain [ ( "", "None" ), ( "Electric", "Electric" ), ( "Grassy", "Grassy" ), ( "Psychic", "Psychic" ), ( "Misty", "Misty" ) ]
+        , button
+            [ onClick ToggleBattlePane
+            , class
+                (if model.battlePaneOpen then
+                    "btn btn-xs btn-primary"
+
+                 else
+                    "btn btn-xs btn-outline btn-primary"
+                )
+            , attribute "aria-pressed"
+                (if model.battlePaneOpen then
+                    "true"
+
+                 else
+                    "false"
+                )
+            , title "Screens, hazards, stat stages, status, HP, Tera"
+            ]
+            [ text
+                (if model.battlePaneOpen then
+                    "Battle & Field ▴"
+
+                 else
+                    "Battle & Field ▾"
+                )
+            ]
         , div [ class "flex-1" ] []
         , button
             [ onClick RequestResetGameData
@@ -5306,14 +5146,17 @@ viewMain : Model -> Html Msg
 viewMain model =
     main_ [ class "flex flex-col gap-3 lg:flex-1 lg:min-h-0" ]
         [ viewDamageStrip model
+        , if model.battlePaneOpen then
+            viewBattlePane model
+
+          else
+            text ""
         , div [ class "grid grid-cols-1 lg:grid-cols-2 gap-3 lg:flex-1 lg:min-h-0" ]
             [ viewTeamBoxSection model
             , div [ class "flex flex-col gap-3 lg:min-h-0 lg:overflow-y-auto" ]
                 [ viewOpponentSection model
                 , viewDefenderInfoSection model
                 , viewLoadoutSection model
-                , viewCollapsibleSection "Field Conditions" model.fieldCollapsed ToggleFieldCollapsed (viewFieldConditionsContent model)
-                , viewCollapsibleSection "Battle State" model.battleStateCollapsed ToggleBattleStateCollapsed (viewBattleStatesContent model)
                 , viewCollapsibleSection "Attacker Stats" model.attackerBaseStatsCollapsed ToggleAttackerBaseStatsCollapsed (viewBaseStatsContent model.attacker model.pokemonList model.abilityList model.natureList model.generation True model.openDropdown model.dropdownHighlightIndex)
                 , viewCollapsibleSection "Defender Stats" model.defenderBaseStatsCollapsed ToggleDefenderBaseStatsCollapsed (viewBaseStatsContent model.defender model.pokemonList model.abilityList model.natureList model.generation False model.openDropdown model.dropdownHighlightIndex)
                 ]
@@ -5960,3 +5803,137 @@ matchupTierCellBackground tier =
 
         NoOHKO ->
             "bg-base-300"
+
+
+{-| Field conditions as one row: for each side (and the field itself) the add
+button with the active conditions as pills next to it.
+-}
+viewFieldConditionsContent : Model -> Html Msg
+viewFieldConditionsContent model =
+    let
+        column labelText dropdownId options pills =
+            div [ class "flex flex-wrap items-center gap-1 min-w-0" ]
+                (div [ class "shrink-0 w-28" ]
+                    [ viewFieldConditionDropdown labelText dropdownId model.openDropdown model.dropdownHighlightIndex options ]
+                    :: pills
+                )
+    in
+    div [ class "grid grid-cols-1 lg:grid-cols-3 gap-2" ]
+        [ column "Attacker" FieldConditionsAttackerDropdown (getAttackerConditionOptions model) (viewAttackerConditionPills model)
+        , column "Both" FieldConditionsBothDropdown (getBothConditionOptions model) (viewBothConditionPills model)
+        , column "Defender" FieldConditionsDefenderDropdown (getDefenderConditionOptions model) (viewDefenderConditionPills model)
+        ]
+
+
+{-| One side's battle state, compact enough for the Battle & Field pane:
+HP slider, then status and Tera, then the five stat stages in a row.
+-}
+viewBattleStateSection : String -> PokemonState -> Int -> List PokemonData -> Bool -> Html Msg
+viewBattleStateSection title pokemon generation pokemonList isAttacker =
+    let
+        statusMsg =
+            if isAttacker then
+                SetAttackerStatus
+
+            else
+                SetDefenderStatus
+
+        boostMsg statName v =
+            if isAttacker then
+                SetAttackerBoost statName (Maybe.withDefault 0 (String.toInt v))
+
+            else
+                SetDefenderBoost statName (Maybe.withDefault 0 (String.toInt v))
+
+        hpMsg v =
+            if isAttacker then
+                SetAttackerCurHP (Maybe.withDefault 100 (String.toInt v))
+
+            else
+                SetDefenderCurHP (Maybe.withDefault 100 (String.toInt v))
+
+        stageSelect ( statName, statLabel, getValue ) =
+            label [ class "flex flex-col gap-0.5 min-w-0" ]
+                [ span [ class "text-[10px] text-base-content/60" ] [ text statLabel ]
+                , select [ onInput (boostMsg statName), class "select select-bordered select-xs w-full" ]
+                    (List.map
+                        (\i ->
+                            option [ value (String.fromInt i), selected (getValue pokemon.boosts == i) ]
+                                [ text
+                                    (if i > 0 then
+                                        "+" ++ String.fromInt i
+
+                                     else
+                                        String.fromInt i
+                                    )
+                                ]
+                        )
+                        (List.reverse (List.range -6 6))
+                    )
+                ]
+    in
+    div [ class "flex flex-col gap-2 min-w-0" ]
+        [ div [ class "flex items-center gap-2 text-xs" ]
+            [ span [ class "font-semibold text-primary" ] [ text title ]
+            , span [ class "text-base-content/60 truncate" ] [ text pokemon.species ]
+            ]
+        , div [ class "flex items-center gap-2 text-xs" ]
+            [ span [ class "text-base-content/60 w-8" ] [ text "HP" ]
+            , input
+                [ type_ "range"
+                , Html.Attributes.min "0"
+                , Html.Attributes.max "100"
+                , value (String.fromInt pokemon.curHP)
+                , onInput hpMsg
+                , class "range range-xs range-primary flex-1"
+                ]
+                []
+            , span [ class "w-10 text-right tabular-nums" ] [ text (String.fromInt pokemon.curHP ++ "%") ]
+            , span [ class "text-base-content/60 tabular-nums whitespace-nowrap" ]
+                [ text ("≈ " ++ String.fromInt (calculateCurrentHP pokemon pokemonList) ++ " / " ++ String.fromInt (calculateMaxHP pokemon pokemonList)) ]
+            ]
+        , div [ class "flex items-center gap-2 text-xs flex-wrap" ]
+            [ span [ class "text-base-content/60 w-8" ] [ text "Status" ]
+            , select [ onInput statusMsg, class "select select-bordered select-xs w-28" ]
+                [ option [ value "", selected (pokemon.status == "") ] [ text "Healthy" ]
+                , option [ value "Paralysis", selected (pokemon.status == "Paralysis") ] [ text "Paralysis" ]
+                , option [ value "Poison", selected (pokemon.status == "Poison") ] [ text "Poison" ]
+                , option [ value "Burn", selected (pokemon.status == "Burn") ] [ text "Burn" ]
+                , option [ value "Sleep", selected (pokemon.status == "Sleep") ] [ text "Sleep" ]
+                , option [ value "Freeze", selected (pokemon.status == "Freeze") ] [ text "Freeze" ]
+                ]
+            , if generation >= 9 then
+                span [ class "flex items-center gap-2" ]
+                    [ span [ class "text-base-content/60" ] [ text "Tera" ]
+                    , input
+                        [ type_ "text"
+                        , value pokemon.teraType
+                        , onInput
+                            (if isAttacker then
+                                SetAttackerTeraType
+
+                             else
+                                SetDefenderTeraType
+                            )
+                        , list (title ++ "TeraTypeList")
+                        , placeholder "None"
+                        , class "input input-bordered input-xs w-28"
+                        ]
+                        []
+                    , datalist [ id (title ++ "TeraTypeList") ]
+                        (List.map (\t -> option [ value t ] []) [ "Normal", "Fire", "Water", "Electric", "Grass", "Ice", "Fighting", "Poison", "Ground", "Flying", "Psychic", "Bug", "Rock", "Ghost", "Dragon", "Dark", "Steel", "Fairy" ])
+                    ]
+
+              else
+                text ""
+            ]
+        , div [ class "grid grid-cols-5 gap-1" ]
+            (List.map stageSelect
+                [ ( "atk", "Atk", .atk )
+                , ( "def", "Def", .def )
+                , ( "spa", "SpA", .spa )
+                , ( "spd", "SpD", .spd )
+                , ( "spe", "Spe", .spe )
+                ]
+            )
+        ]
