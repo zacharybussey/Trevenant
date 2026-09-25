@@ -518,10 +518,14 @@ function convertToTrevenantFormat(pokemonByTrainer) {
         // IMPORTANT: Do NOT sort the team - preserve original order from source document
         // The order in the source reflects the actual battle order (lead Pokemon first)
 
+        // Trainer names in the source are single tokens. A "Leader" prefix (LeaderDylan) is
+        // the trainer class, so the app shows "Leader Dylan" and search finds "Dylan".
+        const classMatch = /^Leader([A-Z].*)$/.exec(trainerName);
+
         encounters.push({
             id: `blackpearl-${id++}`,
-            trainerClass: '',
-            trainerName: trainerName,
+            trainerClass: classMatch ? 'Leader' : '',
+            trainerName: classMatch ? classMatch[1] : trainerName,
             location: '',
             game: gameName,
             isDouble: false,

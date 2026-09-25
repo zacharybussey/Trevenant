@@ -2590,7 +2590,7 @@ Quirky Nature
 - Bulldoze
 - Headbutt
 
-Torkoal DHill (Torkoal) @ Heat Rock
+Torkoal LeaderDylan (Torkoal) @ Heat Rock
 Level: 31
 Ability: Drought
 EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
@@ -2601,7 +2601,7 @@ Quirky Nature
 - Rock Tomb
 - Bulldoze
 
-Monferno DHill (Monferno) @ Choice Scarf
+Monferno LeaderDylan (Monferno) @ Choice Scarf
 Level: 31
 Ability: Iron Fist
 EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
@@ -2612,7 +2612,7 @@ Quirky Nature
 - Thunder Punch
 - Ice Punch
 
-Quilava DHill (Quilava) @ Focus Sash
+Quilava LeaderDylan (Quilava) @ Focus Sash
 Level: 32
 Ability: Blaze
 EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
@@ -2622,7 +2622,7 @@ Quirky Nature
 - Endeavor
 - Lava Plume
 
-Arcanine DHill (Arcanine) @ Charcoal
+Arcanine LeaderDylan (Arcanine) @ Charcoal
 Level: 33
 Ability: Intimidate
 EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
@@ -2633,7 +2633,7 @@ Quirky Nature
 - Fire Fang
 - Thunder Fang
 
-Ninetales DHill (Ninetales) @ Heat Rock
+Ninetales LeaderDylan (Ninetales) @ Heat Rock
 Level: 33
 Ability: Drought
 EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
@@ -2644,7 +2644,7 @@ Quirky Nature
 - Flamethrower
 - Calm Mind
 
-Houndoom DHill (Houndoom) @ Houndoominite
+Houndoom LeaderDylan (Houndoom) @ Houndoominite
 Level: 33
 Ability: Flash Fire
 EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
@@ -15214,7 +15214,7 @@ Level: 78
 Ability: Good as Gold
 EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
 IVs: 15 Hp / 15 Atk / 15 Def / 15 SpA  / 15 SpD / 15 Spe
-Quirky Nature
+Timid Nature
 - Shadow Ball
 - Make It Rain
 - Recover
@@ -15247,7 +15247,7 @@ Level: 78
 Ability: Defiant
 EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
 IVs: 15 Hp / 15 Atk / 15 Def / 15 SpA  / 15 SpD / 15 Spe
-Quirky Nature
+Careful Nature
 - Bulk Up
 - Drain Punch
 - Rage Fist
@@ -15258,7 +15258,7 @@ Level: 78
 Ability: Protosynthesis
 EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
 IVs: 15 Hp / 15 Atk / 15 Def / 15 SpA  / 15 SpD / 15 Spe
-Quirky Nature
+Timid Nature
 - Shadow Ball
 - Moonblast
 - Power Gem
@@ -15269,7 +15269,7 @@ Level: 78
 Ability: Infiltrator
 EVs: 0 Hp / 0 Atk / 0 Def / 0 SpA  / 0 SpD / 0 Spe
 IVs: 15 Hp / 15 Atk / 15 Def / 15 SpA  / 15 SpD / 15 Spe
-Quirky Nature
+Hasty Nature
 - Dragon Darts
 - Hex
 - U-turn

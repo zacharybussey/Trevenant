@@ -8360,8 +8360,8 @@
     },
     {
       "id": "blackpearl-97",
-      "trainerClass": "",
-      "trainerName": "DHill",
+      "trainerClass": "Leader",
+      "trainerName": "Dylan",
       "location": "",
       "game": "Black Pearl",
       "isDouble": false,
@@ -46469,7 +46469,7 @@
           "level": 78,
           "ability": "Good as Gold",
           "item": "Air Balloon",
-          "nature": "Quirky",
+          "nature": "Timid",
           "ivs": {
             "hp": 15,
             "atk": 15,
@@ -46556,7 +46556,7 @@
           "level": 78,
           "ability": "Defiant",
           "item": "Chesto Berry",
-          "nature": "Quirky",
+          "nature": "Careful",
           "ivs": {
             "hp": 15,
             "atk": 15,
@@ -46585,7 +46585,7 @@
           "level": 78,
           "ability": "Protosynthesis",
           "item": "Leftovers",
-          "nature": "Quirky",
+          "nature": "Timid",
           "ivs": {
             "hp": 15,
             "atk": 15,
@@ -46614,7 +46614,7 @@
           "level": 78,
           "ability": "Infiltrator",
           "item": "Focus Sash",
-          "nature": "Quirky",
+          "nature": "Hasty",
           "ivs": {
             "hp": 15,
             "atk": 15,
