@@ -5439,8 +5439,8 @@ viewBoxPanel model =
                 , span [ class "text-xs font-normal tabular-nums" ] [ text (String.fromInt (List.length model.box)) ]
                 ]
             , div [ class "join" ]
-                [ viewButton BoxGrid "Grid"
-                , viewButton BoxBoard "Board"
+                [ viewButton BoxGrid "Icons"
+                , viewButton BoxBoard "Matchups"
                 ]
             , div [ class "flex-1" ] []
             , button
